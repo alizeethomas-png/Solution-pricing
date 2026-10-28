@@ -46,7 +46,7 @@ body.flex-modal-open { overflow: hidden; }
   left: 0;
   right: 0;
   top: 0;
-  height: calc(100% - 72px);
+  height: calc(100% - (var(--space-11, 72px) * 0.75));
   z-index: 0;
   pointer-events: none;
   color: var(--color-cloud-blue-90, #CFE9FE);
@@ -141,7 +141,7 @@ body.flex-modal-open { overflow: hidden; }
   display: grid;
   grid-template-columns: minmax(240px, 331px) minmax(0, 1fr);
   gap: var(--space-content-lg, 24px);
-  padding: 0 var(--space-content-xl, 32px) var(--space-content-md, 16px);
+  padding: 0 var(--space-content-xl, 32px) calc(var(--space-11, 72px) * 0.75);
   align-items: stretch;
 }
 
