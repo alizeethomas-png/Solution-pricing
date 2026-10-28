@@ -41,9 +41,7 @@
 
   var state = { open: false, trigger: null, kind: null, q: "" };
 
-  var BOWL = '<svg viewBox="0 0 1152 1068" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
-    + '<path fill="currentColor" d="M1152 50C1152 22.3859 1129.61 0 1102 0H50C22.3858 0 0 22.3857 0 50V1011.9C0 1044.13 30.0689 1067.9 61.6598 1061.5C243.964 1024.54 393.311 1020.98 571.341 1020.98C749.502 1020.98 910.291 1029.76 1091.61 1063.12C1122.82 1068.87 1152 1045.19 1152 1013.46V50Z"/>'
-    + "</svg>";
+  var BOWL = "";
 
   function esc(s) {
     return String(s)

@@ -37,25 +37,13 @@ body.flex-modal-open { overflow: hidden; }
   height: min(860px, calc(100vh - var(--space-content-2xl, 48px)));
   max-height: calc(100vh - var(--space-content-2xl, 48px));
   overflow: hidden;
+  background: var(--color-cloud-blue-90, #CFE9FE);
   border-radius: var(--space-content-2xl, 48px);
   box-shadow: 0 16px 40px -8px rgba(24, 24, 24, 0.28);
 }
 
 .flex-modal__bowl {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: calc(100% - (var(--space-11, 72px) * 0.75));
-  z-index: 0;
-  pointer-events: none;
-  color: var(--color-cloud-blue-90, #CFE9FE);
-  filter: drop-shadow(0 8px 24px rgba(24, 24, 24, 0.16));
-}
-.flex-modal__bowl svg {
-  display: block;
-  width: 100%;
-  height: 100%;
+  display: none;
 }
 
 .flex-modal__close {
@@ -141,7 +129,7 @@ body.flex-modal-open { overflow: hidden; }
   display: grid;
   grid-template-columns: minmax(240px, 331px) minmax(0, 1fr);
   gap: var(--space-content-lg, 24px);
-  padding: 0 var(--space-content-xl, 32px) calc(var(--space-11, 72px) * 0.75);
+  padding: 0 var(--space-content-xl, 32px) var(--space-content-md, 16px);
   align-items: stretch;
 }
 
@@ -231,7 +219,7 @@ body.flex-modal-open { overflow: hidden; }
   display: flex;
   flex-direction: column;
   gap: var(--space-content-md, 16px);
-  padding: var(--space-content-md, 16px) var(--space-content-md, 16px) var(--space-content-3xl, 64px) var(--space-content-md, 16px);
+  padding: var(--space-content-md, 16px);
   scrollbar-gutter: stable;
   scrollbar-width: auto;
   scrollbar-color: var(--color-neutral-50, #747474) var(--color-cloud-blue-95, #EAF5FE);
