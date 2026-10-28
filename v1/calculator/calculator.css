@@ -1,0 +1,339 @@
+/* ══════════════════════════════════════════════════════════════════
+   FLEX CREDIT PRICING CALCULATOR — "Before you start"
+   Page-specific styles. Rebuild of Figma node 35-8475 using the
+   project's DMS tokens + existing sf-* chrome. Every value resolves
+   from a token; hardcoded values are fallbacks or documented literals.
+
+   Reuses (not redefined here): .sf-nav, .sf-subnav, .sf-footer,
+   .sf-blade-region/.region-day, .blade/.blade__content, .sf-cta*,
+   .sf-cta-link*, .hero-back-link, .section-header*, .faq*, .scaffold-note.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Region gradient ──────────────────────────────────────────────────
+   The Figma places the header + panel on one continuous Day gradient
+   that deepens toward electric blue near the base (behind the omitted
+   Astro mascot). We keep data-theme="day" (inks stay navy) and override
+   only the paint: light Cloud Blue at the top for legible header text,
+   easing to a brighter sky blue at the base. Softer than the Figma's
+   full-saturation base — with the mascot omitted, a vivid empty band
+   would read as unfinished. (Backgrounds are DATA, not tokens.) */
+.region-calc {
+  background: linear-gradient(180deg, #EAF5FE 0%, #C4E2FE 52%, #7FC0FE 100%);
+}
+
+/* ── Header ───────────────────────────────────────────────────────── */
+.calc-header-blade { padding-bottom: 0; }
+
+.calc-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 760px;
+  margin-inline: auto;
+  gap: var(--space-content-sm, 12px);
+}
+
+
+/* H1 — the calculator name. Deep electric blue (electric-blue-30) and the
+   LARGEST line in the header: Display 2 / 56px. Sparkle + cube art sit
+   around it (positioned via .calc-header__decor once assets are wired). */
+.calc-header__title {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+  font-family: var(--font-style-display-2-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-2-weight, 600);
+  font-size: var(--font-style-display-2-size, 56px);
+  line-height: var(--font-style-display-2-line-height, 1.125);
+  letter-spacing: var(--font-style-display-2-letter-spacing, -0.003em);
+  color: var(--color-electric-blue-30, #022AC0);
+}
+.calc-header__spark {
+  font-size: 0.7em;
+  line-height: 1;
+  color: var(--color-fill-accent, #066AFE);
+}
+
+/* "Before you Start" — the step label under the title. Display 4 / 40px,
+   deep cloud-blue ink (#023248), a step smaller than the H1 above it. */
+.calc-header__subhead {
+  margin: 0;
+  font-family: var(--font-style-display-4-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-4-weight, 600);
+  font-size: var(--font-style-display-4-size, 40px);
+  line-height: var(--font-style-display-4-line-height, 1.125);
+  letter-spacing: var(--font-style-display-4-letter-spacing, -0.0025em);
+  color: var(--color-cloud-blue-20, #023248);
+}
+
+.calc-header__desc {
+  margin: 0;
+  max-width: 600px;
+  font-family: var(--font-style-body-copy-1-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-style-body-copy-1-weight, 400);
+  font-size: var(--font-style-body-copy-1-size, 20px);
+  line-height: var(--font-style-body-copy-1-line-height, 1.5);
+  letter-spacing: var(--font-style-body-copy-1-letter-spacing, 0.00125em);
+  color: var(--color-cloud-blue-20, #023248);
+}
+
+/* ── Elevated panel ───────────────────────────────────────────────────
+   Light surface floating on the gradient. Rounded (hero-card radius),
+   Elevation Level 4 shadow. Figma's concave top "lip" is decorative →
+   plain rounded rectangle (documented fidelity gap). */
+.calc-panel-blade { padding-top: var(--space-6, 32px); }
+
+.calc-panel {
+  max-width: 1280px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8, 48px);
+  padding: var(--space-8, 48px);
+  background: var(--color-fill-info, #EAF5FE);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-hero-card, 16px);
+  box-shadow: 0 24px 48px -4px rgba(24, 24, 24, 0.20);
+}
+
+/* ── Groups ───────────────────────────────────────────────────────── */
+.calc-group { display: flex; flex-direction: column; }
+
+.calc-group__title {
+  margin: 0 0 var(--space-5, 24px);
+  text-align: center;
+  font-family: var(--font-style-display-6-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-6-weight, 600);
+  font-size: var(--font-style-display-6-size, 24px);
+  line-height: var(--font-style-display-6-line-height, 1.25);
+  letter-spacing: var(--font-style-display-6-letter-spacing, -0.001em);
+  color: var(--color-on-surface-1, #001E5B);
+}
+
+/* ── Selection grids ──────────────────────────────────────────────── */
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6, 32px);
+}
+/* Extra industries: participate directly in the parent grid until
+   collapsed (JS sets [hidden]). */
+.calc-grid__extra { display: contents; }
+.calc-grid__extra[hidden] { display: none; }
+
+/* ── Selection card (base for industry + company size) ─────────────────
+   Native radio, sr-only-clipped but focusable (technique from
+   .solution-input__label). Selected/focus visuals via :has() on the
+   label; JS mirrors .is-selected as a no-:has() fallback. */
+.calc-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  min-height: 128px;
+  padding: var(--space-4, 16px);
+  text-align: center;
+  /* Frosted glass: translucent white over the blue panel, thin white
+     hairline, hero-card radius, soft electric-blue glow (per Figma). */
+  background: rgba(255, 255, 255, 0.60);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-hero-card, 16px);
+  box-shadow: 0 10px 10px 0 rgba(6, 106, 254, 0.20);
+  cursor: pointer;
+  transition: border-color 150ms ease-out, background 150ms ease-out,
+              box-shadow 150ms ease-out;
+}
+
+/* sr-only, but focusable — do NOT use display:none/visibility:hidden. */
+.calc-card__input {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.calc-card:hover {
+  border-color: rgba(6, 106, 254, 0.40);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 12px 14px 0 rgba(6, 106, 254, 0.26);
+}
+
+/* Selected — accent ring (kept alongside the base glow) + light-blue fill. */
+.calc-card:has(.calc-card__input:checked),
+.calc-card.is-selected {
+  border-color: var(--color-fill-accent, #066AFE);
+  background: var(--color-fill-info, #EAF5FE);
+  box-shadow: 0 0 0 2px var(--color-fill-accent, #066AFE),
+              0 10px 10px 0 rgba(6, 106, 254, 0.20);
+}
+
+/* Keyboard focus ring driven by the hidden radio. */
+.calc-card:has(.calc-card__input:focus-visible) {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+
+/* Industry icon — per-industry two-tone SVG (40×40), extracted from Figma
+   and rendered as <img>. The mask-glyph <i> fallback keeps the same box
+   for any card without a bespoke asset. */
+.calc-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.calc-card__icon .icon { width: 40px; height: 40px; }
+.calc-card__icon img { width: 40px; height: 40px; display: block; }
+.calc-card:has(.calc-card__input:checked) .calc-card__icon,
+.calc-card.is-selected .calc-card__icon { color: var(--color-fill-accent, #066AFE); }
+
+/* Card label — Avant Garde Demi (Display 8 family), pinned to Figma's 16px,
+   deep navy #032D60 (off-palette literal, no matching primitive). */
+.calc-card__label {
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-8-weight, 600);
+  font-size: var(--font-size-16, 16px);
+  line-height: 1.5;
+  letter-spacing: 0.005em;
+  color: #032D60;
+}
+
+/* ── Company-size card variant ────────────────────────────────────────
+   Top-aligned: tag pill, big number, unit. */
+.calc-size-card {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: var(--space-2, 8px);
+  padding: var(--space-5, 24px);
+  background: rgba(255, 255, 255, 0.50);
+}
+
+/* Teal pill — matches Figma exactly (no token maps to this cyan/teal pair,
+   so literal fill #04E1CB / ink #024D4C). Rounded-rect (12px), not a pill. */
+.calc-size-card__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-3, 12px);
+  border-radius: var(--radius-card, 12px);
+  background: var(--color-teal-80, #04E1CB);
+  color: #024D4C;
+  font-family: var(--font-style-body-copy-4-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-12, 12px);
+  line-height: 1.5;
+}
+.calc-size-card__number {
+  margin-top: var(--space-2, 8px);
+  font-family: var(--font-style-display-6-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-6-weight, 600);
+  font-size: var(--font-style-display-6-size, 24px);
+  line-height: 1.1;
+  color: #032D60;
+}
+.calc-size-card__unit {
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  line-height: 1.5;
+  color: #032D60;
+}
+
+/* ── Show more ────────────────────────────────────────────────────────
+   Reuses .sf-cta-link; centered, with a chevron that flips when open. */
+.calc-showmore {
+  align-self: center;
+  margin-top: var(--space-4, 16px);
+  background: none;
+  border: none;
+  padding: var(--space-2, 8px);
+}
+.calc-showmore__chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform 200ms ease-out;
+}
+.calc-showmore[aria-expanded="true"] .calc-showmore__chevron { transform: rotate(180deg); }
+
+/* ── Currency select (native <select>, closed-state styling only) ────── */
+.calc-group--currency { align-items: center; }
+.calc-select {
+  position: relative;
+  width: 100%;
+  max-width: 436px;
+}
+.calc-select__field {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: var(--space-3, 12px) var(--space-9, 56px) var(--space-3, 12px) var(--space-4, 16px);
+  background: var(--color-surface-1, #FFFFFF);
+  border: 1.5px solid var(--color-border-3, #C9C9C9);
+  border-radius: var(--radius-input, 4px);
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  line-height: var(--font-line-height-normal, 1.5);
+  color: var(--color-on-surface-2, #181818);
+  cursor: pointer;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.calc-select__field:hover { border-color: var(--color-fill-accent, #066AFE); }
+.calc-select__field:focus-visible {
+  outline: none;
+  border-color: var(--color-border-focus, #066AFE);
+  box-shadow: 0 0 0 3px rgba(6, 106, 254, 0.16);
+}
+/* Placeholder (empty, required) shows muted until a currency is chosen. */
+.calc-select__field:required:invalid { color: var(--color-on-surface-4, #747474); }
+.calc-select__chevron {
+  position: absolute;
+  right: var(--space-4, 16px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--color-on-surface-3, #444444);
+  pointer-events: none;
+}
+
+/* ── Actions ──────────────────────────────────────────────────────── */
+.calc-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4, 16px);
+}
+.calc-start { min-width: 173px; }
+/* Reset .scaffold-note's negative top margin (it's tuned to sit under a
+   section-header elsewhere; here it lives in a flex column). */
+.calc-scaffold { margin: 0; max-width: 40ch; }
+
+/* ── Responsive ───────────────────────────────────────────────────────
+   Repo breakpoints: ≥1024 / 768–1023.98 / ≤767.98. */
+@media (max-width: 1023.98px) {
+  .calc-grid { grid-template-columns: repeat(2, 1fr); }
+  .calc-panel { padding: var(--space-6, 32px); gap: var(--space-6, 32px); }
+  .calc-header__title { font-size: 48px; }
+}
+@media (max-width: 767.98px) {
+  .calc-header__title { font-size: 36px; }
+  .calc-header__subhead { font-size: var(--font-size-32, 32px); }
+  .calc-grid--size { grid-template-columns: 1fr; }
+  .calc-panel { padding: var(--space-5, 24px); }
+}
+
+/* Respect reduced-motion for the chevron/hover transitions. */
+@media (prefers-reduced-motion: reduce) {
+  .calc-card,
+  .calc-showmore__chevron,
+  .calc-select__field { transition: none; }
+}

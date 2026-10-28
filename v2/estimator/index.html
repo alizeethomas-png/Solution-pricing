@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en"
+      data-theme="day"
+      data-typography="default"
+      data-spacing="default"
+      data-radii="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Solution Estimator | Salesforce</title>
+<meta name="description" content="Configure your Salesforce solution and see an indicative estimate — carried forward from the goals you selected." />
+
+<link rel="stylesheet" href="../assets/dms/fonts.css" />
+<link rel="stylesheet" href="../assets/dms/tokens.css" />
+<link rel="stylesheet" href="../assets/dms/icons.css" />
+<link rel="stylesheet" href="../css/icons-local.css" />
+<link rel="stylesheet" href="../css/components.css" />
+<link rel="stylesheet" href="../css/page.css" />
+<link rel="stylesheet" href="estimator.css?v=8" />
+<link rel="stylesheet" href="../css/flex-modal.css?v=1" />
+<link rel="stylesheet" href="../css/dsr-login.css" />
+</head>
+<body>
+<main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       GLOBAL HEADER  (copied verbatim from the sibling pricing pages)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="sf-nav" data-theme="day" role="banner">
+    <div class="sf-nav__inner">
+      <a href="../index.html" class="sf-nav__logo" aria-label="Salesforce home">
+        <img class="sf-nav__logo-full" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="68" height="48" />
+        <img class="sf-nav__logo-bug" src="../assets/brand/salesforce-logo-bug.svg" alt="Salesforce" width="36" height="25" />
+      </a>
+      <button class="sf-nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="sf-nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="sf-nav__links" id="sf-nav-links" aria-label="Main navigation">
+        <a href="#">Products</a>
+        <a href="#">Industries</a>
+        <a href="#">Customers</a>
+        <a href="#">Events</a>
+        <a href="#">Learning</a>
+        <a href="#">Support</a>
+        <a href="#">Company</a>
+      </nav>
+      <div class="sf-nav__utilities">
+        <button class="sf-nav__icon" aria-label="Call us"><i class="icon icon--call" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon" aria-label="Search"><i class="icon icon--search" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon sf-nav__icon--desktop-only" aria-label="Select region"><i class="icon icon--globe" aria-hidden="true"></i></button>
+        <a href="#" class="sf-nav__icon sf-nav__login" aria-label="Login">
+          <i class="icon icon--user" aria-hidden="true"></i>
+          <span class="sf-nav__login-label">Login</span>
+        </a>
+        <a href="#" class="sf-cta sf-cta--primary sf-cta--medium sf-nav__cta">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       CONTEXT / SECONDARY NAV  (kept in sync with the sibling pages)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <nav class="sf-subnav" aria-label="Pricing sections">
+    <div class="sf-subnav__inner">
+      <a class="sf-subnav__title" href="../index.html">Pricing</a>
+      <a class="sf-subnav__link" href="../index.html">Overview</a>
+      <div class="sf-subnav__links">
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-buy-menu">
+            Pricing By
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu" id="pricing-buy-menu" role="menu">
+            <a class="sf-subnav__menu-item" role="menuitem" href="../product/index.html">Pricing by Product</a>
+            <a class="sf-subnav__menu-item" role="menuitem" href="../industry/index.html">Pricing by Industries</a>
+          </div>
+        </div>
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-tools-menu">
+            Pricing Tools
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu sf-subnav__menu--rich" id="pricing-tools-menu" role="menu">
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../calculator/index.html">
+              <span class="sf-subnav__menu-item-title">Flex Credit Calculator</span>
+              <span class="sf-subnav__menu-item-desc">Estimate how many Flex Credits you&rsquo;ll need and understand their potential cost.</span>
+            </a>
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../estimator/index.html">
+              <span class="sf-subnav__menu-item-title">Solution Estimator</span>
+              <span class="sf-subnav__menu-item-desc">Get guidance on which products can support your solution and estimate their cost.</span>
+            </a>
+          </div>
+        </div>
+        <a class="sf-subnav__link" href="../buying-models/index.html">Buying Models</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SOLUTION ESTIMATOR — wizard that picks up the goals selected on the
+       "What are you trying to solve?" screen (carried via ?g= / ?q=) and
+       walks through Industry → Size + Region → Products → Flex Credits
+       (conditional) → Buying Model → Agreement → Estimate.
+
+       The header + wizard card share one continuous Day gradient (the same
+       region-day treatment as the solve hero) for visual continuity. The
+       card recreates the POC's `.sf` container; `#sb` is re-rendered by
+       estimator.js per step.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="sf-blade-region region-day region-estimator region-cloudblue" data-theme="day">
+    <section class="blade est-blade">
+      <div class="blade__content">
+
+        <div class="est-wizard">
+          <!-- Card header: title + subtitle + progress bar -->
+          <div class="est-wizard__head">
+            <h1 class="est-wizard__title">Build Your Salesforce Solution</h1>
+            <p class="est-wizard__sub">Tell us a little about your company so we can guide you toward the solutions that best fit your business needs.</p>
+          </div>
+
+          <!-- Breadcrumb navigation (Solutions · Discover · Configure ·
+               Buying Models · Estimate). estimator.js (setBar) rebuilds this
+               list each step: completed steps render as buttons that navigate
+               back, the current step is highlighted with aria-current, and
+               future steps are inert (not focusable, not clickable). The first
+               crumb, "Solutions", is the upstream solve screen — it always
+               renders as completed and returns there (goals preserved). -->
+          <nav class="est-crumbs" aria-label="Estimator steps">
+            <ol id="est-crumbs" class="est-crumbs__list"></ol>
+          </nav>
+
+          <!-- Step body — re-rendered by estimator.js -->
+          <div id="sb" class="est-wizard__body"></div>
+        </div>
+
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FOOTER  (copied verbatim from the sibling pricing pages)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="sf-footer" data-theme="day" role="contentinfo">
+    <div class="sf-footer__links">
+      <div class="sf-footer__brand">
+        <img class="sf-footer__logo" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="92" height="65" />
+        <div class="sf-footer__social">
+          <a href="#" aria-label="Facebook"><img src="../assets/brand/social/facebook.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="X (Twitter)"><img src="../assets/brand/social/twitter.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="LinkedIn"><img src="../assets/brand/social/linkedin.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="Instagram"><img src="../assets/brand/social/instagram.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="YouTube"><img src="../assets/brand/social/youtube.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="TikTok"><img src="../assets/brand/social/tik-tok.svg" alt="" width="32" height="32" /></a>
+        </div>
+        <p class="sf-footer__phone">Call us at 1-800-664-9073</p>
+        <a href="#" class="sf-footer__contact-link">See all ways to contact us</a>
+      </div>
+      <div class="sf-footer__columns">
+        <div class="sf-footer__column">
+          <h3>New to Salesforce?</h3>
+          <ul>
+            <li><a href="#">What is CRM?</a></li>
+            <li><a href="#">Digital Marketing</a></li>
+            <li><a href="#">Customer Service Software</a></li>
+            <li><a href="#">Email Marketing</a></li>
+            <li><a href="#">Ecommerce</a></li>
+            <li><a href="#">Artificial Intelligence</a></li>
+            <li><a href="#">Revenue Management Solutions</a></li>
+            <li><a href="#">AI Agents</a></li>
+            <li><a href="#">SaaS</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>About Salesforce</h3>
+          <ul>
+            <li><a href="#">What is Salesforce?</a></li>
+            <li><a href="#">Newsroom</a></li>
+            <li><a href="#">Customer Success</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Trust</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Investors</a></li>
+            <li><a href="#">Give us your Feedback</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Popular Links</h3>
+          <ul>
+            <li><a href="#">Salesforce Login</a></li>
+            <li><a href="#">New Release Features</a></li>
+            <li><a href="#">Find or Become a Partner</a></li>
+            <li><a href="#">Dreamforce</a></li>
+            <li><a href="../index.html">Pricing</a></li>
+            <li><a href="#">CRM Software</a></li>
+            <li><a href="#">All Cloud Products</a></li>
+            <li><a href="../estimator/index.html">Solution Based Pricing</a></li>
+            <li><a href="#">Newsletter Sign-up</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sf-footer__bottom">
+      <div class="sf-footer__bottom-inner">
+        <button class="sf-footer__region">
+          <i class="icon icon--globe" aria-hidden="true"></i>
+          Worldwide <span aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="sf-footer__legal">
+          <div class="sf-footer__legal-links">
+            <a href="#">Legal</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Information</a>
+            <a href="#">Responsible Disclosure</a>
+            <a href="#">Trust</a>
+            <a href="#">Contact</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Your Privacy Choices</a>
+          </div>
+          <p class="sf-footer__copyright">
+            &copy; Copyright 2026 Salesforce, Inc. <a href="#">All rights reserved</a>.
+            Various trademarks held by their respective owners. Salesforce, Inc.
+            Salesforce Tower, 415 Mission Street, 3rd Floor, San Francisco, CA 94105,
+            United States
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<div id="dsr-login" class="dsr-login" hidden>
+  <div class="dsr-login__scrim" onclick="closeDsrLogin()"></div>
+  <div class="dsr-login__card" role="dialog" aria-modal="true" aria-labelledby="dsr-login-title">
+    <img class="dsr-login__logo" src="../assets/login/salesforce-lockup.svg" alt="Salesforce">
+    <h2 class="dsr-login__title" id="dsr-login-title">Choose an account</h2>
+    <p class="dsr-login__sub">Choose or enter an account you’d like to connect to <strong>jane.smith@acme.com</strong></p>
+    <div class="dsr-login__accounts">
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="../assets/login/google.png" alt="" width="16" height="16"> Google
+      </button>
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="../assets/login/salesforce-mark.svg" alt="" width="16" height="16"> Salesforce
+      </button>
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="../assets/login/mulesoft-mark.svg" alt="" width="16" height="16"> MuleSoft
+      </button>
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="../assets/login/spiff-mark.svg" alt="" width="16" height="16"> Spiff
+      </button>
+    </div>
+    <button type="button" class="dsr-login__more">View more options</button>
+    <div class="dsr-login__or" aria-hidden="true">Or</div>
+    <form onsubmit="return submitDsrLogin(event)">
+      <label class="dsr-login__field">Business email
+        <input id="dsr-login-email" type="text" name="email" autocomplete="username" oninput="syncDsrLogin()">
+      </label>
+      <button type="submit" id="dsr-login-next" class="sf-cta sf-cta--primary sf-cta--hero dsr-login__next is-disabled" disabled aria-disabled="true">Next</button>
+    </form>
+    <p class="dsr-login__fine">
+      Explore <button type="button">Trailblazer account benefits</button>.<br>
+      Don’t have an account? <button type="button">Sign up for free</button>.
+    </p>
+  </div>
+</div>
+
+<script src="../js/nav.js" defer></script>
+<script src="../js/dsr-login.js" defer></script>
+<script src="../js/confetti.js" defer></script>
+<script src="../js/flex-modal.js?v=1" defer></script>
+<script src="estimator.js?v=14" defer></script>
+</body>
+</html>

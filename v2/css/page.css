@@ -1,0 +1,384 @@
+/* ══════════════════════════════════════════════════════════════════
+   PAGE-SPECIFIC STYLES — Salesforce Pricing landing (Screen 1)
+   ────────────────────────────────────────────────────────────────
+   Section-level styling that sits ON TOP of the reusable component
+   library in components.css. Every value resolves from the DMS design
+   tokens (single source of truth); hardcoded values appear only as
+   var() fallbacks or where a token does not exist (documented inline).
+
+   Organised by page section:
+     1. Badges (shared small component)
+     2. Pricing-per cards (featured modifier)
+     3. Buying-models scaffold (placeholder modifier)
+     4. Calculator promo band
+     5. FAQ accordion
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════
+   1. BADGE — small pill tag used for card status ("New", "Coming
+   soon"). Pill radius from --radius-button; colours from the feedback
+   / neutral token roles so they theme correctly.
+   ══════════════════════════════════════════════════════════════════ */
+.sf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-interactive-2xs, 4px);
+  padding: 2px 12px;
+  border-radius: var(--radius-button, 9999px);
+  font-family: var(--font-style-body-copy-4-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-12, 12px);
+  line-height: 18px;
+  letter-spacing: 0.03px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* "New" — accent/info role: light-blue fill, accent ink. */
+.sf-badge--new {
+  background: var(--color-fill-info, #EAF5FE);
+  color: var(--color-on-fill-info, #066AFE);
+}
+/* "Coming soon" — muted/inactive role for scaffold placeholders. Uses the
+   disabled-fill token (semantically: not-yet-active), with on-surface-3 ink
+   for legible contrast on the light fill. */
+.sf-badge--soon {
+  background: var(--color-fill-disabled-1, #F3F3F3);
+  color: var(--color-on-surface-3, #444444);
+}
+/* Badge sitting at the top of a card's copy block. */
+.sf-card__badge-row {
+  display: flex;
+  gap: var(--space-interactive-xs, 8px);
+  margin: 0 0 var(--space-content-sm, 12px) 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   1b. STRETCHED LINK — makes the entire .sf-card clickable via a
+   single <a> inside it. The ::after pseudo-element covers the card;
+   the card just needs position: relative (already true for .sf-card).
+   Only the link with this modifier is stretched; other links inside
+   the card (if any) would need z-index: 1 to remain independently
+   clickable.
+   ══════════════════════════════════════════════════════════════════ */
+.sf-cta-link--stretched::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   2. PRICING-PER — three category cards (Industries / Product /
+   Solution-Based Pricing). Reuses .sf-card + .sf-card-grid--3up.
+   The Solution-Based card is the highlighted new model → accent ring.
+   ══════════════════════════════════════════════════════════════════ */
+/* role: featured card ring — var(--color-fill-accent) #066AFE. Uses
+   box-shadow (not border) so it layers on top of the base card shadow
+   without shifting layout / the 1px hairline border. */
+.sf-card--featured {
+  box-shadow:
+    0 0 0 2px var(--color-fill-accent, #066AFE),
+    0 2px 8px -2px rgba(24, 24, 24, 0.08),
+    0 12px 20px -4px rgba(6, 106, 254, 0.20);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Reference redesign: each entry point is a dark-blue gradient tile with
+   a free-standing white glyph (top-left), a circular white "open" button
+   with a navy diagonal arrow (top-right), a bold white heading, and white
+   body copy. The WHOLE tile is a single link — the arrow is the visual
+   affordance; the stretched-link ::after over the card is the hit area.
+   Fill: all three cards share one dark-blue gradient (Electric Blue 15 →
+   30). Ink is white throughout and the arrow disc inverts to a white disc
+   with a navy arrow, so every element clears WCAG AA — in fact AAA (≈10:1
+   at the lightest point of the gradient, up to ≈15.7:1). Cards are told
+   apart by glyph + title, not by fill colour.
+   ────────────────────────────────────────────────────────────────── */
+.pricing-per-card {
+  border: none;
+  border-radius: var(--radius-1, 16px);
+  padding: var(--space-6, 32px);
+  gap: var(--space-6, 32px);
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+  /* Dark-blue gradient shared by all three cards. Same navy → royal-blue
+     anchors as the hero gradient (components.css), stopped before its light
+     cyan so white ink keeps AAA contrast across the whole fill. */
+  background: linear-gradient(135deg,
+                var(--color-electric-blue-15, #001E5B) 0%,
+                var(--color-electric-blue-30, #022AC0) 100%);
+  color: var(--color-white, #FFFFFF);
+}
+
+/* Top row: free-standing glyph (left) + circular arrow button (right). */
+.pricing-per-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4, 16px);
+}
+.pricing-per-card__icon {
+  display: inline-flex;
+  color: var(--color-white, #FFFFFF);
+}
+.pricing-per-card__icon .icon { width: 40px; height: 40px; }
+
+/* Circular "open" button — inverted for the dark card: white disc, navy
+   arrow (was navy disc / white arrow on the old colour fills). This <a> is
+   the card link; .sf-cta-link--stretched puts an ::after over the whole
+   tile so the entire card is the click target. */
+.pricing-per-card__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-circle, 9999px);
+  background: var(--color-white, #FFFFFF);
+  color: var(--color-electric-blue-15, #001E5B);
+  text-decoration: none;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+.pricing-per-card__arrow { display: inline-flex; }
+.pricing-per-card__arrow svg { display: block; width: 24px; height: 24px; }
+
+/* The tile owns its padding, so drop the base __copy padding; ink is white
+   for AAA contrast on the dark-blue gradient. */
+.pricing-per-card .sf-card__copy { padding: 0; }
+.pricing-per-card .sf-card__title { color: var(--color-white, #FFFFFF); }
+.pricing-per-card .sf-card__body {
+  margin-bottom: 0;
+  color: var(--color-white, #FFFFFF);
+}
+
+/* Full-tile keyboard focus ring; pointer hover lifts the tile and
+   deepens the arrow disc. */
+.pricing-per-card:focus-within {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .pricing-per-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 4px 12px -2px rgba(24, 24, 24, 0.10),
+      0 16px 28px -6px rgba(24, 24, 24, 0.22);
+  }
+  .pricing-per-card:hover .pricing-per-card__link {
+    background: var(--color-cloud-blue-90, #CFE9FE);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   3. BUYING-MODELS SCAFFOLD — clearly-marked placeholder section.
+   Cards use a dashed border + muted icon so it reads as "structure in
+   place, content to come" rather than finished UI.
+   ══════════════════════════════════════════════════════════════════ */
+.sf-card--placeholder {
+  border: 1px dashed var(--color-border-neutral, #D6D6D6);
+  box-shadow: none;
+  background: var(--color-surface-1, #FFFFFF);
+}
+.sf-card--placeholder .sf-card__icon {
+  /* Muted icon badge — disabled-fill surface + muted ink, signals inactive. */
+  background: var(--color-fill-disabled-1, #F3F3F3);
+  color: var(--color-on-surface-4, #747474);
+}
+.sf-card--placeholder .sf-card__title {
+  color: var(--color-on-surface-2, #181818);
+}
+/* Centered note under the section header flagging the scaffold state. */
+.scaffold-note {
+  margin: calc(-1 * var(--space-content-md, 16px)) auto 0;
+  max-width: 640px;
+  text-align: center;
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-style: italic;
+  font-size: var(--font-style-body-copy-3-size, 16px);
+  line-height: var(--font-style-body-copy-3-line-height, 1.5);
+  color: var(--color-on-surface-4, #747474);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   4. CALCULATOR PROMO — full-bleed Night band. Text uses .section-header
+   (all on-surface inks resolve white under [data-theme='night']); this
+   block only lays out the icon + CTA row beneath it.
+   ══════════════════════════════════════════════════════════════════ */
+.calc-promo { text-align: center; }
+.calc-promo__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto var(--space-content-lg, 24px);
+  border-radius: 50%;
+  /* Accent medallion on the light Day gradient — accent fill + white
+     glyph reads clearly now that this is no longer a dark band. */
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+.calc-promo__ctas {
+  display: flex;
+  gap: var(--space-4, 16px);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-content-2xl, 48px);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   5. FAQ ACCORDION — native <details>/<summary> (works with zero JS;
+   js/faq.js only adds single-open convenience). Token-driven type,
+   neutral dividers, chevron rotates when open.
+   ══════════════════════════════════════════════════════════════════ */
+.faq {
+  max-width: 800px;
+  margin-inline: auto;
+}
+.faq__item {
+  border-bottom: 1px solid var(--color-neutral-90, #E5E5E5);
+}
+.faq__item:first-child {
+  border-top: 1px solid var(--color-neutral-90, #E5E5E5);
+}
+/* summary is the clickable question row. list-style removed for the
+   native disclosure triangle across engines. */
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4, 16px);
+  padding: var(--space-content-lg, 24px) var(--space-2, 8px);
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-style-body-copy-1-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-style-body-copy-2-size, 18px);
+  line-height: var(--font-style-body-copy-2-line-height, 1.5);
+  color: var(--color-on-surface-1, #001E5B);
+  transition: color 150ms ease-out;
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q:hover { color: var(--color-link, #022AC0); }
+.faq__item summary:focus-visible {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: -3px;
+  border-radius: var(--radius-4, 4px);
+}
+.faq__chevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-on-surface-3, #444444);
+  transition: transform 200ms ease-out;
+}
+.faq__item[open] .faq__chevron { transform: rotate(180deg); }
+.faq__a {
+  padding: 0 var(--space-2, 8px) var(--space-content-lg, 24px);
+  max-width: 720px;
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-regular, 400);
+  font-size: var(--font-style-body-copy-2-size, 18px);
+  line-height: var(--font-style-body-copy-2-line-height, 1.5);
+  color: var(--color-on-surface-2, #181818);
+}
+.faq__a p { margin: 0; }
+.faq__a p + p { margin-top: var(--space-content-md, 16px); }
+.faq__a a { color: var(--color-link, #022AC0); }
+
+/* ══════════════════════════════════════════════════════════════════
+   FLAT (NON-CARD) VARIANT — .sf-card--plain
+   ────────────────────────────────────────────────────────────────
+   Used by the landing "Buying models" section so the three models read
+   as plain, centered informational blocks — not clickable cards. Strips
+   the surface fill, border, shadow, and radius from .sf-card, and centers
+   the icon + copy both horizontally (align-items/text-align) and
+   vertically (justify-content) within the equal-height 3-up grid cell.
+   Reuses .sf-card__title / __body / __icon typography so the copy stays
+   consistent with the rest of the design system.
+   ══════════════════════════════════════════════════════════════════ */
+.sf-card--plain {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+  text-align: center;
+  align-items: center;      /* center icon + copy horizontally */
+  justify-content: center;  /* center the group vertically in the stretched cell */
+}
+.sf-card--plain .sf-card__copy {
+  flex: 0 0 auto;           /* don't stretch to fill, so the group can center */
+  align-items: center;
+  text-align: center;
+}
+/* Buying-model icons at 4× the standard 72px model-icon size (→ 288px).
+   Wrapper is centered and capped to the column width; the img caps to the
+   wrapper, so a large icon never overflows a narrow 3-up column. */
+.sf-card--plain .sf-card__icon--model {
+  margin: var(--space-5, 24px) auto 0;
+  max-width: 100%;
+}
+.sf-card--plain .sf-card__icon--model img {
+  width: 288px;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Centered call-to-action at the foot of a blade. Mirrors the buying-models
+   page's .bm-cta-center convention; the pill button itself uses the shared
+   .sf-cta styles, so it matches the landing page's section-level CTAs. */
+.blade__cta {
+  margin-top: var(--space-6, 32px);
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LANDING PAGE UPDATES
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Hero title: escalate to Display 2 at desktop, Display 1 (80px) at
+   wide — the largest size the design system permits. Overrides the
+   Display 3/2 cascade in components.css (page.css loads after).
+   Contrast on #90D0FE (top of Day gradient): #001E5B ≈ 9.6:1 (AAA). */
+@media (min-width: 1024px) {
+  .hero-blade__headline-1col {
+    font-size: var(--font-style-display-2-size, 56px);
+    letter-spacing: var(--font-style-display-2-letter-spacing, -0.003em);
+  }
+}
+@media (min-width: 1440px) {
+  .hero-blade__headline-1col {
+    font-size: var(--font-style-display-1-size, 80px);
+    letter-spacing: -0.004em;
+  }
+}
+
+/* Section-header left-aligned variant — used for "Explore Pricing by
+   Categories". Cards within the section are unaffected (they live
+   outside the section-header div). */
+.section-header--left {
+  text-align: left;
+}
+
+/* Pricing-per cards: keep the enlarged 48px diagonal arrow, but shrink the
+   circular disc (80 → 52px) so the arrow fills much more of the disc — the
+   snug arrow-in-circle proportion from the reference. The 48px arrow SVG is
+   mostly transparent padding (the visible glyph is ~20px, centred), so it
+   sits comfortably inside the 52px disc with no clipping. */
+.pricing-per-card__link {
+  width: 52px;
+  height: 52px;
+}
+.pricing-per-card__arrow svg {
+  width: 48px;
+  height: 48px;
+}
+
+/* CTA placed above a card grid (below a section-header): flush against
+   the header, gap below before the cards. */
+.blade__cta--precards {
+  margin-top: 0;
+  margin-bottom: var(--space-6, 32px);
+  text-align: center;
+}

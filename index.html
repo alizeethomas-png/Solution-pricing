@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="day">
+<head>
+  <!-- ═══════════════════════════════════════════════════════════════════
+       ★ ENTRY POINT — TOP-LEVEL SELECTOR (deploy root: /index.html)
+       The first page users land on. Two cards link to the two versions:
+         • "V1 Prototype"  →  v1/index.html
+         • "V2 Prototype"  →  v2/index.html
+       Self-contained (inline styles); pulls brand font + logo from v2/.
+       Full project map: HANDOFF.md (this same folder).
+       ═══════════════════════════════════════════════════════════════════ -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Solution Based Pricing — Prototype Versions</title>
+
+  <!-- Brand fonts only. Everything else is inlined below with literal DMS
+       token values so this entry page has no dependency on the per-version
+       css/ or tokens.css (each version owns its own copy). fonts.css uses
+       self-relative ./fonts/ URLs, so it resolves from the v2 copy; if the
+       hosted/local fonts are unreachable the stacks fall back to Arial. -->
+  <link rel="stylesheet" href="v2/assets/dms/fonts.css" />
+
+  <style>
+    /* ── DMS token values (Day theme), inlined ─────────────────────── */
+    :root {
+      --navy:      #001E5B;  /* color-on-surface-1  */
+      --accent:    #066AFE;  /* color-fill-accent   */
+      --body-gray: #444444;  /* color-on-surface-3  */
+      --sky:       #90D0FE;  /* cloud-blue-80 (gradient top)    */
+      --info:      #EAF5FE;  /* cloud-blue-95 (gradient bottom) */
+      --white:     #FFFFFF;
+      --font-display: "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif;
+      --font-body:    "Salesforce Sans", Arial, sans-serif;
+      --radius-card: 16px;
+      --shadow-card: 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+      --shadow-card-hover: 0 16px 40px -8px rgba(0, 30, 91, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--navy);
+      /* The prototype's signature Day gradient (components.css .region-day). */
+      background: linear-gradient(180deg, var(--sky) 0%, var(--info) 100%) no-repeat;
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Centered, wide, no nav/footer — just the picker. */
+    .chooser {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      padding: 64px 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ── Intro block (logo + eyebrow + title + subtitle) ───────────── */
+    .chooser__intro { text-align: center; max-width: 620px; }
+
+    .chooser__logo {
+      height: 44px;
+      width: auto;
+      display: block;
+      margin: 0 auto 28px;
+    }
+
+    .chooser__eyebrow {
+      margin: 0 0 8px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .chooser__title {
+      margin: 0 0 12px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 40px;
+      line-height: 1.15;
+      color: var(--navy);
+    }
+
+    .chooser__subtitle {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--body-gray);
+    }
+
+    /* ── Two-up version cards ──────────────────────────────────────── */
+    .chooser__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+
+    /* Whole-card link. White surface + accent border lifts it off the blue
+       gradient (an info-blue fill would blend into the gradient's lower
+       stop). Same visual language as the rest of the system: accent border,
+       navy headline, accent eyebrow/CTA, soft shadow, rounded corners. */
+    .vcard {
+      display: flex;
+      flex-direction: column;
+      padding: 32px;
+      text-decoration: none;
+      background: var(--white);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .vcard:hover,
+    .vcard:focus-visible {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card-hover);
+    }
+
+    .vcard:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .vcard__kicker {
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .vcard__title {
+      margin: 8px 0 12px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 26px;
+      line-height: 1.2;
+      color: var(--navy);
+    }
+
+    .vcard__body {
+      margin: 0 0 24px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--body-gray);
+    }
+    .vcard__body strong { color: var(--navy); }
+
+    /* Pin the launch affordance to the bottom so both cards align. */
+    .vcard__cta {
+      margin-top: auto;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--accent);
+    }
+    .vcard__cta span { transition: transform 0.18s ease; display: inline-block; }
+    .vcard:hover .vcard__cta span,
+    .vcard:focus-visible .vcard__cta span { transform: translateX(4px); }
+
+    /* ── Mobile: stack the cards ───────────────────────────────────── */
+    @media (max-width: 767px) {
+      .chooser { gap: 40px; padding: 48px 20px; }
+      .chooser__title { font-size: 32px; }
+      .chooser__grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .vcard, .vcard__cta span { transition: none; }
+      .vcard:hover, .vcard:focus-visible { transform: none; }
+      .vcard:hover .vcard__cta span,
+      .vcard:focus-visible .vcard__cta span { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="chooser">
+    <header class="chooser__intro">
+      <img class="chooser__logo" src="v2/assets/brand/salesforce-logo.svg" alt="Salesforce" />
+      <p class="chooser__eyebrow">Internal Concept</p>
+      <h1 class="chooser__title">Solution Based Pricing</h1>
+      <p class="chooser__subtitle">Choose a prototype version to explore.</p>
+    </header>
+
+    <div class="chooser__grid">
+      <a class="vcard" href="v1/index.html">
+        <span class="vcard__kicker">Version 1</span>
+        <h2 class="vcard__title">V1 Prototype</h2>
+        <p class="vcard__body">Your business &rarr; Solutions &rarr; Select products. The build flow ends at Select products with <strong>Configure and Estimate Your Solution</strong>.</p>
+        <span class="vcard__cta">Launch V1 <span aria-hidden="true">&rarr;</span></span>
+      </a>
+
+      <a class="vcard" href="v2/index.html">
+        <span class="vcard__kicker">Version 2</span>
+        <h2 class="vcard__title">V2 Prototype</h2>
+        <p class="vcard__body">The full five-step flow: Your business &rarr; Solutions &rarr; Select products &rarr; Purchase options &rarr; Estimate.</p>
+        <span class="vcard__cta">Launch V2 <span aria-hidden="true">&rarr;</span></span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en"
+      data-theme="day"
+      data-typography="default"
+      data-spacing="default"
+      data-radii="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Flexible Buying Models | Salesforce</title>
+<meta name="description" content="Flexible ways to buy Salesforce consumption services — pay as you go, pre-commit, or pre-purchase — with Flex Credits that work across every buying model." />
+
+<link rel="stylesheet" href="../assets/dms/fonts.css" />
+<link rel="stylesheet" href="../assets/dms/tokens.css" />
+<link rel="stylesheet" href="../assets/dms/icons.css" />
+<link rel="stylesheet" href="../css/icons-local.css" />
+<link rel="stylesheet" href="../css/components.css" />
+<link rel="stylesheet" href="../css/page.css" />
+<link rel="stylesheet" href="buying-models.css" />
+</head>
+<body>
+<main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       1. GLOBAL HEADER  (copied verbatim from the sibling pricing pages)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="sf-nav" data-theme="day" role="banner">
+    <div class="sf-nav__inner">
+      <a href="../index.html" class="sf-nav__logo" aria-label="Salesforce home">
+        <img class="sf-nav__logo-full" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="68" height="48" />
+        <img class="sf-nav__logo-bug" src="../assets/brand/salesforce-logo-bug.svg" alt="Salesforce" width="36" height="25" />
+      </a>
+      <button class="sf-nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="sf-nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="sf-nav__links" id="sf-nav-links" aria-label="Main navigation">
+        <a href="#">Products</a>
+        <a href="#">Industries</a>
+        <a href="#">Customers</a>
+        <a href="#">Events</a>
+        <a href="#">Learning</a>
+        <a href="#">Support</a>
+        <a href="#">Company</a>
+      </nav>
+      <div class="sf-nav__utilities">
+        <button class="sf-nav__icon" aria-label="Call us"><i class="icon icon--call" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon" aria-label="Search"><i class="icon icon--search" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon sf-nav__icon--desktop-only" aria-label="Select region"><i class="icon icon--globe" aria-hidden="true"></i></button>
+        <a href="#" class="sf-nav__icon sf-nav__login" aria-label="Login">
+          <i class="icon icon--user" aria-hidden="true"></i>
+          <span class="sf-nav__login-label">Login</span>
+        </a>
+        <a href="#" class="sf-cta sf-cta--primary sf-cta--medium sf-nav__cta">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       CONTEXT / SECONDARY NAV  (kept in sync with the sibling pages;
+       "Buying Models" is the current page)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <nav class="sf-subnav" aria-label="Pricing sections">
+    <div class="sf-subnav__inner">
+      <a class="sf-subnav__title" href="../index.html">Pricing</a>
+      <a class="sf-subnav__link" href="../index.html">Overview</a>
+      <div class="sf-subnav__links">
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-buy-menu">
+            Pricing By
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu" id="pricing-buy-menu" role="menu">
+            <a class="sf-subnav__menu-item" role="menuitem" href="../product/index.html">Pricing by Product</a>
+            <a class="sf-subnav__menu-item" role="menuitem" href="../industry/index.html">Pricing by Industries</a>
+          </div>
+        </div>
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-tools-menu">
+            Pricing Tools
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu sf-subnav__menu--rich" id="pricing-tools-menu" role="menu">
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../calculator/index.html">
+              <span class="sf-subnav__menu-item-title">Flex Credit Calculator</span>
+              <span class="sf-subnav__menu-item-desc">Estimate how many Flex Credits you&rsquo;ll need and understand their potential cost.</span>
+            </a>
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../estimator/index.html">
+              <span class="sf-subnav__menu-item-title">Solution Estimator</span>
+              <span class="sf-subnav__menu-item-desc">Get guidance on which products can support your solution and estimate their cost.</span>
+            </a>
+          </div>
+        </div>
+        <a class="sf-subnav__link" href="./index.html" aria-current="page">Buying Models</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       2. HERO — Day gradient. Headline + subhead + "Contact us", carrying
+       the three-model summary. (Recreated from salesforce.com/pricing/
+       flexible-buying-models/.)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="sf-blade-region region-day" data-theme="day">
+    <section class="blade hero-blade hero-blade--1col">
+      <div class="hero-blade__cap">
+        <div class="hero-blade__content-1col">
+          <h1 class="hero-blade__headline-1col">Buying models built to scale on your terms</h1>
+          <p class="hero-blade__body-1col">
+            Flexible ways to buy Salesforce consumption services, from experimentation to
+            transformation. Choose the buying model that fits your business: pay as you go
+            with no commitment, commit to a baseline for scaled savings, or pre-purchase
+            upfront for the greatest savings.
+          </p>
+          <div class="bm-hero__cta">
+            <a class="sf-cta sf-cta--primary sf-cta--medium" href="#">Contact us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       3. THREE BUYING MODELS — reuses the landing buying-models cards
+       (3D model icons + real copy). Order matches the live page:
+       Pay-as-you-go · Pre-commit · Pre-purchase.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="models-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <p class="section-header__eyebrow">Choose how you buy</p>
+        <h2 class="section-header__headline" id="models-heading">Three ways to buy</h2>
+      </div>
+
+      <div class="sf-card-grid sf-card-grid--3up">
+
+        <article class="sf-card sf-card--plain" data-model="payg">
+          <div class="sf-card__icon sf-card__icon--model"><img src="../assets/buying-model-icons/payg.png" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Pay-as-you-go</h3>
+            <p class="sf-card__body">
+              Get started with no upfront payment or usage commitment. Pay only for what you
+              use, billed monthly at list price with no minimums.
+            </p>
+          </div>
+        </article>
+
+        <article class="sf-card sf-card--plain" data-model="pre-commit">
+          <div class="sf-card__icon sf-card__icon--model"><img src="../assets/buying-model-icons/pre-commit.png" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Pre-commit</h3>
+            <p class="sf-card__body">
+              Commit to a baseline of usage with no upfront payment. Savings scale with the
+              size of your commitment.
+            </p>
+          </div>
+        </article>
+
+        <article class="sf-card sf-card--plain" data-model="pre-purchase">
+          <div class="sf-card__icon sf-card__icon--model"><img src="../assets/buying-model-icons/pre-purchase.png" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Pre-purchase</h3>
+            <p class="sf-card__body">
+              Pay upfront for the greatest savings. Savings scale with the size of your
+              pre-purchased commitment.
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       4. COMPARISON TABLE — "How each model works"
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="compare-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <h2 class="section-header__headline" id="compare-heading">How each model works</h2>
+      </div>
+
+      <div class="bm-compare-wrap">
+        <table class="bm-compare">
+          <thead>
+            <tr>
+              <th scope="col"><span class="bm-compare__rowlbl-head">Comparison</span></th>
+              <th scope="col">Pay-as-you-go</th>
+              <th scope="col">Pre-commit</th>
+              <th scope="col">Pre-purchase</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Best for</th>
+              <td>Customers wanting to experiment or learn usage patterns before committing</td>
+              <td>Customers who want predictable costs with the flexibility to scale</td>
+              <td>Customers with predictable usage who want the greatest savings</td>
+            </tr>
+            <tr>
+              <th scope="row">Payment timing</th>
+              <td>Monthly, billed in arrears</td>
+              <td>Monthly, billed in arrears</td>
+              <td>Upfront</td>
+            </tr>
+            <tr>
+              <th scope="row">Minimum commitment</th>
+              <td>None</td>
+              <td>Required &mdash; if usage falls below commitment, the remaining balance is invoiced</td>
+              <td>Required &mdash; usage draws down from your balance over the contract term</td>
+            </tr>
+            <tr>
+              <th scope="row">Savings</th>
+              <td>List price</td>
+              <td>Scales with commitment size</td>
+              <td>Maximum savings &mdash; scales with pre-purchased commitment size</td>
+            </tr>
+            <tr>
+              <th scope="row">Available services</th>
+              <td>Agentforce and Data 360</td>
+              <td>Agentforce, Data 360 and MuleSoft (new MuleSoft customers only)</td>
+              <td>All Salesforce services</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       5. FLEX CREDITS — works across every buying model + 3 feature cards
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="sf-blade-region region-day" data-theme="day">
+    <section class="blade" aria-labelledby="flex-heading">
+      <div class="blade__content">
+        <div class="section-header">
+          <p class="section-header__eyebrow">One flexible unit</p>
+          <h2 class="section-header__headline" id="flex-heading">Flex Credits work across every buying model</h2>
+          <p class="section-header__body">
+            No matter which buying model you choose, Flex Credits are a single, flexible unit
+            of payment you can spend across Salesforce consumption services. They give you the
+            control to experiment, optimize, adopt new innovation, and grow across teams,
+            channels, and use cases.
+          </p>
+        </div>
+
+        <div class="sf-card-grid sf-card-grid--3up">
+          <article class="sf-card">
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Spend flexibly across services</h3>
+              <p class="sf-card__body">
+                Flex Credits work across Salesforce consumption services, so your investment
+                stays flexible as your business grows and your needs change. Available today
+                for Agentforce and Data 360.
+              </p>
+            </div>
+          </article>
+          <article class="sf-card">
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Align spend to value delivered</h3>
+              <p class="sf-card__body">
+                Every Flex Credit consumed maps directly to real work being done, meaning your
+                investment aligns to the value delivered across your business. To estimate how
+                many Flex Credits you may need, use our
+                <a href="../calculator/index.html">Flex Credits pricing calculator</a>.
+              </p>
+            </div>
+          </article>
+          <article class="sf-card">
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Track usage with Digital Wallet</h3>
+              <p class="sf-card__body">
+                Digital Wallet puts you in control with real-time, granular insights into how
+                your Flex Credits are being consumed, giving you the visibility to optimize
+                usage.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="bm-cta-center">
+          <a class="sf-cta sf-cta--secondary sf-cta--medium" href="#">Rate Card</a>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       6. GET STARTED FOR FREE
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="get-started-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <h2 class="section-header__headline" id="get-started-heading">Get started for free</h2>
+        <p class="section-header__body">
+          Designed for companies wanting to experiment before they buy, Salesforce Foundations
+          provides a free starting point for Agentforce and Data 360.
+        </p>
+      </div>
+      <div class="bm-cta-center">
+        <a class="sf-cta sf-cta--primary sf-cta--medium" href="#">Learn more</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       7. FAQ — native <details>/<summary> accordion (faq.js adds
+       single-open convenience). Questions + answers recreated verbatim.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="faq-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <h2 class="section-header__headline" id="faq-heading">Frequently asked questions</h2>
+      </div>
+
+      <div class="faq">
+        <details class="faq__item">
+          <summary class="faq__q">
+            Can I have multiple buying models?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Yes. Buying models are selected per product, giving you the flexibility to choose
+              the model that best fits how each part of your business operates. Work with your
+              account executive to understand what buying model is best for you.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            How do overages work?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              For pay-go, there are no overages &mdash; all usage is charged at list price. For
+              pre-commit and pre-purchased, any overage will be charged at the contracted rate.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Can I move from one buying model to another?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Our models are designed to be flexible and to meet customers where they are in
+              their journey. Work with your account executive to understand what buying model is
+              best for you and more about this process.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Is there a pricing plan tailored for enterprise-wide transformation?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Yes. For organizations ready to scale AI and data across their enterprise,
+              Salesforce offers the Agentic Enterprise License Agreement (AELA): a fixed-price,
+              fixed-term agreement with unlimited access to Salesforce consumption services, no
+              overages, and no usage-based billing. Teams can innovate and expand with full price
+              predictability. To learn more, contact your Salesforce account executive.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Can you give me more information on Flex Credits for Agentforce and Data 360?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Additional information, examples and pricing can be found for Agentforce here and
+              Data 360 here.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Do I have to decide how my Flex Credits will be used when I buy them?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              No. Flex Credits can be spent across Agentforce and Data 360 based on where you need
+              them, with no upfront allocation required. As more products move onto Flex Credits,
+              your investment will allow for seamless flexibility.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            What tools are available to help me forecast how many Flex Credits I need?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              To estimate how many Flex Credits you may need for one or many use cases, check our
+              <a href="../calculator/index.html">Flex Credits pricing tool</a>. After purchasing
+              Flex Credits, all usage will be tracked in Digital Wallet with granular usage
+              insights. Learn more here.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FOOTER  (copied verbatim from the sibling pricing pages)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="sf-footer" data-theme="day" role="contentinfo">
+    <div class="sf-footer__links">
+      <div class="sf-footer__brand">
+        <img class="sf-footer__logo" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="92" height="65" />
+        <div class="sf-footer__social">
+          <a href="#" aria-label="Facebook"><img src="../assets/brand/social/facebook.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="X (Twitter)"><img src="../assets/brand/social/twitter.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="LinkedIn"><img src="../assets/brand/social/linkedin.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="Instagram"><img src="../assets/brand/social/instagram.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="YouTube"><img src="../assets/brand/social/youtube.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="TikTok"><img src="../assets/brand/social/tik-tok.svg" alt="" width="32" height="32" /></a>
+        </div>
+        <p class="sf-footer__phone">Call us at 1-800-664-9073</p>
+        <a href="#" class="sf-footer__contact-link">See all ways to contact us</a>
+      </div>
+      <div class="sf-footer__columns">
+        <div class="sf-footer__column">
+          <h3>New to Salesforce?</h3>
+          <ul>
+            <li><a href="#">What is CRM?</a></li>
+            <li><a href="#">Digital Marketing</a></li>
+            <li><a href="#">Customer Service Software</a></li>
+            <li><a href="#">Email Marketing</a></li>
+            <li><a href="#">Ecommerce</a></li>
+            <li><a href="#">Artificial Intelligence</a></li>
+            <li><a href="#">Revenue Management Solutions</a></li>
+            <li><a href="#">AI Agents</a></li>
+            <li><a href="#">SaaS</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>About Salesforce</h3>
+          <ul>
+            <li><a href="#">What is Salesforce?</a></li>
+            <li><a href="#">Newsroom</a></li>
+            <li><a href="#">Customer Success</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Trust</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Investors</a></li>
+            <li><a href="#">Give us your Feedback</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Popular Links</h3>
+          <ul>
+            <li><a href="#">Salesforce Login</a></li>
+            <li><a href="#">New Release Features</a></li>
+            <li><a href="#">Find or Become a Partner</a></li>
+            <li><a href="#">Dreamforce</a></li>
+            <li><a href="../index.html">Pricing</a></li>
+            <li><a href="#">CRM Software</a></li>
+            <li><a href="#">All Cloud Products</a></li>
+            <li><a href="./index.html" aria-current="page">Buying Models</a></li>
+            <li><a href="#">Newsletter Sign-up</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sf-footer__bottom">
+      <div class="sf-footer__bottom-inner">
+        <button class="sf-footer__region">
+          <i class="icon icon--globe" aria-hidden="true"></i>
+          Worldwide <span aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="sf-footer__legal">
+          <div class="sf-footer__legal-links">
+            <a href="#">Legal</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Information</a>
+            <a href="#">Responsible Disclosure</a>
+            <a href="#">Trust</a>
+            <a href="#">Contact</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Your Privacy Choices</a>
+          </div>
+          <p class="sf-footer__copyright">
+            &copy; Copyright 2026 Salesforce, Inc. <a href="#">All rights reserved</a>.
+            Various trademarks held by their respective owners. Salesforce, Inc.
+            Salesforce Tower, 415 Mission Street, 3rd Floor, San Francisco, CA 94105,
+            United States
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="../js/nav.js" defer></script>
+<script src="../js/faq.js" defer></script>
+</body>
+</html>

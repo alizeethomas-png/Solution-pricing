@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en"
+      data-theme="day"
+      data-typography="default"
+      data-spacing="default"
+      data-radii="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Product Pricing | Salesforce</title>
+<meta name="description" content="Explore Salesforce pricing by product — Agentforce, Sales Cloud, Service Cloud, Data Cloud, Slack, and more." />
+
+<link rel="stylesheet" href="../assets/dms/fonts.css" />
+<link rel="stylesheet" href="../assets/dms/tokens.css" />
+<link rel="stylesheet" href="../assets/dms/icons.css" />
+<link rel="stylesheet" href="../css/icons-local.css" />
+<link rel="stylesheet" href="../css/components.css" />
+<link rel="stylesheet" href="../css/page.css" />
+</head>
+<body>
+<main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       1. GLOBAL HEADER
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="sf-nav" data-theme="day" role="banner">
+    <div class="sf-nav__inner">
+      <a href="../index.html" class="sf-nav__logo" aria-label="Salesforce home">
+        <img class="sf-nav__logo-full" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="68" height="48" />
+        <img class="sf-nav__logo-bug" src="../assets/brand/salesforce-logo-bug.svg" alt="Salesforce" width="36" height="25" />
+      </a>
+      <button class="sf-nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="sf-nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="sf-nav__links" id="sf-nav-links" aria-label="Main navigation">
+        <a href="#">Products</a>
+        <a href="#">Industries</a>
+        <a href="#">Customers</a>
+        <a href="#">Events</a>
+        <a href="#">Learning</a>
+        <a href="#">Support</a>
+        <a href="#">Company</a>
+      </nav>
+      <div class="sf-nav__utilities">
+        <button class="sf-nav__icon" aria-label="Call us"><i class="icon icon--call" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon" aria-label="Search"><i class="icon icon--search" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon sf-nav__icon--desktop-only" aria-label="Select region"><i class="icon icon--globe" aria-hidden="true"></i></button>
+        <a href="#" class="sf-nav__icon sf-nav__login" aria-label="Login">
+          <i class="icon icon--user" aria-hidden="true"></i>
+          <span class="sf-nav__login-label">Login</span>
+        </a>
+        <a href="#" class="sf-cta sf-cta--primary sf-cta--medium sf-nav__cta">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       1b. CONTEXT / SECONDARY NAV — canonical version (matches the
+       overview page): "Pricing By" + "Pricing Tools" dropdowns. Paths are
+       ../-relative because this page sits one directory deep.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <nav class="sf-subnav" aria-label="Pricing sections">
+    <div class="sf-subnav__inner">
+      <a class="sf-subnav__title" href="../index.html">Pricing</a>
+      <a class="sf-subnav__link" href="../index.html">Overview</a>
+      <div class="sf-subnav__links">
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-buy-menu">
+            Pricing By
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu" id="pricing-buy-menu" role="menu">
+            <a class="sf-subnav__menu-item" role="menuitem" href="./index.html" aria-current="page">Pricing by Product</a>
+            <a class="sf-subnav__menu-item" role="menuitem" href="../industry/index.html">Pricing by Industries</a>
+          </div>
+        </div>
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-tools-menu">
+            Pricing Tools
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu sf-subnav__menu--rich" id="pricing-tools-menu" role="menu">
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../calculator/index.html">
+              <span class="sf-subnav__menu-item-title">Flex Credit Calculator</span>
+              <span class="sf-subnav__menu-item-desc">Estimate how many Flex Credits you&rsquo;ll need and understand their potential cost.</span>
+            </a>
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../estimator/index.html">
+              <span class="sf-subnav__menu-item-title">Solution Estimator</span>
+              <span class="sf-subnav__menu-item-desc">Get guidance on which products can support your solution and estimate their cost.</span>
+            </a>
+          </div>
+        </div>
+        <a class="sf-subnav__link" href="../buying-models/index.html">Buying Models</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       2. TITLE — Day gradient hero (sub-page pattern).
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="sf-blade-region region-day" data-theme="day">
+    <section class="blade hero-blade hero-blade--1col">
+      <div class="hero-blade__cap">
+        <div class="hero-blade__content-1col">
+          <h1 class="hero-blade__headline-1col">Product Pricing</h1>
+          <p class="hero-blade__body-1col">
+            Explore the full range of Salesforce pricing &mdash; built to fit businesses
+            of every size and stage. Pick a product to see its editions and pricing.
+          </p>
+        </div>
+      </div>
+    </section>
+    <!-- region-day stays open past the hero: the Day gradient now spans the
+         Explore section below too, fading out just above the FAQ. -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       3. EXPLORE BY PRODUCT — card grid recreated from salesforce.com/pricing.
+       Brand glyphs are vendored under assets/product-icons/. Each card is a
+       single stretched link (whole card clickable); destinations are
+       placeholders (href="#") — set each product's pricing URL when ready.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="explore-product-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <p class="section-header__eyebrow">Products</p>
+        <h2 class="section-header__headline" id="explore-product-heading">Explore by product</h2>
+        <p class="section-header__body">
+          Choose a product to see its editions, features, and pricing.
+        </p>
+      </div>
+
+      <div class="sf-card-grid sf-card-grid--3up sf-card-grid--translucent">
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/agentforce.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Agentforce</h3>
+            <p class="sf-card__body">Build and customize autonomous AI agents to support your teams and customers around the clock.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Agentforce pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/sales.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Sales Cloud</h3>
+            <p class="sf-card__body">Connect teams, close more deals, and streamline your entire sales process on one platform.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Sales Cloud pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/service.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Service Cloud</h3>
+            <p class="sf-card__body">Deliver personalized service and resolve cases faster across every channel.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Service Cloud pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/marketing.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Marketing Cloud</h3>
+            <p class="sf-card__body">Build, personalize, and optimize campaigns across every channel and touchpoint.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Marketing Cloud pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/commerce.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Commerce Cloud</h3>
+            <p class="sf-card__body">Create connected buying experiences across B2C and B2B commerce.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Commerce Cloud pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/data-cloud.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Data Cloud</h3>
+            <p class="sf-card__body">Unify and activate all of your data natively across the Salesforce platform.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Data Cloud pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/ai.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Einstein AI</h3>
+            <p class="sf-card__body">Bring trusted predictive and generative AI to every experience across your business.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Einstein AI pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/platform.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Platform</h3>
+            <p class="sf-card__body">Build and scale AI-powered apps fast with low-code and pro-code tools.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Platform pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/slack.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Slack</h3>
+            <p class="sf-card__body">Bring your people, tools, and customers together to get work done in one place.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Slack pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/tableau.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Tableau</h3>
+            <p class="sf-card__body">See and understand your data with the world&rsquo;s leading analytics platform.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Tableau pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/mulesoft.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">MuleSoft</h3>
+            <p class="sf-card__body">Connect any app, data, or device, whether in the cloud or on-premises.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See MuleSoft pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/small-business.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Small Business</h3>
+            <p class="sf-card__body">Sell smarter, support faster, and grow &mdash; all from one easy-to-use app.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Small Business pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/customer-360.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Customer 360</h3>
+            <p class="sf-card__body">Attract prospects, win customers, and deepen relationships on one trusted CRM.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Customer 360 pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/net-zero.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Net Zero Cloud</h3>
+            <p class="sf-card__body">Track, analyze, and report environmental data to reach your sustainability goals.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Net Zero Cloud pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/heroku.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Heroku</h3>
+            <p class="sf-card__body">Build, deploy, and scale cloud-native apps on a trusted managed platform.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Heroku pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <div class="sf-card__icon sf-card__icon--brand"><img src="../assets/product-icons/customer-success.svg" alt="" aria-hidden="true"></div>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Success Plans</h3>
+            <p class="sf-card__body">Get the right level of support and expert guidance to hit your goals faster.</p>
+            <a class="sf-cta-link sf-cta-link--stretched" href="#" aria-label="See Success Plans pricing">
+              <span class="sf-cta-link__label">See pricing</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+  </section><!-- /region-day — Day gradient ends here, just above the FAQ -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       4. FAQ — questions recreated from salesforce.com/pricing; answers are
+       representative prototype copy (verify against the live page before use).
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="faq-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <h2 class="section-header__headline" id="faq-heading">Frequently asked questions</h2>
+      </div>
+
+      <div class="faq">
+        <details class="faq__item">
+          <summary class="faq__q">
+            Are there upfront costs or additional fees?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              The price shown is for the listed product and edition. Some capabilities, add-ons,
+              or higher usage tiers may carry additional cost &mdash; you&rsquo;ll see those clearly
+              before you buy, and an expert can walk you through a complete quote.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            What if my business priorities and product needs have changed?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Your plan can grow and change with you. You can add products, move to a different
+              edition, or adjust as priorities shift &mdash; talk to your account team to find the
+              right fit.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Do Salesforce products integrate with outside applications?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Yes. Salesforce connects to thousands of apps through MuleSoft, prebuilt connectors,
+              and the AppExchange marketplace, so you can bring your existing tools and data
+              together.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            What support and service packages are available?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Every license includes a standard success plan. Premier and Signature success plans
+              add faster support, expert guidance, and proactive monitoring for teams that need more.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Can I pay monthly?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Monthly billing is available on many products and buying models. Some editions are
+              billed annually &mdash; the pricing details for each product note the available terms.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            How long are your contracts?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Contract length varies by product and buying model, from month-to-month options to
+              multi-year agreements. Longer commitments can unlock better rates.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Can I upgrade at any time? Can I add more products later?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Yes. You can upgrade editions or add products at any time, and new capabilities are
+              available to you right away.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            How does the free trial work?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Free trials let you explore a product with sample data and core features for a set
+              period &mdash; no credit card required. You can turn the trial into a paid subscription
+              whenever you&rsquo;re ready.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Will my data be private and safe?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Trust is our number one value. Your data is protected by robust, independently audited
+              security controls and privacy safeguards &mdash; visit the Salesforce Trust site for
+              details.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       5. NEXT STEPS — three ways to move forward (recreated from the
+       reference "Next steps" band). Tinted-circle icons use the local mask
+       set for file:// reliability.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="next-steps-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <p class="section-header__eyebrow">What&rsquo;s next</p>
+        <h2 class="section-header__headline" id="next-steps-heading">Next steps</h2>
+      </div>
+
+      <div class="sf-card-grid sf-card-grid--3up">
+
+        <article class="sf-card">
+          <span class="sf-card__icon"><i class="icon icon--check icon--lg" aria-hidden="true"></i></span>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Get started free</h3>
+            <p class="sf-card__body">Try Salesforce free for 30 days. No software to install and no credit card required.</p>
+            <a class="sf-cta-link" href="#">
+              <span class="sf-cta-link__label">Start your trial</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <span class="sf-card__icon"><i class="icon icon--call icon--lg" aria-hidden="true"></i></span>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Talk to an expert</h3>
+            <p class="sf-card__body">Tell us a bit about your needs and the right specialist will reach out to help.</p>
+            <a class="sf-cta-link" href="#">
+              <span class="sf-cta-link__label">Contact sales</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+        <article class="sf-card">
+          <span class="sf-card__icon"><i class="icon icon--globe icon--lg" aria-hidden="true"></i></span>
+          <div class="sf-card__copy">
+            <h3 class="sf-card__title">Stay up to date</h3>
+            <p class="sf-card__body">Get the latest Salesforce research, product news, and industry insights.</p>
+            <a class="sf-cta-link" href="#">
+              <span class="sf-cta-link__label">Sign up</span>
+              <i class="icon icon--chevronright sf-cta-link__chevron" aria-hidden="true"></i>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       6. LEGAL FOOTER
+       ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="sf-footer" data-theme="day" role="contentinfo">
+    <div class="sf-footer__links">
+      <div class="sf-footer__brand">
+        <img class="sf-footer__logo" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="92" height="65" />
+        <div class="sf-footer__social">
+          <a href="#" aria-label="Facebook"><img src="../assets/brand/social/facebook.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="X (Twitter)"><img src="../assets/brand/social/twitter.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="LinkedIn"><img src="../assets/brand/social/linkedin.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="Instagram"><img src="../assets/brand/social/instagram.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="YouTube"><img src="../assets/brand/social/youtube.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="TikTok"><img src="../assets/brand/social/tik-tok.svg" alt="" width="32" height="32" /></a>
+        </div>
+        <p class="sf-footer__phone">Call us at 1-800-664-9073</p>
+        <a href="#" class="sf-footer__contact-link">See all ways to contact us</a>
+      </div>
+      <div class="sf-footer__columns">
+        <div class="sf-footer__column">
+          <h3>New to Salesforce?</h3>
+          <ul>
+            <li><a href="#">What is CRM?</a></li>
+            <li><a href="#">Digital Marketing</a></li>
+            <li><a href="#">Customer Service Software</a></li>
+            <li><a href="#">Email Marketing</a></li>
+            <li><a href="#">Ecommerce</a></li>
+            <li><a href="#">Artificial Intelligence</a></li>
+            <li><a href="#">Revenue Management Solutions</a></li>
+            <li><a href="#">AI Agents</a></li>
+            <li><a href="#">SaaS</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>About Salesforce</h3>
+          <ul>
+            <li><a href="#">What is Salesforce?</a></li>
+            <li><a href="#">Newsroom</a></li>
+            <li><a href="#">Customer Success</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Trust</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Investors</a></li>
+            <li><a href="#">Give us your Feedback</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Popular Links</h3>
+          <ul>
+            <li><a href="#">Salesforce Login</a></li>
+            <li><a href="#">New Release Features</a></li>
+            <li><a href="#">Find or Become a Partner</a></li>
+            <li><a href="#">Dreamforce</a></li>
+            <li><a href="../index.html">Pricing</a></li>
+            <li><a href="#">CRM Software</a></li>
+            <li><a href="#">All Cloud Products</a></li>
+            <li><a href="#" aria-current="page">Product Pricing</a></li>
+            <li><a href="#">Newsletter Sign-up</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sf-footer__bottom">
+      <div class="sf-footer__bottom-inner">
+        <button class="sf-footer__region">
+          <i class="icon icon--globe" aria-hidden="true"></i>
+          Worldwide <span aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="sf-footer__legal">
+          <div class="sf-footer__legal-links">
+            <a href="#">Legal</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Information</a>
+            <a href="#">Responsible Disclosure</a>
+            <a href="#">Trust</a>
+            <a href="#">Contact</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Your Privacy Choices</a>
+          </div>
+          <p class="sf-footer__copyright">
+            &copy; Copyright 2026 Salesforce, Inc. <a href="#">All rights reserved</a>.
+            Various trademarks held by their respective owners. Salesforce, Inc.
+            Salesforce Tower, 415 Mission Street, 3rd Floor, San Francisco, CA 94105,
+            United States
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="../js/nav.js" defer></script>
+<script src="../js/faq.js" defer></script>
+</body>
+</html>

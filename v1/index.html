@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en"
+      data-theme="day"
+      data-typography="default"
+      data-spacing="default"
+      data-radii="default">
+<head>
+<!-- ═══════════════════════════════════════════════════════════════════
+     ★ ENTRY POINT — V1 PROTOTYPE  (route root: /v1/index.html)
+     A full copy of the prototype with ONE branch: the build flow ends at
+     Configure. Reached from the top-level selector (../index.html →
+     "V1 Prototype").
+     Build flow: Solutions → Discover → Configure  (terminal; CTA =
+     "Configure and Estimate Your Solution"). Buying Models + Estimate are removed from V1.
+       • Flow starts at:  v1/solution/index.html   (the "solve" screen)
+       • Wizard engine:   v1/estimator/estimator.js  (see "V1 FORK" note inside)
+     The ONLY files that differ from /v2/ are estimator/estimator.js and
+     solution/index.html. Full project map: ../HANDOFF.md
+     ═══════════════════════════════════════════════════════════════════ -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Salesforce Pricing</title>
+<meta name="description" content="Find the right way to buy Salesforce — by industry, by product, or by the business outcome you're after." />
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STYLES — load order matters:
+       1. fonts.css   → @font-face declarations (self-hosted woff2)
+       2. tokens.css  → DMS design tokens (colours, type, spacing, radii)
+       3. icons.css   → .icon mask-image classes
+       4. components.css → reusable chrome/components (ported)
+       5. page.css    → this prototype's section styles
+     All four DMS files are VENDORED under assets/dms/ so the page renders
+     on GitHub Pages / offline with no dependency on the token host.
+     ═══════════════════════════════════════════════════════════════════ -->
+<link rel="stylesheet" href="assets/dms/fonts.css" />
+<link rel="stylesheet" href="assets/dms/tokens.css" />
+<link rel="stylesheet" href="assets/dms/icons.css" />
+<!-- data-URI mask overrides for the icons used here; makes them render on
+     file:// (double-click) as well as http(s). Must load after icons.css. -->
+<link rel="stylesheet" href="css/icons-local.css" />
+<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="css/page.css" />
+<link rel="stylesheet" href="css/dsr-login.css" />
+</head>
+<body>
+<main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       1. GLOBAL HEADER
+       Structure/labels referenced from the live salesforce.com/pricing
+       nav; styling from DMS tokens (CTA is token-blue per the styling
+       single-source-of-truth decision, not the live site's green).
+       data-theme="day" scopes the chrome so the Night calculator region
+       below never bleeds its theme up into the sticky header.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="sf-nav" data-theme="day" role="banner">
+    <div class="sf-nav__inner">
+      <a href="#" class="sf-nav__logo" aria-label="Salesforce home">
+        <img class="sf-nav__logo-full" src="assets/brand/salesforce-logo.svg" alt="Salesforce" width="68" height="48" />
+        <img class="sf-nav__logo-bug" src="assets/brand/salesforce-logo-bug.svg" alt="Salesforce" width="36" height="25" />
+      </a>
+      <button class="sf-nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="sf-nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="sf-nav__links" id="sf-nav-links" aria-label="Main navigation">
+        <a href="#">Products</a>
+        <a href="#">Industries</a>
+        <a href="#">Customers</a>
+        <a href="#">Events</a>
+        <a href="#">Learning</a>
+        <a href="#">Support</a>
+        <a href="#">Company</a>
+      </nav>
+      <div class="sf-nav__utilities">
+        <button class="sf-nav__icon" aria-label="Call us"><i class="icon icon--call" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon" aria-label="Search"><i class="icon icon--search" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon sf-nav__icon--desktop-only" aria-label="Select region"><i class="icon icon--globe" aria-hidden="true"></i></button>
+        <a href="#" class="sf-nav__icon sf-nav__login" aria-label="Login">
+          <i class="icon icon--user" aria-hidden="true"></i>
+          <span class="sf-nav__login-label">Login</span>
+        </a>
+        <!-- token-blue Primary pill (fixes the einstein source's undefined
+             sf-cta--special, which rendered unstyled) -->
+        <a href="#" class="sf-cta sf-cta--primary sf-cta--medium sf-nav__cta">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       1b. CONTEXT / SECONDARY NAV
+       ═══════════════════════════════════════════════════════════════════ -->
+  <nav class="sf-subnav" aria-label="Pricing sections">
+    <div class="sf-subnav__inner">
+      <a class="sf-subnav__title" href="./index.html">Pricing</a>
+      <a class="sf-subnav__link" href="./index.html">Overview</a>
+      <div class="sf-subnav__links">
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-buy-menu">
+            Pricing By
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu" id="pricing-buy-menu" role="menu">
+            <a class="sf-subnav__menu-item" role="menuitem" href="./product/index.html">Pricing by Product</a>
+            <a class="sf-subnav__menu-item" role="menuitem" href="./industry/index.html">Pricing by Industries</a>
+          </div>
+        </div>
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-tools-menu">
+            Pricing Tools
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu sf-subnav__menu--rich" id="pricing-tools-menu" role="menu">
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="./calculator/index.html">
+              <span class="sf-subnav__menu-item-title">Flex Credit Calculator</span>
+              <span class="sf-subnav__menu-item-desc">Estimate how many Flex Credits you&rsquo;ll need and understand their potential cost.</span>
+            </a>
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="./estimator/index.html">
+              <span class="sf-subnav__menu-item-title">Solution Estimator</span>
+              <span class="sf-subnav__menu-item-desc">Get guidance on which products can support your solution and estimate their cost.</span>
+            </a>
+          </div>
+        </div>
+        <a class="sf-subnav__link" href="./buying-models/index.html">Buying Models</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       2–5. LIGHT GRADIENT REGION — spans from just below the subnav to
+       just above the FAQ. Hero, pricing-by cards, calculator promo, and
+       buying models share one continuous Day gradient
+       (Cloud Blue 80 #90D0FE → Cloud Blue 95 #EAF5FE). Child blades
+       are transparent so the gradient shows through the full height.
+       On-surface day tokens: #001E5B on #90D0FE ≈ 9.6:1 AAA ✓
+                              #001E5B on #EAF5FE ≈ 14.5:1 AAA ✓
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="sf-blade-region region-day" data-theme="day">
+
+    <!-- 2. HERO ──────────────────────────────────────────────────── -->
+    <section class="blade hero-blade hero-blade--1col">
+      <div class="hero-blade__cap">
+        <div class="hero-blade__content-1col">
+          <h1 class="hero-blade__headline-1col">Salesforce Pricing</h1>
+          <p class="hero-blade__body-1col">
+            Find the right way to buy Salesforce — by industry, by product, or by
+            the business outcome you&rsquo;re after.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. EXPLORE PRICING BY CATEGORIES ─────────────────────────── -->
+    <section class="blade" aria-labelledby="pricing-per-heading">
+      <div class="blade__content">
+        <div class="section-header">
+          <h2 class="section-header__headline" id="pricing-per-heading">Explore Pricing by Categories</h2>
+          <p class="section-header__body">
+            Pick the starting point that matches how you buy. Each path leads to the
+            same transparent pricing.
+          </p>
+        </div>
+
+        <div class="sf-card-grid sf-card-grid--3up">
+
+          <!-- Product — set this card's destination in the link href below. -->
+          <article class="sf-card pricing-per-card pricing-per-card--product" data-category="product">
+            <div class="pricing-per-card__head">
+              <span class="pricing-per-card__icon"><i class="icon icon--apps" aria-hidden="true"></i></span>
+              <a class="pricing-per-card__link sf-cta-link--stretched" href="./product/index.html" aria-label="View product pricing">
+                <span class="pricing-per-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+              </a>
+            </div>
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Product</h3>
+              <p class="sf-card__body">
+                Go directly to pricing for Sales Cloud, Service Cloud, Data Cloud, and
+                more.
+              </p>
+            </div>
+          </article>
+
+          <!-- Industries — set this card's destination in the link href below. -->
+          <article class="sf-card pricing-per-card pricing-per-card--industries" data-category="industries">
+            <div class="pricing-per-card__head">
+              <span class="pricing-per-card__icon"><i class="icon icon--industries" aria-hidden="true"></i></span>
+              <a class="pricing-per-card__link sf-cta-link--stretched" href="./industry/index.html" aria-label="Browse pricing by industry">
+                <span class="pricing-per-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+              </a>
+            </div>
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Industries</h3>
+              <p class="sf-card__body">
+                See pricing shaped for your industry &mdash; from financial services to
+                healthcare, retail, and beyond.
+              </p>
+            </div>
+          </article>
+
+          <!-- Solution-Based Pricing — set this card's destination in the link href below. -->
+          <article class="sf-card pricing-per-card pricing-per-card--solution" data-category="solution">
+            <div class="pricing-per-card__head">
+              <span class="pricing-per-card__icon"><i class="icon icon--target" aria-hidden="true"></i></span>
+              <a class="pricing-per-card__link sf-cta-link--stretched" href="./estimator/index.html" aria-label="Find your solution">
+                <span class="pricing-per-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+              </a>
+            </div>
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Solution-Based Pricing</h3>
+              <p class="sf-card__body">
+                Start from a business outcome and get a tailored recommendation &mdash;
+                no product expertise required.
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. DIGITAL SALES ROOM ───────────────────────────────────── -->
+    <section class="blade" id="calculator">
+      <div class="blade__content">
+        <div class="calc-promo">
+          <span class="calc-promo__icon"><i class="icon icon--money icon--lg" aria-hidden="true"></i></span>
+          <div class="section-header">
+            <h2 class="section-header__headline">Digital Sales Room</h2>
+            <p class="section-header__body">
+              Two ways in. From Build Your Salesforce Solution, Configure and Estimate
+              Your Solution opens a room with the products and currency you already
+              chose. Or login here and start a room from the beginning.
+            </p>
+          </div>
+          <div class="calc-promo__ctas">
+            <button type="button" class="sf-cta sf-cta--hero sf-cta--primary" onclick="openDsrLogin()">Login to Digital Sales Room</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. BUYING MODELS ─────────────────────────────────────────── -->
+    <section class="blade" aria-labelledby="buying-models-heading">
+      <div class="blade__content">
+        <div class="section-header">
+          <h2 class="section-header__headline" id="buying-models-heading">Buying models</h2>
+          <p class="section-header__body">Flexible ways to buy Salesforce consumption services from experimentation to transformation</p>
+        </div>
+
+        <div class="blade__cta blade__cta--precards">
+          <a class="sf-cta sf-cta--primary sf-cta--medium" href="./buying-models/index.html">Learn more</a>
+        </div>
+
+        <div class="sf-card-grid sf-card-grid--3up">
+
+          <article class="sf-card sf-card--plain" data-model="payg">
+            <div class="sf-card__icon sf-card__icon--model"><img src="assets/buying-model-icons/payg.png" alt="" aria-hidden="true"></div>
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Pay As You Go</h3>
+              <p class="sf-card__body">
+                No upfront commitment. Pay monthly based on actual usage at list price.
+                Maximum flexibility for net-new customers or experimentation.
+              </p>
+            </div>
+          </article>
+
+          <article class="sf-card sf-card--plain" data-model="pre-purchase">
+            <div class="sf-card__icon sf-card__icon--model"><img src="assets/buying-model-icons/pre-purchase.png" alt="" aria-hidden="true"></div>
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Pre-Purchase</h3>
+              <p class="sf-card__body">
+                Buy Flex Credits upfront at the highest available discount. Credits paid
+                at signature, consumed over the contract term.
+              </p>
+            </div>
+          </article>
+
+          <article class="sf-card sf-card--plain" data-model="pre-commit">
+            <div class="sf-card__icon sf-card__icon--model"><img src="assets/buying-model-icons/pre-commit.png" alt="" aria-hidden="true"></div>
+            <div class="sf-card__copy">
+              <h3 class="sf-card__title">Pre-Commit</h3>
+              <p class="sf-card__body">
+                Commit to a minimum monthly spend; billed monthly against that
+                commitment. Shortfall invoiced at end of term.
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+  </section><!-- /.sf-blade-region region-day (hero → pricing by → calculator → buying models) -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       6. FAQ — native <details>/<summary> accordion. Works with zero JS;
+       js/faq.js only adds single-open convenience. Answers grounded in the
+       kickoff brief (parallel pricing models; currency finding; buying-model
+       tradeoffs; self-serve estimation).
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="faq-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <h2 class="section-header__headline" id="faq-heading">Frequently asked questions</h2>
+      </div>
+
+      <div class="faq">
+        <details class="faq__item">
+          <summary class="faq__q">
+            What&rsquo;s the difference between product and solution-based pricing?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              If you already know the product you need &mdash; Sales Cloud, Service
+              Cloud, Data Cloud, and so on &mdash; product pricing takes you straight
+              there. Solution-based pricing starts from a business outcome instead: tell
+              us what you&rsquo;re trying to achieve and we&rsquo;ll point you to the
+              right fit.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Is solution-based pricing replacing product pricing?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              No. Solution-based pricing runs alongside the existing product-based model
+              as a parallel path &mdash; it isn&rsquo;t replacing the product pricing you
+              use today. You choose whichever journey fits how you buy.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Can I see pricing in my local currency?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              That&rsquo;s what the pricing calculator is for. Rather than leaving to
+              work out conversions yourself, you&rsquo;ll get a transparent estimate in
+              your own currency, up front.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            How do the buying models &mdash; PAYG, Pre-Purchase, and Pre-Commit &mdash; differ?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              At a high level: pay as you go bills for what you use, pre-purchase lets you
+              buy credits up front, and pre-commit trades a term commitment for a better
+              rate at scale. Detailed guidance on the tradeoffs is on the way &mdash; this
+              section is still being finalized.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Do I have to talk to sales to see a price?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              No &mdash; you can get a self-serve estimate first and talk to sales when
+              you&rsquo;re ready. The goal is to make it easy to explore pricing before
+              any conversation.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       7. LEGAL FOOTER — reused from the einstein build; assets vendored
+       locally under assets/brand/. data-theme="day" scopes the chrome.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="sf-footer" data-theme="day" role="contentinfo">
+    <div class="sf-footer__links">
+      <div class="sf-footer__brand">
+        <img class="sf-footer__logo" src="assets/brand/salesforce-logo.svg" alt="Salesforce" width="92" height="65" />
+        <div class="sf-footer__social">
+          <a href="#" aria-label="Facebook"><img src="assets/brand/social/facebook.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="X (Twitter)"><img src="assets/brand/social/twitter.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="LinkedIn"><img src="assets/brand/social/linkedin.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="Instagram"><img src="assets/brand/social/instagram.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="YouTube"><img src="assets/brand/social/youtube.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="TikTok"><img src="assets/brand/social/tik-tok.svg" alt="" width="32" height="32" /></a>
+        </div>
+        <p class="sf-footer__phone">Call us at 1-800-664-9073</p>
+        <a href="#" class="sf-footer__contact-link">See all ways to contact us</a>
+      </div>
+      <div class="sf-footer__columns">
+        <div class="sf-footer__column">
+          <h3>New to Salesforce?</h3>
+          <ul>
+            <li><a href="#">What is CRM?</a></li>
+            <li><a href="#">Digital Marketing</a></li>
+            <li><a href="#">Customer Service Software</a></li>
+            <li><a href="#">Email Marketing</a></li>
+            <li><a href="#">Ecommerce</a></li>
+            <li><a href="#">Artificial Intelligence</a></li>
+            <li><a href="#">Revenue Management Solutions</a></li>
+            <li><a href="#">AI Agents</a></li>
+            <li><a href="#">SaaS</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>About Salesforce</h3>
+          <ul>
+            <li><a href="#">What is Salesforce?</a></li>
+            <li><a href="#">Newsroom</a></li>
+            <li><a href="#">Customer Success</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Trust</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Investors</a></li>
+            <li><a href="#">Give us your Feedback</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Popular Links</h3>
+          <ul>
+            <li><a href="#">Salesforce Login</a></li>
+            <li><a href="#">New Release Features</a></li>
+            <li><a href="#">Find or Become a Partner</a></li>
+            <li><a href="#">Dreamforce</a></li>
+            <li><a href="#" aria-current="page">Pricing</a></li>
+            <li><a href="#">CRM Software</a></li>
+            <li><a href="#">All Cloud Products</a></li>
+            <li><a href="#">Product Pricing</a></li>
+            <li><a href="#">Newsletter Sign-up</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sf-footer__bottom">
+      <div class="sf-footer__bottom-inner">
+        <button class="sf-footer__region">
+          <i class="icon icon--globe" aria-hidden="true"></i>
+          Worldwide <span aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="sf-footer__legal">
+          <div class="sf-footer__legal-links">
+            <a href="#">Legal</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Information</a>
+            <a href="#">Responsible Disclosure</a>
+            <a href="#">Trust</a>
+            <a href="#">Contact</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Your Privacy Choices</a>
+          </div>
+          <p class="sf-footer__copyright">
+            &copy; Copyright 2026 Salesforce, Inc. <a href="#">All rights reserved</a>.
+            Various trademarks held by their respective owners. Salesforce, Inc.
+            Salesforce Tower, 415 Mission Street, 3rd Floor, San Francisco, CA 94105,
+            United States
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<!-- Progressive-enhancement scripts. Plain <script defer> (not modules) so
+     they run when index.html is opened directly from disk (file://).
+     The page is fully usable without them. -->
+<div id="dsr-login" class="dsr-login" hidden>
+  <div class="dsr-login__scrim" onclick="closeDsrLogin()"></div>
+  <div class="dsr-login__card" role="dialog" aria-modal="true" aria-labelledby="dsr-login-title">
+    <img class="dsr-login__logo" src="assets/login/salesforce-lockup.svg" alt="Salesforce">
+    <h2 class="dsr-login__title" id="dsr-login-title">Choose an account</h2>
+    <p class="dsr-login__sub">Choose or enter an account you’d like to connect to <strong>jane.smith@acme.com</strong></p>
+    <div class="dsr-login__accounts">
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="assets/login/google.png" alt="" width="16" height="16"> Google
+      </button>
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="assets/login/salesforce-mark.svg" alt="" width="16" height="16"> Salesforce
+      </button>
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="assets/login/mulesoft-mark.svg" alt="" width="16" height="16"> MuleSoft
+      </button>
+      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
+        <img src="assets/login/spiff-mark.svg" alt="" width="16" height="16"> Spiff
+      </button>
+    </div>
+    <button type="button" class="dsr-login__more">View more options</button>
+    <div class="dsr-login__or" aria-hidden="true">Or</div>
+    <form onsubmit="return submitDsrLogin(event)">
+      <label class="dsr-login__field">Business email
+        <input id="dsr-login-email" type="text" name="email" autocomplete="username" oninput="syncDsrLogin()">
+      </label>
+      <button type="submit" id="dsr-login-next" class="sf-cta sf-cta--primary sf-cta--hero dsr-login__next is-disabled" disabled aria-disabled="true">Next</button>
+    </form>
+    <p class="dsr-login__fine">
+      Explore <button type="button">Trailblazer account benefits</button>.<br>
+      Don’t have an account? <button type="button">Sign up for free</button>.
+    </p>
+  </div>
+</div>
+<script>
+  function dsrLoginGo(){
+    var pages="/pages/alizee-thomas/Solution-pricing";
+    var dest=location.pathname.indexOf(pages)===0
+      ? "../sales-room/index.html#/journeys"
+      : "/journeys";
+    window.location.assign(dest);
+  }
+</script>
+<script src="js/nav.js" defer></script>
+<script src="js/faq.js" defer></script>
+<script src="js/dsr-login.js" defer></script>
+</body>
+</html>

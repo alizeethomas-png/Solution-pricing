@@ -1,0 +1,1283 @@
+/* ══════════════════════════════════════════════════════════════════
+   SOLUTION ESTIMATOR — wizard styles
+   ────────────────────────────────────────────────────────────────
+   Ports the reference POC's component styles (selectable tiles,
+   product cards, dark Flex-credit panel, buy-model / agreement cards,
+   estimate boxes) re-expressed with the project's DMS design tokens
+   for visual continuity with the solve screen. Hardcoded values appear
+   only as var() fallbacks or, for the dark panel, as on-dark alpha
+   whites where the token ladder has no matching step (documented).
+
+   Everything a step renders lives inside `#sb` within `.est-wizard`,
+   so component selectors are scoped under `.est-wizard` to guarantee
+   they never leak into the shared page chrome.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Region + card shell ─────────────────────────────────────────── */
+.region-estimator { padding-block: 0; }
+
+.est-blade { padding-block: var(--space-content-2xl, 48px); }
+
+/* Boxless: the wizard is just a centered max-width column now — no card
+   background/border/shadow. Everything inside is centered (see head, crumbs,
+   .q, .sub); the Back/Continue foot keeps its own left/right layout. */
+.est-wizard {
+  max-width: 1280px;
+  margin-inline: auto;
+}
+
+/* Card header */
+.est-wizard__head {
+  padding: var(--space-content-lg, 24px) var(--space-8, 48px) var(--space-content-md, 16px);
+  text-align: center;
+}
+.est-wizard__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-interactive-xs, 8px);
+  margin: 0 0 var(--space-interactive-xs, 8px);
+  font-family: var(--font-style-body-copy-4-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-12, 12px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-fill-accent, #066AFE);
+}
+.est-wizard__title {
+  margin: 0;
+  /* Matches the solve screen's .solution-hero__headline exactly (Avant Garde,
+     48px, tight leading) so the unified title looks identical across the flow. */
+  font-family: var(--font-style-display-3-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-48, 48px);
+  line-height: var(--font-line-height-tight, 1.125);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.est-wizard__sub {
+  margin: var(--space-interactive-2xs, 4px) 0 0;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  color: var(--color-on-surface-4, #747474);
+}
+
+/* The step breadcrumb (.est-crumbs) now lives in components.css — it's shared
+   with the solve screen (step 1). Markup/classes are unchanged; estimator.js
+   still targets #est-crumbs and rebuilds the crumb list via setBar(). */
+
+/* Step body */
+.est-wizard__body { padding: var(--space-8, 48px); }
+
+/* ══════════════════════════════════════════════════════════════════
+   STEP CONTENT — everything below is scoped under `.est-wizard` and
+   rendered into `#sb` by estimator.js.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Question title + subhead */
+.est-wizard .q {
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-24, 24px);
+  line-height: var(--font-line-height-snug, 1.25);
+  color: var(--color-on-surface-1, #001E5B);
+  margin-bottom: var(--space-interactive-2xs, 4px);
+  text-align: center;
+}
+.est-wizard .q--sub { font-size: var(--font-size-24, 24px); }  /* match the main .q question size */
+.est-wizard .sub {
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  line-height: var(--font-line-height-normal, 1.5);
+  color: var(--color-on-surface-3, #444444);
+  margin-bottom: var(--space-content-md, 16px);
+  text-align: center;
+}
+.est-wizard .slbl {
+  font-family: var(--font-style-body-copy-5-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-3, #444444);
+  margin-bottom: var(--space-interactive-xs, 8px);
+}
+.est-wizard .sdiv {
+  height: 1px;
+  background: var(--color-border-2, #E5E5E5);
+  margin: var(--space-content-lg, 24px) 0 var(--space-content-md, 16px);
+}
+
+/* Carried-goal chips (visible carry-forward on the Products step) */
+.est-wizard .goalbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-interactive-xs, 8px);
+  /* Boxless: the "Based on your goals" row sits directly on the raw page
+     background — no fill, border, or radius. The goal pills keep their own chrome. */
+  padding: 0;
+  margin-bottom: var(--space-content-md, 16px);
+}
+.est-wizard .goalbar-lbl {
+  font-family: var(--font-style-body-copy-5-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.est-wizard .goalchip {
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-fill-accent, #066AFE);
+  background: var(--color-surface-1, #FFFFFF);
+  border: 1px solid var(--color-fill-accent, #066AFE);
+  border-radius: var(--radius-chip, 9999px);
+  padding: 3px 10px;
+}
+
+/* ── Grids ───────────────────────────────────────────────────────── */
+/* Industry, Size AND Region share ONE grid: fixed-basis flex items that wrap
+   and center. At the ~1184px content width, ~240px cards give 4 per row — so
+   the 6 size options and 6 regions each render as 4 cards on the first row +
+   2 centered on the next, matching the industry grid exactly. */
+.est-wizard .g3,
+.est-wizard .g2,
+.est-wizard .ggrid,
+.solution-options__grid { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-content-sm, 12px); margin-bottom: var(--space-content-md, 16px); }
+/* Agreement step keeps its own 3-up grid. */
+.est-wizard .g2c { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-content-sm, 12px); margin-bottom: var(--space-content-md, 16px); }
+
+/* ══════════════════════════════════════════════════════════════════
+   SELECTABLE CARDS — tiles, geo tiles, buy-model, agreement, product
+   cards all share the solve screen's selected pattern:
+     default → neutral border
+     hover / selected → accent border + info-blue fill + accent ring
+   ══════════════════════════════════════════════════════════════════ */
+/* ── Selectable cards — all steps — match FlexCredit calc-card ──────────
+   Electric-blue glow shadow, 16px hero-card radius, 2px blue-tint border.
+   Hover deepens the glow; selected adds a solid 2px accent ring on top. */
+.est-wizard .tile,
+.est-wizard .gtile,
+.est-wizard .bm,
+.est-wizard .ag,
+.est-wizard .pc,
+.solution-option {
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(6, 106, 254, 0.15);
+  border-radius: var(--radius-hero-card, 16px);
+  box-shadow: 0 10px 10px 0 rgba(6, 106, 254, 0.20);
+  cursor: pointer;
+  transition: border-color 150ms ease-out, background 150ms ease-out, box-shadow 150ms ease-out;
+}
+.est-wizard .tile:hover,
+.est-wizard .gtile:hover,
+.est-wizard .bm:hover,
+.est-wizard .ag:hover,
+.est-wizard .pc:hover,
+.solution-option:hover {
+  border-color: rgba(6, 106, 254, 0.40);
+  background: rgba(234, 245, 254, 0.5);
+  box-shadow: 0 12px 14px 0 rgba(6, 106, 254, 0.26);
+}
+.est-wizard .tile.on,
+.est-wizard .gtile.on,
+.est-wizard .bm.on,
+.est-wizard .ag.on,
+.est-wizard .pc.on,
+.solution-option[aria-pressed="true"] {
+  border-color: var(--color-fill-accent, #066AFE);
+  background: rgba(234, 245, 254, 0.5);
+  box-shadow: 0 0 0 2px var(--color-fill-accent, #066AFE),
+              0 10px 10px 0 rgba(6, 106, 254, 0.20);
+}
+/* Product card keeps a white body when open (config area reads clearer). */
+.est-wizard .pc.on { background: rgba(255, 255, 255, 0.5); }
+/* Configure-step product cards (Recommended + All Products): outline/border
+   only — no drop shadow. Base, hover and selected all drop the shared blue
+   glow / accent ring; selection now reads purely from the 2px accent border
+   (--color-fill-accent) already set by the shared .on rule above, matching
+   the selected state of every other card in the wizard. Scoped to .pc so the
+   other wizard steps' cards keep their glow treatment. */
+.est-wizard .pc,
+.est-wizard .pc:hover { box-shadow: none; }
+/* Selected product card: 2px accent ring — same outline thickness as the
+   industry and company-size cards' selected state (no drop-glow, so the
+   configure area keeps its flat treatment). */
+.est-wizard .pc.on { box-shadow: 0 0 0 2px var(--color-fill-accent, #066AFE); }
+
+/* Industry / size tile (vertical) */
+.est-wizard .tile,
+.solution-option { display: flex; flex-direction: column; gap: 3px; padding: var(--space-content-sm, 12px) var(--space-content-md, 16px); }
+/* Discover cards — industry, size AND region tiles share ONE footprint:
+   fixed-basis (240px) flex items so full rows AND the partial last row center
+   as a group (not left-packed); content centered on both axes within an
+   88px-min card. Basis is tuned per breakpoint below. Solution-name cards
+   reuse this same footprint (4-col, last row centered). */
+.est-wizard .tile,
+.est-wizard .gtile,
+.solution-option { flex: 0 1 240px; align-items: center; justify-content: center; text-align: center; min-height: 88px; }
+.solution-option {
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-8-weight, 600);
+  font-size: var(--font-size-14, 14px);
+  color: #032D60;
+  line-height: 1.4;
+}
+.est-wizard .tic { font-size: var(--font-size-20, 20px); margin-bottom: 3px; }
+/* Vendored industry SVG icons (assets/industry-icons/) — replace the emoji
+   that previously filled the .tic slot on the Discover industry cards. */
+.est-wizard .ind-ico { display: block; width: 40px; height: 40px; }
+/* Avant Garde semibold label — matches calc-card__label exactly */
+.est-wizard .tnm {
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-8-weight, 600);
+  font-size: var(--font-size-14, 14px);
+  color: #032D60;
+  line-height: 1.4;
+}
+/* Card secondary/subtext — ONE shared secondary style for EVERY card subtitle
+   across the wizard: Discover (industry · size · region), Product cards, and
+   the commercial cards (buying-model · agreement). All render in the body font
+   at the same size/weight/color as the industry subtext ("Banking, insurance,
+   wealth"). Family/size/weight/color are set here so the subtitles are
+   guaranteed to match and can't drift; layout-only props (margin, line-height)
+   stay on each element's own rule below. */
+.est-wizard .tds,
+.est-wizard .sz-l,
+.est-wizard .sz-e,
+.est-wizard .gtile-ds,
+.est-wizard .pc-ds,
+.est-wizard .bm-ds,
+.est-wizard .ag-ds {
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--color-on-surface-4, #747474);
+}
+.est-wizard .sz-r { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-8-weight, 600); font-size: var(--font-size-16, 16px); color: #032D60; }
+.est-wizard .sz-l { margin-top: 2px; }  /* font/color inherited from the shared subtext rule above */
+
+/* Geography tile — same vertical stack + footprint as the industry/size tiles. */
+.est-wizard .gtile { display: flex; flex-direction: column; gap: 3px; padding: var(--space-content-sm, 12px) var(--space-content-md, 16px); }
+.est-wizard .gtile-body { display: flex; flex-direction: column; gap: 2px; }
+.est-wizard .gtile-nm { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-8-weight, 600); font-size: var(--font-size-14, 14px); color: #032D60; line-height: 1.4; }
+/* .gtile-ds subtext now styled by the shared secondary-subtext rule above. */
+
+/* ── Tags / pills ────────────────────────────────────────────────── */
+.est-wizard .tag { font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); padding: 2px 8px; border-radius: var(--radius-chip, 9999px); }
+.est-wizard .tgg { background: var(--color-teal-95, #DEF9F3); color: var(--color-teal-60, #06A59A); border: 0.5px solid var(--color-teal-60, #06A59A); }
+.est-wizard .tgo { background: var(--color-orange-95, #FFF1EA); color: var(--color-orange-50, #A96404); border: 0.5px solid var(--color-orange-65, #F38303); }
+/* Buying-model card tag: unused after pills were removed from PAYG and
+   Pre-Purchase. Kept so leftover .tag markup would still style if re-added. */
+.est-wizard .bm .tag { position: absolute; top: var(--space-content-sm, 12px); right: var(--space-content-sm, 12px); z-index: 2; }
+
+/* ── Buying-model cards ──────────────────────────────────────────── */
+/* Three buying-model cards side by side (Bonus Credits, BMS[3], is not rendered).
+   Each card is a centered stack: 3D illustration icon, then name, then a
+   description ending in an "i" info affordance that reveals the payment/discount/
+   minimum/caveat details on hover or focus (no inline meta row, no warning box). */
+.est-wizard .bm-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-content-sm, 12px); margin-bottom: var(--space-content-md, 16px); }
+/* Redesigned to match the pricing-model-card reference: centered, icon-forward
+   layout — large 3D illustration on top, navy title, then description/meta.
+   Selection is shown by the shared .bm.on treatment. Data + behavior
+   (pickBm / S.bm gating) are unchanged. */
+.est-wizard .bm { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--space-interactive-xs, 8px); padding: 28px 20px 20px; text-align: center; }
+.est-wizard .bm-ico { display: block; width: 120px; height: 120px; object-fit: contain; margin-bottom: 4px; }
+.est-wizard .bm-nm { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-8-weight, 600); font-size: var(--font-size-16, 16px); color: #032D60; display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 3px; flex-wrap: wrap; line-height: 1.4; align-self: stretch; }
+.est-wizard .bm-ds { line-height: 1.55; margin-bottom: 5px; align-self: stretch; }  /* font/size/color from the shared secondary-subtext rule (was on-surface-3 #444444 → now on-surface-4 #747474 to match the industry subtext) */
+/* ── Info affordance + hover/focus tooltip ───────────────────────────
+   Replaces the old inline .bm-meta price row and the amber .bm-w warning box.
+   The "i" sits at the end of the description; hovering or focusing it reveals
+   payment / discount / minimum / caveat as plain sentences. .bm is
+   position:relative and no ancestor clips, so the tooltip floats above the card. */
+.est-wizard .bm-info {
+  position: relative;
+  display: inline-flex;
+  vertical-align: baseline;
+  margin-left: 0;   /* now a flex child of .bm-nm — title↔icon spacing comes from .bm-nm's gap */
+  cursor: help;
+}
+.est-wizard .bm-info__ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--color-fill-accent, #066AFE);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold, 700);
+  font-style: italic;
+  line-height: 1;
+  color: var(--color-fill-accent, #066AFE);
+}
+.est-wizard .bm-info:hover .bm-info__ic,
+.est-wizard .bm-info:focus-visible .bm-info__ic {
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+.est-wizard .bm-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  z-index: 30;
+  display: none;
+  width: max-content;
+  max-width: 230px;
+  text-align: left;
+  background: var(--color-on-surface-1, #001E5B);
+  color: var(--color-on-fill-accent, #FFFFFF);
+  padding: var(--space-content-sm, 12px);
+  border-radius: var(--radius-tooltip, 8px);
+  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.4);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-regular, 400);
+  line-height: 1.5;
+  white-space: normal;
+}
+/* Downward nubbin pointing at the "i". */
+.est-wizard .bm-tip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--color-on-surface-1, #001E5B);
+}
+.est-wizard .bm-tip__l { display: block; }
+.est-wizard .bm-tip__l + .bm-tip__l { margin-top: 6px; }
+.est-wizard .bm-info:hover .bm-tip,
+.est-wizard .bm-info:focus .bm-tip,
+.est-wizard .bm-info:focus-within .bm-tip { display: block; }
+/* Selection is shown by the shared .bm.on treatment (accent border + ring + info
+   fill); the explicit selection radio was removed per design. */
+
+/* ── Agreement cards ─────────────────────────────────────────────── */
+.est-wizard .ag { padding: var(--space-content-md, 16px); }
+.est-wizard .ag-b { font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); padding: 2px 8px; border-radius: var(--radius-chip, 9999px); display: inline-block; margin-bottom: 6px; }
+.est-wizard .ag-nm { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-8-weight, 600); font-size: var(--font-size-14, 14px); color: #032D60; margin-bottom: 4px; line-height: 1.4; }
+.est-wizard .ag-ds { line-height: 1.45; }  /* font/size/color from the shared secondary-subtext rule above */
+
+/* Configure step: constrain the content column (heading → last product card)
+   to 960px, centered. The Back/Continue .foot is rendered as a SIBLING outside
+   this wrapper, so it keeps its full-width left/right layout — the buttons
+   stay in their current position and are NOT constrained to 960px. */
+.est-wizard .cfg-wrap { max-width: 960px; margin-inline: auto; }
+
+/* ── Product cards ───────────────────────────────────────────────── */
+.est-wizard .prod-list { display: flex; flex-direction: column; gap: var(--space-interactive-xs, 8px); margin-bottom: var(--space-content-md, 16px); }
+
+/* ── "Show all products" disclosure — a centered text toggle (Figma
+   Screen 1/2) that reveals the "All Products" section below the
+   recommended list. The chevron flips 180° on expand; the revealed
+   product list stays full-width while the toggle itself stays centered. */
+.est-wizard .prod-acc { margin-bottom: var(--space-content-md, 16px); display: flex; flex-direction: column; }
+.est-wizard .prod-acc-hd {
+  align-self: center;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--space-interactive-xs, 8px); margin: 0;
+  padding: var(--space-interactive-xs, 8px) var(--space-content-md, 16px);
+  background: transparent; border: none;
+  border-radius: var(--radius-3, 8px);
+  cursor: pointer;
+  transition: background 150ms ease-out;
+}
+.est-wizard .prod-acc-hd:hover { background: var(--color-fill-info, #EAF5FE); }
+.est-wizard .prod-acc-hd:focus-visible { outline: 2px solid var(--color-fill-accent, #066AFE); outline-offset: 2px; border-color: var(--color-fill-accent, #066AFE); }
+.est-wizard .prod-acc-lbl {
+  display: inline-flex; align-items: center; gap: var(--space-interactive-xs, 8px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: var(--font-weight-demi, 600);
+  color: var(--color-link, #022AC0);
+}
+.est-wizard .prod-acc-ct {
+  text-transform: none; letter-spacing: 0;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-fill-accent, #066AFE);
+  background: var(--color-fill-info, #EAF5FE);
+  border: 0.5px solid var(--color-fill-accent, #066AFE);
+  border-radius: var(--radius-chip, 9999px);
+  padding: 1px 8px;
+}
+.est-wizard .prod-acc-ch {
+  width: 14px; height: 14px; flex-shrink: 0;
+  color: var(--color-link, #022AC0);
+  transition: transform 200ms ease-out;
+}
+.est-wizard .prod-acc.open .prod-acc-ch { transform: rotate(180deg); }
+.est-wizard .prod-acc .prod-list { margin-top: var(--space-interactive-xs, 8px); margin-bottom: 0; }
+.est-wizard .prod-list[hidden] { display: none; }
+.est-wizard .pc { overflow: hidden; position: relative; }
+.est-wizard .pc-h { display: flex; align-items: center; gap: 0; padding: var(--space-content-sm, 12px) var(--space-content-md, 16px); padding-right: calc(var(--space-content-md, 16px) + var(--space-content-md, 16px) + var(--space-interactive-xs, 8px)); cursor: pointer; position: relative; }
+.est-wizard .pc-check {
+  position: absolute;
+  top: var(--space-content-sm, 12px);
+  right: var(--space-content-md, 16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+.est-wizard .pc-check input {
+  width: var(--space-content-md, 16px);
+  height: var(--space-content-md, 16px);
+  margin: 0;
+  accent-color: var(--color-fill-accent, #066AFE);
+  cursor: pointer;
+}
+.est-wizard .pc-check input:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.est-wizard .pc-i { flex-shrink: 0; margin-right: var(--space-6, 32px); }
+/* Product-card header icon — 48×48 on the Select-your-product step. */
+.est-wizard .pc-i .prod-ico { width: 48px; height: 48px; }
+/* Vendored product SVG icons (assets/product-icons/). Sized to the emoji
+   slots they replace: ~28px in the product-card header, ~18px inline in the
+   estimate summary rows. */
+.est-wizard .prod-ico { display: block; width: 28px; height: 28px; }
+.est-wizard .srow-n .prod-ico { display: inline-block; width: 18px; height: 18px; vertical-align: text-bottom; margin-right: 3px; }
+.est-wizard .pc-nm { font-family: var(--font-style-display-7-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-7-weight, 600); font-size: var(--font-size-20, 20px); color: #032D60; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; line-height: 1.4; }
+.est-wizard .rb { font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); background: var(--color-teal-95, #DEF9F3); color: var(--color-teal-60, #06A59A); border: 0.5px solid var(--color-teal-60, #06A59A); border-radius: var(--radius-chip, 9999px); padding: 1px 6px; }
+.est-wizard .pc-ds { margin-top: 2px; color: var(--color-on-surface-2, #181818); }  /* font/size from shared subtext rule; color overridden gray → black */
+.est-wizard .pc-start { margin-top: var(--space-interactive-xs, 8px); }
+.est-wizard .stk-star {
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--color-on-surface-2, #181818);
+  margin-left: var(--space-interactive-xs, 8px);
+}
+.est-wizard .seat-b { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.est-wizard .seat-l { font-size: var(--font-size-12, 12px); color: var(--color-on-surface-4, #747474); white-space: nowrap; }
+.est-wizard input.si {
+  width: 64px; padding: 5px 8px;
+  border: 1.5px solid var(--color-border-3, #C9C9C9);
+  border-radius: var(--radius-3, 8px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px); font-weight: var(--font-weight-bold, 700);
+  color: var(--color-on-surface-1, #001E5B);
+  background: var(--color-surface-1, #FFFFFF); outline: none; text-align: center;
+}
+.est-wizard input.si:focus { border-color: var(--color-fill-accent, #066AFE); }
+.est-wizard .pill-org {
+  font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); padding: 3px 9px;
+  border-radius: var(--radius-chip, 9999px);
+  background: var(--color-fill-info, #EAF5FE); color: var(--color-fill-accent, #066AFE);
+  border: 0.5px solid var(--color-fill-accent, #066AFE); white-space: nowrap; flex-shrink: 0;
+}
+.est-wizard .cl {
+  font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); padding: 3px 9px;
+  border-radius: var(--radius-chip, 9999px);
+  background: var(--color-teal-95, #DEF9F3); color: var(--color-teal-60, #06A59A);
+  border: 0.5px solid var(--color-teal-60, #06A59A); white-space: nowrap; flex-shrink: 0;
+}
+.est-wizard .pc-cfg { display: none; margin: 0 var(--space-content-md, 16px); padding: var(--space-interactive-xs, 8px) 0 var(--space-content-sm, 12px); border-top: 1px solid var(--color-neutral-90, #E5E5E5); }
+.est-wizard .pc.on .pc-cfg { display: block; }
+.est-wizard .cfg-in { background: var(--color-fill-info, #EAF5FE); border-radius: var(--radius-3, 8px); padding: var(--space-content-sm, 12px); border: 1px solid var(--color-cloud-blue-90, #CFE9FE); }
+.est-wizard .cfg-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: var(--space-content-sm, 12px); align-items: center; }
+.est-wizard .cfg-l { font-size: var(--font-size-12, 12px); color: var(--color-on-surface-4, #747474); white-space: nowrap; }
+.est-wizard select.ss {
+  width: 100%; padding: 6px 8px;
+  border: 1.5px solid var(--color-border-3, #C9C9C9);
+  border-radius: var(--radius-3, 8px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px); color: var(--color-on-surface-1, #001E5B);
+  background: var(--color-surface-1, #FFFFFF); outline: none; cursor: pointer;
+}
+.est-wizard select.ss:focus { border-color: var(--color-fill-accent, #066AFE); }
+.est-wizard .st { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.est-wizard .stk { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-14, 14px); font-weight: var(--font-weight-regular, 400); color: var(--color-electric-blue-20, #002775); margin-top: 1px; align-self: flex-end; text-align: right; }
+.est-wizard .stk-start {
+  align-self: flex-end;
+  text-align: right;
+  font-family: var(--font-style-body-copy-5-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-style-body-copy-5-weight, 400);
+  font-size: var(--font-style-body-copy-5-size, 12px);
+  line-height: var(--font-style-body-copy-5-line-height, 1.5);
+  letter-spacing: var(--font-style-body-copy-5-letter-spacing, 0.002em);
+  color: var(--color-on-surface-4, #747474);
+  margin: 0;
+}
+.est-wizard .stv { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-24, 24px); font-weight: var(--font-weight-bold, 700); color: var(--color-electric-blue-20, #002775); text-align: right; padding: 0; }
+.est-wizard .cfg-cs { font-size: var(--font-size-12, 12px); color: var(--color-on-surface-4, #747474); }
+.est-wizard .pc-flex-note {
+  margin: 0 0 var(--space-content-sm, 12px);
+  padding: var(--space-content-sm, 12px);
+  background: var(--color-cloud-blue-95, #EAF5FE);
+  border-radius: var(--radius-border-2, 8px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-regular, 400);
+  line-height: var(--line-height-2, 1.4);
+  color: var(--color-on-surface-2, #181818);
+}
+.est-wizard .pc-flex-note p { margin: 0; }
+.est-wizard .pc-flex-cta {
+  display: flex;
+  justify-content: flex-start;
+  padding: var(--space-interactive-xs, 8px) 0 0;
+}
+.est-wizard .pc-flex-note .learn-link {
+  display: inline;
+  margin-top: 0;
+  vertical-align: baseline;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+.est-wizard .cfg-note { grid-column: 3 / 5; font-size: var(--font-size-12, 12px); color: var(--color-on-surface-4, #747474); }
+
+/* ══════════════════════════════════════════════════════════════════
+   REDESIGNED PRODUCT CARD — Configure step (Figma Screen 1–3)
+   The pricing-type badge sits inline with the name; a Monthly/Annual
+   summary joins the header once a card is selected; selecting a card
+   expands a panel of labelled input rows (one control per row) on the
+   card's white body. Flex inputs (Agentforce / Data 360) live here inline
+   — the standalone Flex step is retired. Reuses .si (numeric), .ss
+   (select), .st/.stk/.stv (the header summary blocks).
+   ══════════════════════════════════════════════════════════════════ */
+.est-wizard .pc-hb { flex: 1; min-width: 0; }
+/* Pricing-type badge (pill) — one per card, next to the name. */
+.est-wizard .pc-badge {
+  font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700);
+  padding: 2px 10px; border-radius: var(--radius-chip, 9999px);
+  white-space: nowrap; flex-shrink: 0;
+  background: transparent; border: 1.5px solid;   /* outline pill (per Product-card-open reference) */
+}
+.est-wizard .pc-badge--seat,
+.est-wizard .pc-badge--org  { color: var(--color-fill-accent, #066AFE); border-color: var(--color-fill-accent, #066AFE); }
+.est-wizard .pc-badge--flex { color: var(--color-teal-60, #06A59A); border-color: var(--color-teal-60, #06A59A); }
+.est-wizard .pc-badge--cs   { color: var(--color-on-surface-3, #444444); border-color: var(--color-border-2, #E5E5E5); }
+/* Header Monthly/Annual summary — appears once selected, right-aligned. */
+.est-wizard .pc-sum { display: flex; gap: var(--space-content-md, 16px); align-items: flex-start; justify-content: flex-end; flex-shrink: 0; margin-left: auto; padding-left: var(--space-content-sm, 12px); }
+.est-wizard .pc-sum--cs { font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); color: var(--color-on-surface-4, #747474); white-space: nowrap; }
+/* Expanded input panel — labelled rows, one control each. */
+.est-wizard .pc-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-content-md, 16px); padding: var(--space-interactive-xs, 8px) 0; border-bottom: 1px solid var(--color-neutral-90, #E5E5E5); }
+.est-wizard .pc-row:last-child { border-bottom: none; padding-bottom: 0; }
+.est-wizard .pc-row-l { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-14, 14px); font-weight: var(--font-weight-demi, 600); color: var(--color-electric-blue-20, #002775); }
+.est-wizard .pc-row-c { flex-shrink: 0; display: flex; align-items: center; gap: var(--space-interactive-xs, 8px); }
+/* All configure-row controls share ONE footprint (uniform width + height)
+   with a subtle depth shadow, per the Product-card-open reference. */
+.est-wizard .pc-row-c .si,
+.est-wizard .pc-row-c .ss {
+  width: 260px; min-width: 260px; max-width: 260px;
+  padding: 9px 12px;
+  font-size: var(--font-size-14, 14px);
+  box-shadow: 0 1px 3px rgba(24, 24, 24, 0.12);
+}
+/* Number field: center-align the typed value, hide native spinners. */
+.est-wizard .pc-row-c .si { text-align: center; -moz-appearance: textfield; }
+.est-wizard .pc-row-c .si::-webkit-outer-spin-button,
+.est-wizard .pc-row-c .si::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+/* Dropdowns: swap the inconsistent native arrow for a matching chevron. */
+.est-wizard .pc-row-c .ss {
+  -webkit-appearance: none; appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.25L6 7.75l3.5-3.5' fill='none' stroke='%23747474' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 12px;
+}
+/* Unchosen (placeholder) state for the Agentforce dropdowns. */
+.est-wizard select.ss.ss--ph { color: var(--color-on-surface-4, #747474); }
+/* Inline gate hint under the list — Agentforce needs a complexity choice. */
+.est-wizard .need-note { font-size: var(--font-size-12, 12px); color: var(--color-on-surface-3, #444444); margin: 0 0 var(--space-content-sm, 12px); text-align: right; }
+/* "All Products" section label under the show-all toggle. */
+.est-wizard .slbl--all { margin-top: var(--space-content-md, 16px); }
+
+/* "Learn about <product>" CTA — sits directly under the product description on
+   each Configure card AND under each Estimate line item's details. Opens the
+   product's info/marketing page in a new tab. Text-only link mirroring the
+   design system's .hero-back-link (link colour, demi weight); sized to match the
+   "Show all products" toggle (.prod-acc-lbl, 14px). inline-flex keeps it hugging
+   its text so the margin-top gap from the description applies cleanly. */
+.est-wizard .learn-link {
+  display: inline-flex;
+  margin-top: var(--space-interactive-xs, 8px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: var(--font-weight-demi, 600);
+  color: var(--color-link, #022AC0);
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+}
+.est-wizard .learn-link:hover { text-decoration: underline; }
+.est-wizard .learn-link:focus-visible {
+  outline: 2px solid var(--color-fill-accent, #066AFE);
+  outline-offset: 2px;
+  border-radius: var(--radius-3, 8px);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LEARN-ABOUT POPOVER — centered on the page, card-styled surface
+   Lives on document.body (not inside .est-wizard) so .pc overflow:hidden
+   cannot clip it. Scrim dims + blurs the rest of the page.
+   ══════════════════════════════════════════════════════════════════ */
+#learn-pop-root[hidden] { display: none !important; }
+.learn-pop-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 30, 91, 0.36);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.learn-pop {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 81;
+  box-sizing: border-box;
+  width: min(360px, calc(100vw - 32px));
+  padding: var(--space-content-md, 16px);
+  padding-right: calc(var(--space-content-md, 16px) + 28px);
+  background: var(--color-background-1, #FFFFFF);
+  border: 2px solid rgba(6, 106, 254, 0.15);
+  border-radius: var(--radius-hero-card, 16px);
+  box-shadow: none;
+}
+.learn-pop__close {
+  position: absolute;
+  top: var(--space-content-sm, 12px);
+  right: var(--space-content-sm, 12px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-3, 8px);
+  background: transparent;
+  color: var(--color-on-surface-3, #444444);
+  cursor: pointer;
+}
+.learn-pop__close:hover { color: var(--color-on-surface-1, #001E5B); }
+.learn-pop__close:focus-visible {
+  outline: 2px solid var(--color-fill-accent, #066AFE);
+  outline-offset: 2px;
+}
+.learn-pop__icon {
+  display: block;
+  margin: 0 0 var(--space-content-sm, 12px);
+}
+.learn-pop__icon:empty { display: none; }
+.learn-pop__icon .prod-ico {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+.learn-pop__title {
+  margin: 0 0 var(--space-interactive-xs, 8px);
+  font-family: var(--font-style-display-7-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-7-weight, 600);
+  font-size: var(--font-size-20, 20px);
+  color: #032D60;
+  line-height: 1.4;
+  padding-right: 8px;
+}
+.learn-pop__ds {
+  margin: 0 0 var(--space-content-sm, 12px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--color-on-surface-3, #444444);
+  line-height: 1.5;
+}
+.learn-pop__feats {
+  margin: 0 0 var(--space-content-sm, 12px);
+  padding-left: 1.15em;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--color-on-surface-3, #444444);
+  line-height: 1.5;
+}
+.learn-pop__feats li { margin: 0 0 4px; }
+.learn-pop__cta {
+  /* extra end padding so the corner arrow does not collide with the label */
+  padding-right: calc(var(--space-interactive-lg, 24px) + 8px);
+}
+.learn-pop__cta-arrow {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FLEX-CREDIT DARK PANEL — on-dark decorative surface. The cyan accent
+   maps to --color-teal-80 and the gradient to the electric-blue ramp;
+   incidental text alphas use rgba(255,255,255,·) because the token
+   ladder has no matching on-dark alpha-white steps (.35/.45/.12/.2).
+   ══════════════════════════════════════════════════════════════════ */
+.est-wizard .est {
+  background: linear-gradient(160deg, var(--color-electric-blue-15, #001E5B), var(--color-electric-blue-20, #002775));
+  border-radius: var(--radius-card, 12px);
+  padding: var(--space-content-lg, 24px);
+  margin-bottom: var(--space-content-lg, 24px);
+  border: 1px solid rgba(4, 225, 203, 0.15);
+}
+.est-wizard .est-t { font-size: var(--font-size-16, 16px); font-weight: var(--font-weight-bold, 700); color: var(--color-white, #FFFFFF); margin-bottom: 2px; }
+.est-wizard .est-s { font-size: var(--font-size-12, 12px); color: rgba(255, 255, 255, 0.45); margin-bottom: var(--space-content-md, 16px); }
+.est-wizard .etabs { display: flex; border-bottom: 1px solid rgba(255, 255, 255, 0.12); margin-bottom: var(--space-content-md, 16px); }
+.est-wizard .etab { padding: var(--space-interactive-xs, 8px) var(--space-content-md, 16px); font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); color: rgba(255, 255, 255, 0.4); cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1px; }
+.est-wizard .etab.on { color: var(--color-teal-80, #04E1CB); border-bottom-color: var(--color-teal-80, #04E1CB); }
+.est-wizard .ep { display: none; }
+.est-wizard .ep.on { display: block; }
+.est-wizard .er { margin-bottom: var(--space-content-sm, 12px); }
+.est-wizard .el { font-size: var(--font-size-12, 12px); color: rgba(255, 255, 255, 0.4); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+.est-wizard .el-v { font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); color: var(--color-teal-80, #04E1CB); }
+.est-wizard input[type=range].esl { width: 100%; height: 4px; -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, 0.15); border-radius: 2px; outline: none; cursor: pointer; }
+.est-wizard input[type=range].esl::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-teal-80, #04E1CB); border: 2.5px solid var(--color-white, #FFFFFF); cursor: pointer; }
+.est-wizard input[type=range].esl::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-teal-80, #04E1CB); border: 2.5px solid var(--color-white, #FFFFFF); cursor: pointer; }
+.est-wizard .eopts { display: flex; gap: 6px; flex-wrap: wrap; }
+.est-wizard .eopt { padding: 5px 11px; border-radius: var(--radius-chip, 9999px); font-size: var(--font-size-12, 12px); cursor: pointer; border: 0.5px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.07); color: rgba(255, 255, 255, 0.6); font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif); font-weight: 500; }
+.est-wizard .eopt.on { background: rgba(4, 225, 203, 0.2); border-color: var(--color-teal-80, #04E1CB); color: var(--color-teal-80, #04E1CB); font-weight: var(--font-weight-bold, 700); }
+.est-wizard .eres { background: rgba(0, 0, 0, 0.2); border-radius: var(--radius-3, 8px); padding: var(--space-content-sm, 12px); border: 0.5px solid rgba(4, 225, 203, 0.2); margin-top: var(--space-content-sm, 12px); }
+.est-wizard .rg4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-content-sm, 12px); margin-bottom: 6px; }
+.est-wizard .rk { font-size: var(--font-size-12, 12px); color: rgba(255, 255, 255, 0.35); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+.est-wizard .rv { font-size: var(--font-size-18, 18px); font-weight: var(--font-weight-bold, 700); color: var(--color-white, #FFFFFF); line-height: 1; }
+.est-wizard .rs { font-size: var(--font-size-12, 12px); color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+.est-wizard .rnote { font-size: var(--font-size-12, 12px); color: rgba(255, 255, 255, 0.4); line-height: 1.6; padding-top: var(--space-interactive-xs, 8px); border-top: 0.5px solid rgba(255, 255, 255, 0.1); margin-top: 5px; }
+.est-wizard .vt { width: 100%; border-collapse: collapse; margin-top: var(--space-interactive-xs, 8px); font-size: var(--font-size-12, 12px); }
+.est-wizard .vt th { font-size: var(--font-size-12, 12px); text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255, 255, 255, 0.3); padding: 4px 8px; text-align: left; border-bottom: 0.5px solid rgba(255, 255, 255, 0.1); }
+.est-wizard .vt td { color: rgba(255, 255, 255, 0.5); padding: 5px 8px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); }
+.est-wizard .vt tr.cur td { color: var(--color-teal-80, #04E1CB); font-weight: var(--font-weight-bold, 700); }
+
+/* ══════════════════════════════════════════════════════════════════
+   ESTIMATE — summary boxes, grand total, "better deal" recs, callouts
+   ══════════════════════════════════════════════════════════════════ */
+/* Estimate group cards — matched to the Configure product-card treatment:
+   50%-opacity white fill, 2px light-accent outline, hero-card radius, no shadow.
+   Stacked via margin-bottom (unchanged). */
+.est-wizard .sbox { background: rgba(255, 255, 255, 0.5); border: 2px solid rgba(6, 106, 254, 0.15); border-radius: var(--radius-hero-card, 16px); box-shadow: none; padding: var(--space-content-md, 16px); margin-bottom: var(--space-content-sm, 12px); }
+/* Card header — title + subtitle on the left, the card Total on the right. */
+.est-wizard .shdr { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-content-md, 16px); margin-bottom: var(--space-content-sm, 12px); padding-bottom: var(--space-interactive-xs, 8px); border-bottom: 1px solid var(--color-neutral-90, #E5E5E5); }
+/* Grouping title matches the Configure product-name treatment (Avant Garde
+   Display-7, 20px) per the requested "match product titles" size. */
+.est-wizard .shdr-nm { font-family: var(--font-style-display-7-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-7-weight, 600); font-size: var(--font-size-20, 20px); color: #032D60; line-height: 1.3; }
+.est-wizard .shdr-sub { font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif); font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-regular, 400); color: var(--color-on-surface-4, #747474); margin-top: 2px; }
+.est-wizard .shdr-tot { text-align: right; flex-shrink: 0; }
+.est-wizard .shdr-tot-l { font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-regular, 400); color: var(--color-on-surface-4, #747474); }
+.est-wizard .shdr-tot-p { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-20, 20px); font-weight: var(--font-weight-bold, 700); color: var(--color-electric-blue-20, #002775); white-space: nowrap; }
+.est-wizard .srow { display: flex; justify-content: space-between; align-items: center; gap: var(--space-content-sm, 12px); padding: var(--space-interactive-xs, 8px) 0; border-bottom: 1px solid var(--color-neutral-90, #E5E5E5); }
+.est-wizard .srow:last-child { border: none; }
+/* Product entry left group — 48px icon + name/summary stack, mirroring the
+   Configure product-card header (.pc-h / .pc-i; icon-to-text gap = 32px). */
+.est-wizard .srow-l { display: flex; align-items: center; gap: var(--space-6, 32px); min-width: 0; }
+.est-wizard .srow-l .prod-ico { display: block; width: 48px; height: 48px; flex-shrink: 0; }
+/* Product name + summary line — matched to Configure .pc-nm / .pc-ds. */
+.est-wizard .srow-n { font-family: var(--font-style-display-7-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-7-weight, 600); font-size: var(--font-size-20, 20px); color: #032D60; line-height: 1.3; }
+.est-wizard .srow-d { font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif); font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-regular, 400); color: var(--color-on-surface-2, #181818); margin-top: 2px; }
+/* Prices mirror the Configure product-card price style (.stv / .stk): Avant Garde
+   Display-8 in electric-blue-20 navy — the annual value bold, the /mo line regular. */
+.est-wizard .srow-p { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-20, 20px); font-weight: var(--font-weight-bold, 700); color: var(--color-electric-blue-20, #002775); white-space: nowrap; text-align: right; }
+.est-wizard .srow-s { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-14, 14px); font-weight: var(--font-weight-regular, 400); color: var(--color-electric-blue-20, #002775); margin-top: 1px; text-align: right; }
+.est-wizard .sub-tr { display: flex; justify-content: space-between; align-items: baseline; background: var(--color-fill-info, #EAF5FE); border-radius: var(--radius-3, 8px); padding: var(--space-interactive-xs, 8px) var(--space-content-sm, 12px); margin-top: 6px; border: 1px solid var(--color-cloud-blue-90, #CFE9FE); }
+.est-wizard .sub-l { font-size: var(--font-size-14, 14px); font-weight: var(--font-weight-bold, 700); color: var(--color-on-surface-1, #001E5B); }
+/* Selected-solution pill(s) under the "Your Salesforce estimate" title — the goals
+   carried from the solve screen, shown as OUTLINE pills with NO background fill
+   (transparent), centered. Mirrors the .goalchip pattern minus the white fill. */
+.est-wizard .est-sol { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-interactive-xs, 8px); margin-bottom: var(--space-content-sm, 12px); }
+.est-wizard .est-sol-pill { font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif); font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-bold, 700); color: var(--color-fill-accent, #066AFE); background: transparent; border: 1px solid var(--color-fill-accent, #066AFE); border-radius: var(--radius-chip, 9999px); padding: 3px 10px; }
+.est-wizard .gt { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-content-md, 16px); background: linear-gradient(135deg, var(--color-fill-info, #EAF5FE), var(--color-cloud-blue-90, #CFE9FE)); border: 2px solid var(--color-fill-accent, #066AFE); border-radius: var(--radius-card, 12px); padding: var(--space-content-md, 16px) var(--space-content-lg, 24px); margin-bottom: var(--space-content-sm, 12px); box-shadow: 0 2px 10px -2px rgba(6, 106, 254, 0.18); }
+/* "Total Estimated Annual Investment" heading matches the "Seats and License
+   Products" grouping title (.shdr-nm: Avant Garde Display-7, 20px, #032D60); its
+   subtext matches the "Salesforce List Pricing" style (.shdr-sub). */
+.est-wizard .gt-l { font-family: var(--font-style-display-7-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-weight: var(--font-style-display-7-weight, 600); font-size: var(--font-size-20, 20px); color: #032D60; line-height: 1.3; margin-bottom: 3px; }
+.est-wizard .gt-s { font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif); font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-regular, 400); color: var(--color-on-surface-4, #747474); }
+/* Totals adopt the product-card price style (.stv / .stk): Avant Garde Display-8,
+   electric-blue-20 navy. Monthly + annual sit SIDE BY SIDE (mirroring the Configure
+   product card's .pc-sum): price on top, "/month" or "/annual" label beneath. The
+   price is +4 over the product card's 24px → 28px (no --font-size-28 token exists,
+   so the bare 28px is the fallback); the labels stay 14px regular. */
+.est-wizard .gt-figs { display: flex; gap: var(--space-content-md, 16px); align-items: flex-start; flex-shrink: 0; }
+.est-wizard .gt-fig { text-align: right; }
+.est-wizard .gt-v { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-28, 28px); font-weight: var(--font-weight-bold, 700); color: var(--color-electric-blue-20, #002775); line-height: 1; }
+.est-wizard .gt-suf { font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif); font-size: var(--font-size-14, 14px); font-weight: var(--font-weight-regular, 400); color: var(--color-electric-blue-20, #002775); margin-top: 1px; }
+
+/* "Could you get a better deal?" recommendation cards removed per design — the
+   .rec-box / .rc styles that backed them are deleted. */
+
+.est-wizard .hint { background: var(--color-fill-info, #EAF5FE); border-left: 3.5px solid var(--color-fill-accent, #066AFE); border-radius: 0 var(--radius-3, 8px) var(--radius-3, 8px) 0; padding: var(--space-content-sm, 12px) var(--space-content-md, 16px); font-size: var(--font-size-12, 12px); color: var(--color-on-surface-1, #001E5B); line-height: 1.65; margin-bottom: var(--space-content-md, 16px); }
+.est-wizard .warn { background: var(--color-fill-warning, #FBF3E0); border-left: 3.5px solid var(--color-orange-65, #F38303); border-radius: 0 var(--radius-3, 8px) var(--radius-3, 8px) 0; padding: var(--space-content-sm, 12px) var(--space-content-md, 16px); font-size: var(--font-size-12, 12px); color: var(--color-orange-30, #5F3E02); line-height: 1.65; margin-bottom: var(--space-content-sm, 12px); }
+
+/* Intro banners (buy model / flex bridge) */
+.est-wizard .buy-intro,
+.est-wizard .flex-bridge {
+  background: var(--color-fill-info, #EAF5FE);
+  border: 1.5px solid var(--color-cloud-blue-90, #CFE9FE);
+  border-radius: var(--radius-3, 8px);
+  padding: var(--space-content-sm, 12px) var(--space-content-md, 16px);
+  margin-bottom: var(--space-content-md, 16px);
+  display: flex; align-items: flex-start; gap: var(--space-content-sm, 12px);
+}
+.est-wizard .flex-bridge { align-items: center; }
+.est-wizard .buy-intro-ico,
+.est-wizard .flex-bridge-ico { font-size: 22px; flex-shrink: 0; }
+.est-wizard .buy-intro-txt,
+.est-wizard .flex-bridge-txt { font-size: var(--font-size-12, 12px); color: var(--color-on-surface-2, #181818); line-height: 1.6; }
+.est-wizard .buy-intro-ttl,
+.est-wizard .flex-bridge-ttl { font-size: var(--font-size-14, 14px); font-weight: var(--font-weight-bold, 700); color: var(--color-on-surface-1, #001E5B); margin-bottom: 3px; }
+
+/* ── Footer nav (Back / Continue) + status line ──────────────────── */
+/* Ported Back/Continue render as <button>, which (unlike the <a> the
+   .sf-cta component normally decorates) does NOT inherit font-family —
+   restate it so the buttons match the rest of the type. */
+.est-wizard button.sf-cta { font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif); }
+/* Back CTA — plain text link (no border, no background box, no outline),
+   replacing the former secondary-button Back. Sits at the left of .foot on
+   every step except Discover, which has no back action. */
+.est-wizard .sf-cta-back,
+.solution-foot .sf-cta-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-interactive-2xs, 4px);
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  font-weight: var(--font-weight-demi, 600);
+  line-height: 24px;
+  color: var(--color-link, #022AC0);
+  text-decoration: none;
+  cursor: pointer;
+}
+.est-wizard .sf-cta-back:hover,
+.solution-foot .sf-cta-back:hover { text-decoration: underline; }
+.est-wizard .foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-content-md, 16px); padding-top: var(--space-content-md, 16px); border-top: 1px solid var(--color-border-2, #E5E5E5); margin-top: var(--space-interactive-2xs, 4px); }
+/* Discover has no Back, so its lone Continue (wrapped in .foot-end) is pushed
+   to the right of .foot. */
+.est-wizard .foot-end { display: flex; align-items: center; gap: var(--space-content-md, 16px); margin-left: auto; }
+.est-wizard .foot-note { font-size: var(--font-size-12, 12px); color: var(--color-on-surface-4, #747474); }
+
+/* Estimate action CTAs — Download Report (secondary/outline) + Contact Specialist
+   (solid primary via the shared .sf-cta--primary component) hug their text and sit
+   side by side, centered together. flex:0 0 auto ⇒ each button is only as wide as
+   its label (no stretch to fill the row). */
+.est-wizard .cta-row { display: flex; gap: var(--space-content-sm, 12px); flex-wrap: wrap; justify-content: center; margin-bottom: var(--space-content-md, 16px); }
+.est-wizard .cta-row .sf-cta { flex: 0 0 auto; }
+/* Indicative-pricing disclaimer — plain legal text placed BELOW the "Back to
+   Buying Models" foot row (converted from the former .warn banner: no icon/fill/border). */
+.est-wizard .legal { font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif); font-size: var(--font-size-12, 12px); font-weight: var(--font-weight-regular, 400); color: var(--color-on-surface-4, #747474); line-height: 1.6; margin-top: var(--space-content-sm, 12px); }
+
+/* Monthly / Annual segmented control */
+.est-wizard .period-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 var(--space-content-md, 16px);
+}
+.est-wizard .period-toggle-row--center { justify-content: flex-end; }
+.est-wizard .period-toggle {
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: var(--radius-button, 9999px);
+  box-shadow: inset 0 0 0 2px var(--color-border-accent, #022AC0);
+  background: var(--color-background-1, #FFFFFF);
+}
+.est-wizard .period-toggle__btn {
+  margin: 0;
+  padding: var(--space-interactive-xs, 8px) var(--space-interactive-lg, 24px);
+  border: 0;
+  background: transparent;
+  color: var(--color-on-fill-neutral-accent, #022AC0);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-14, 14px);
+  line-height: var(--font-line-height-normal, 1.5);
+  cursor: pointer;
+}
+.est-wizard .period-toggle__btn.is-on {
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+.est-wizard .period-toggle__btn:focus-visible {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+/* Share dropdown — aligned to the primary footer button */
+.est-wizard .share-wrap { position: relative; display: inline-flex; }
+.est-wizard .share-cta .icon {
+  width: var(--font-size-16, 16px);
+  height: var(--font-size-16, 16px);
+  color: currentColor;
+  transition: transform 150ms ease-out;
+}
+.est-wizard .share-cta[aria-expanded="true"] .icon { transform: rotate(180deg); }
+.est-wizard .share-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-interactive-xs, 8px));
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  margin: 0;
+  padding: var(--space-interactive-xs, 8px);
+  list-style: none;
+  background: var(--color-background-1, #FFFFFF);
+  border: 1px solid var(--color-border-1, #F3F3F3);
+  border-radius: var(--radius-card, 12px);
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+}
+.est-wizard .share-menu[hidden] { display: none; }
+.est-wizard .share-menu__item {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: var(--space-content-xs, 8px) var(--space-content-sm, 12px);
+  border: 0;
+  border-radius: var(--radius-input, 4px);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  line-height: 20px;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.est-wizard .share-menu__item:hover,
+.est-wizard .share-menu__item:focus-visible {
+  background: var(--color-fill-info, #EAF5FE);
+  color: var(--color-link, #022AC0);
+  outline: none;
+}
+
+.est-wizard .srow > .st { flex-shrink: 0; }
+
+/* Share confirmation overlay (after login for save / export) */
+body.share-confirm-open { overflow: hidden; }
+.share-confirm[hidden] { display: none !important; }
+.share-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-content-md, 16px);
+}
+.share-confirm__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 30, 91, 0.36);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.share-confirm__card {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(420px, 100%);
+  padding: var(--space-content-2xl, 48px) var(--space-content-2xl, 48px) var(--space-content-xl, 32px);
+  background: var(--color-background-1, #FFFFFF);
+  border-radius: var(--radius-modal, 16px);
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+  text-align: center;
+}
+.share-confirm__title {
+  margin: 0 0 var(--space-content-sm, 12px);
+  font-family: var(--font-style-display-7-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-7-weight, 600);
+  font-size: var(--font-size-32, 32px);
+  line-height: 1.2;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.share-confirm__msg {
+  margin: 0 0 var(--space-content-lg, 24px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  line-height: 1.45;
+  color: var(--color-on-surface-2, #181818);
+}
+.share-confirm__card .sf-cta { display: inline-flex; align-items: center; }
+.share-confirm__close {
+  position: absolute;
+  top: var(--space-content-sm, 12px);
+  right: var(--space-content-sm, 12px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-content-xl, 32px);
+  height: var(--space-content-xl, 32px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-3, 8px);
+  background: transparent;
+  color: var(--color-on-surface-3, #444444);
+  cursor: pointer;
+}
+.share-confirm__close .icon {
+  width: var(--font-size-16, 16px);
+  height: var(--font-size-16, 16px);
+}
+.share-confirm__close:hover { color: var(--color-on-surface-1, #001E5B); }
+.share-confirm__close:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.share-confirm__success {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 var(--space-content-sm, 12px);
+  color: var(--color-on-surface-success, #2E844A);
+}
+.share-confirm__success .icon {
+  width: var(--font-size-32, 32px);
+  height: var(--font-size-32, 32px);
+}
+.share-download__icon {
+  position: relative;
+  display: inline-block;
+  width: var(--font-size-16, 16px);
+  height: var(--font-size-16, 16px);
+  flex-shrink: 0;
+}
+.share-download__icon .icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: currentColor;
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+.share-download__ok { opacity: 0; transform: scale(0.6); }
+.share-download.is-downloaded .share-download__dl { opacity: 0; transform: scale(0.6); }
+.share-download.is-downloaded .share-download__ok { opacity: 1; transform: scale(1); }
+.share-confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 120;
+}
+@media (prefers-reduced-motion: reduce) {
+  .share-download__icon .icon { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════════ */
+/* Tablet — step padding back from 48px; grids shrink to 3-col */
+@media (max-width: 1023.98px) {
+  .est-wizard__body { padding: var(--space-content-xl, 32px); }
+  .est-wizard__head { padding: var(--space-content-lg, 24px) var(--space-content-xl, 32px) var(--space-content-md, 16px); }
+  .est-wizard .tile,
+  .est-wizard .gtile,
+  .solution-option { flex-basis: 180px; }
+}
+@media (max-width: 767px) {
+  .est-wizard__body { padding: var(--space-content-md, 16px); }
+  .est-wizard__head { padding: var(--space-content-md, 16px); }
+  .est-wizard__title { font-size: var(--font-size-32, 32px); }
+  .est-wizard .tile,
+  .est-wizard .gtile,
+  .solution-option { flex-basis: calc(50% - 6px); }
+  .est-wizard .g2c { grid-template-columns: 1fr 1fr; }
+  .est-wizard .bm-list { grid-template-columns: 1fr; }
+  .est-wizard .rg4 { grid-template-columns: 1fr 1fr; }
+  .est-wizard .cfg-row { grid-template-columns: 1fr 1fr; }
+  .est-wizard .cfg-l { grid-column: 1 / -1; }
+  /* Product-card header + input rows stack on narrow screens. */
+  .est-wizard .pc-h { flex-wrap: wrap; }
+  .est-wizard .pc-sum { margin-left: 0; padding-left: 0; width: 100%; }
+  .est-wizard .pc-row { flex-direction: column; align-items: stretch; gap: 5px; }
+  .est-wizard .pc-row-c { justify-content: flex-start; }
+  .est-wizard .pc-row-c .si,
+  .est-wizard .pc-row-c .ss { width: 100%; min-width: 0; max-width: none; }
+  .est-wizard .need-note { text-align: left; }
+  .est-wizard .foot { flex-wrap: wrap; }
+}
+
+/* ─── Why recommended (Configure) ─────────────────────────────────
+   Chips: card eyebrow badge recipe (recipe-card.md).
+   Popover: tooltip radius (token-roles) + card rest elevation.
+   z-index 10 is the skill's flat-ladder tooltip step. No z-index token. */
+.est-wizard .why-rec {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-content-xs);
+  margin-top: var(--space-content-xs);
+}
+.est-wizard .why-rec__lbl {
+  font-family: var(--font-style-body-copy-4-family);
+  font-weight: var(--font-style-body-copy-4-weight);
+  font-size: var(--font-style-body-copy-4-size);
+  line-height: var(--font-style-body-copy-4-line-height);
+  letter-spacing: var(--font-style-body-copy-4-letter-spacing);
+  color: var(--color-on-surface-2);
+}
+.est-wizard .why-rec__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-content-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.est-wizard .why-chip {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 6px 12px;
+  background: var(--color-neutral-95);
+  color: var(--color-on-surface-3);
+  border: 0;
+  border-radius: var(--radius-badge);
+  font-family: var(--font-style-body-copy-4-bold-family);
+  font-weight: var(--font-style-body-copy-4-bold-weight);
+  font-size: var(--font-style-body-copy-4-bold-size);
+  line-height: var(--font-style-body-copy-4-bold-line-height);
+  letter-spacing: var(--font-style-body-copy-4-bold-letter-spacing);
+  white-space: nowrap;
+}
+.est-wizard button.why-chip { cursor: pointer; }
+.est-wizard .why-eye {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: var(--space-interactive-xs);
+  border: 0;
+  border-radius: var(--radius-badge);
+  background: transparent;
+  color: var(--color-on-surface-1);
+  font-size: var(--font-style-body-copy-3-size);
+  cursor: pointer;
+}
+.est-wizard .why-eye:focus-visible,
+.est-wizard .why-chip--more:focus-visible,
+.why-pop:focus-visible {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+.why-pop {
+  position: fixed;
+  z-index: 10;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(36rem, calc(100vw - var(--space-container-padding-xs) - var(--space-container-padding-xs)));
+  margin: 0;
+  padding: var(--space-container-padding-xs);
+  background: var(--color-surface-1);
+  color: var(--color-on-surface-1);
+  border: 1px solid rgba(24, 24, 24, 0.04);
+  border-radius: var(--radius-tooltip);
+  box-shadow: 0 2px 8px -2px rgba(24, 24, 24, 0.08), 0 8px 12px -2px rgba(24, 24, 24, 0.16);
+}
+.why-pop[hidden] { display: none; }
+.why-pop::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--space-interactive-xs);
+}
+.why-pop--below::before { top: calc(var(--space-interactive-xs) * -1); }
+.why-pop--above::before { bottom: calc(var(--space-interactive-xs) * -1); }
+.sf-blade-region[data-theme='night'] .why-chip {
+  background: var(--color-surface-1);
+  color: var(--color-on-surface-1);
+}
+.sf-blade-region[data-theme='night'] .why-pop {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 2px 8px -2px rgba(0, 30, 91, 0.4),
+    0 8px 16px -4px rgba(0, 30, 91, 0.3);
+}
+.why-pop__title {
+  margin: 0 0 var(--space-content-2xs);
+  font-family: var(--font-style-body-copy-3-bold-family);
+  font-weight: var(--font-style-body-copy-3-bold-weight);
+  font-size: var(--font-style-body-copy-3-bold-size);
+  line-height: var(--font-style-body-copy-3-bold-line-height);
+  letter-spacing: var(--font-style-body-copy-3-bold-letter-spacing);
+  color: var(--color-on-surface-1);
+}
+.why-pop__kicker {
+  margin: 0 0 var(--space-content-xs);
+  font-family: var(--font-style-body-copy-4-bold-family);
+  font-weight: var(--font-style-body-copy-4-bold-weight);
+  font-size: var(--font-style-body-copy-4-bold-size);
+  line-height: var(--font-style-body-copy-4-bold-line-height);
+  letter-spacing: var(--font-style-body-copy-4-bold-letter-spacing);
+  color: var(--color-on-surface-2);
+}
+.why-pop__copy,
+.why-pop__benefit {
+  margin: 0;
+  font-family: var(--font-style-body-copy-4-family);
+  font-weight: var(--font-style-body-copy-4-weight);
+  font-size: var(--font-style-body-copy-4-size);
+  line-height: var(--font-style-body-copy-4-line-height);
+  letter-spacing: var(--font-style-body-copy-4-letter-spacing);
+  color: var(--color-on-surface-3);
+}
+.why-pop__name {
+  font-family: var(--font-style-body-copy-4-bold-family);
+  font-weight: var(--font-style-body-copy-4-bold-weight);
+  font-size: var(--font-style-body-copy-4-bold-size);
+  line-height: var(--font-style-body-copy-4-bold-line-height);
+  letter-spacing: var(--font-style-body-copy-4-bold-letter-spacing);
+  color: var(--color-on-surface-1);
+}
+.why-pop__rows {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  column-gap: var(--space-content-sm);
+  row-gap: var(--space-content-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.why-pop__row {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: baseline;
+}
+.why-more__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-content-2xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-style-body-copy-4-family);
+  font-weight: var(--font-style-body-copy-4-weight);
+  font-size: var(--font-style-body-copy-4-size);
+  line-height: var(--font-style-body-copy-4-line-height);
+  letter-spacing: var(--font-style-body-copy-4-letter-spacing);
+  color: var(--color-on-surface-1);
+}
+@media (max-width: 768px) {
+  .why-pop__rows { display: flex; flex-direction: column; }
+  .why-pop__row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-content-2xs);
+  }
+}

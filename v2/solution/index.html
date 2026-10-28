@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en"
+      data-theme="day"
+      data-typography="default"
+      data-spacing="default"
+      data-radii="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Solution Based Pricing | Salesforce</title>
+<meta name="description" content="Start from a business outcome and get a tailored Salesforce recommendation — no product expertise required." />
+
+<link rel="stylesheet" href="../assets/dms/fonts.css" />
+<link rel="stylesheet" href="../assets/dms/tokens.css" />
+<link rel="stylesheet" href="../assets/dms/icons.css" />
+<link rel="stylesheet" href="../css/icons-local.css" />
+<link rel="stylesheet" href="../css/components.css" />
+<link rel="stylesheet" href="../css/page.css" />
+<link rel="stylesheet" href="../estimator/estimator.css?v=8" />
+<link rel="stylesheet" href="solution.css" />
+</head>
+<body>
+<main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       GLOBAL HEADER
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="sf-nav" data-theme="day" role="banner">
+    <div class="sf-nav__inner">
+      <a href="../index.html" class="sf-nav__logo" aria-label="Salesforce home">
+        <img class="sf-nav__logo-full" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="68" height="48" />
+        <img class="sf-nav__logo-bug" src="../assets/brand/salesforce-logo-bug.svg" alt="Salesforce" width="36" height="25" />
+      </a>
+      <button class="sf-nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="sf-nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="sf-nav__links" id="sf-nav-links" aria-label="Main navigation">
+        <a href="#">Products</a>
+        <a href="#">Industries</a>
+        <a href="#">Customers</a>
+        <a href="#">Events</a>
+        <a href="#">Learning</a>
+        <a href="#">Support</a>
+        <a href="#">Company</a>
+      </nav>
+      <div class="sf-nav__utilities">
+        <button class="sf-nav__icon" aria-label="Call us"><i class="icon icon--call" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon" aria-label="Search"><i class="icon icon--search" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon sf-nav__icon--desktop-only" aria-label="Select region"><i class="icon icon--globe" aria-hidden="true"></i></button>
+        <a href="#" class="sf-nav__icon sf-nav__login" aria-label="Login">
+          <i class="icon icon--user" aria-hidden="true"></i>
+          <span class="sf-nav__login-label">Login</span>
+        </a>
+        <a href="#" class="sf-cta sf-cta--primary sf-cta--medium sf-nav__cta">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       CONTEXT / SECONDARY NAV
+       ═══════════════════════════════════════════════════════════════════ -->
+  <nav class="sf-subnav" aria-label="Pricing sections">
+    <div class="sf-subnav__inner">
+      <a class="sf-subnav__title" href="../index.html">Pricing</a>
+      <a class="sf-subnav__link" href="../index.html">Overview</a>
+      <div class="sf-subnav__links">
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-buy-menu">
+            Pricing By
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu" id="pricing-buy-menu" role="menu">
+            <a class="sf-subnav__menu-item" role="menuitem" href="../product/index.html">Pricing by Product</a>
+            <a class="sf-subnav__menu-item" role="menuitem" href="../industry/index.html">Pricing by Industries</a>
+          </div>
+        </div>
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-tools-menu">
+            Pricing Tools
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu sf-subnav__menu--rich" id="pricing-tools-menu" role="menu">
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../calculator/index.html">
+              <span class="sf-subnav__menu-item-title">Flex Credit Calculator</span>
+              <span class="sf-subnav__menu-item-desc">Estimate how many Flex Credits you&rsquo;ll need and understand their potential cost.</span>
+            </a>
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="./index.html" aria-current="page">
+              <span class="sf-subnav__menu-item-title">Solution Estimator</span>
+              <span class="sf-subnav__menu-item-desc">Get guidance on which products can support your solution and estimate their cost.</span>
+            </a>
+          </div>
+        </div>
+        <a class="sf-subnav__link" href="../buying-models/index.html">Buying Models</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       HERO — solution-based pricing entry point.
+       Layout adapted from the POC's "Marketing Pricing" section:
+       eyebrow + H1 + subhead + goal-input + suggestion chips.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="sf-blade-region region-day region-cloudblue" data-theme="day">
+    <section class="blade solution-hero">
+      <div class="blade__content">
+
+        <!-- Shared step header — full-width + centered so the title (now one
+             line), the description, and the breadcrumb sit at the same vertical
+             position as the estimator steps (no jump on navigation), and the
+             breadcrumb stays on a single row like the Discover step. -->
+        <div class="solution-hero__head">
+          <h1 class="solution-hero__headline">Build Your Salesforce Solution</h1>
+          <p class="solution-hero__body">
+            Explore pricing and find the right Salesforce solution for your business goals.
+            Prices shown in USD. Select one or more.
+          </p>
+        </div>
+
+        <!-- Step breadcrumb — the shared .est-crumbs component (components.css).
+             This is step 2 (Solutions); Your business is completed and links
+             back. Static markup (no JS) — unlike the estimator, where setBar()
+             rebuilds the same classes each render. -->
+        <nav class="est-crumbs" aria-label="Estimator steps">
+          <ol class="est-crumbs__list">
+            <li class="crumb-item"><a class="crumb crumb--done" id="crumb-business" href="../estimator/index.html?step=0"><span class="crumb-n">1</span><span class="crumb-l">Your business</span></a><i class="icon icon--chevronright crumb-sep" aria-hidden="true"></i></li>
+            <li class="crumb-item"><span class="crumb crumb--current" aria-current="step"><span class="crumb-n">2</span><span class="crumb-l">Solutions</span></span><i class="icon icon--chevronright crumb-sep" aria-hidden="true"></i></li>
+            <li class="crumb-item"><span class="crumb crumb--future" aria-disabled="true"><span class="crumb-n">3</span><span class="crumb-l">Select products</span></span><i class="icon icon--chevronright crumb-sep" aria-hidden="true"></i></li>
+            <li class="crumb-item"><span class="crumb crumb--future" aria-disabled="true"><span class="crumb-n">4</span><span class="crumb-l">Purchase options</span></span><i class="icon icon--chevronright crumb-sep" aria-hidden="true"></i></li>
+            <li class="crumb-item"><span class="crumb crumb--future" aria-disabled="true"><span class="crumb-n">5</span><span class="crumb-l">Estimate</span></span></li>
+          </ol>
+        </nav>
+
+        <!-- Interactive column — search + goal grid keep the narrower reading width. -->
+        <div class="solution-hero__inner">
+
+          <!-- Step-1 prompt — mirrors the estimator's per-step .q / .sub pattern
+               so "What are you trying to solve?" reads as the first wizard step.
+               Sits below the breadcrumb, above the goal input. -->
+          <div class="solution-hero__prompt">
+            <h2 class="solution-hero__q">What are you trying to solve?</h2>
+            <p class="solution-hero__q-sub">Select one or more solutions for your business.</p>
+          </div>
+
+          <!-- Goal input -->
+          <form class="solution-input" action="#" role="search" aria-label="Describe your goal">
+            <label for="solution-query" class="solution-input__label">What are you trying to solve?</label>
+            <div class="solution-input__field">
+              <input
+                id="solution-query"
+                class="solution-input__text"
+                type="search"
+                placeholder="What are you trying to solve?"
+                autocomplete="off"
+                aria-label="Describe your business goal"
+              />
+              <button class="solution-input__submit" type="submit" aria-label="Submit">
+                <i class="icon icon--chevronright" aria-hidden="true"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Solution option cards — multi-select. Outside the 680px reading
+             column so a 4-column tile grid can match Your business. -->
+        <div class="solution-options">
+          <div class="solution-options__grid" role="group" aria-label="Select your goals">
+
+            <button class="solution-option" type="button" aria-pressed="false">Grow sales &amp; pipeline</button>
+            <button class="solution-option" type="button" aria-pressed="false">Improve customer service</button>
+            <button class="solution-option" type="button" aria-pressed="false">Automate marketing</button>
+            <button class="solution-option" type="button" aria-pressed="false">Deploy AI agents</button>
+            <button class="solution-option" type="button" aria-pressed="false">Unify customer data</button>
+            <button class="solution-option" type="button" aria-pressed="false">Launch or scale ecommerce</button>
+            <button class="solution-option" type="button" aria-pressed="false">Integrate systems</button>
+            <button class="solution-option" type="button" aria-pressed="false">Analytics &amp; dashboards</button>
+            <button class="solution-option" type="button" aria-pressed="false">Collaboration &amp; productivity</button>
+            <button class="solution-option" type="button" aria-pressed="false">Industry-specific platform</button>
+
+          </div>
+        </div>
+
+        <div class="solution-foot">
+          <a class="sf-cta-back" id="solution-back" href="../estimator/index.html?step=0">Back to Your business</a>
+        </div>
+
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="sf-footer" data-theme="day" role="contentinfo">
+    <div class="sf-footer__links">
+      <div class="sf-footer__brand">
+        <img class="sf-footer__logo" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="92" height="65" />
+        <div class="sf-footer__social">
+          <a href="#" aria-label="Facebook"><img src="../assets/brand/social/facebook.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="X (Twitter)"><img src="../assets/brand/social/twitter.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="LinkedIn"><img src="../assets/brand/social/linkedin.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="Instagram"><img src="../assets/brand/social/instagram.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="YouTube"><img src="../assets/brand/social/youtube.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="TikTok"><img src="../assets/brand/social/tik-tok.svg" alt="" width="32" height="32" /></a>
+        </div>
+        <p class="sf-footer__phone">Call us at 1-800-664-9073</p>
+        <a href="#" class="sf-footer__contact-link">See all ways to contact us</a>
+      </div>
+      <div class="sf-footer__columns">
+        <div class="sf-footer__column">
+          <h3>New to Salesforce?</h3>
+          <ul>
+            <li><a href="#">What is CRM?</a></li>
+            <li><a href="#">Digital Marketing</a></li>
+            <li><a href="#">Customer Service Software</a></li>
+            <li><a href="#">Email Marketing</a></li>
+            <li><a href="#">Ecommerce</a></li>
+            <li><a href="#">Artificial Intelligence</a></li>
+            <li><a href="#">Revenue Management Solutions</a></li>
+            <li><a href="#">AI Agents</a></li>
+            <li><a href="#">SaaS</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>About Salesforce</h3>
+          <ul>
+            <li><a href="#">What is Salesforce?</a></li>
+            <li><a href="#">Newsroom</a></li>
+            <li><a href="#">Customer Success</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Trust</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Investors</a></li>
+            <li><a href="#">Give us your Feedback</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Popular Links</h3>
+          <ul>
+            <li><a href="#">Salesforce Login</a></li>
+            <li><a href="#">New Release Features</a></li>
+            <li><a href="#">Find or Become a Partner</a></li>
+            <li><a href="#">Dreamforce</a></li>
+            <li><a href="../index.html">Pricing</a></li>
+            <li><a href="#">CRM Software</a></li>
+            <li><a href="#">All Cloud Products</a></li>
+            <li><a href="#" aria-current="page">Solution Based Pricing</a></li>
+            <li><a href="#">Newsletter Sign-up</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sf-footer__bottom">
+      <div class="sf-footer__bottom-inner">
+        <button class="sf-footer__region">
+          <i class="icon icon--globe" aria-hidden="true"></i>
+          Worldwide <span aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="sf-footer__legal">
+          <div class="sf-footer__legal-links">
+            <a href="#">Legal</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Information</a>
+            <a href="#">Responsible Disclosure</a>
+            <a href="#">Trust</a>
+            <a href="#">Contact</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Your Privacy Choices</a>
+          </div>
+          <p class="sf-footer__copyright">
+            &copy; Copyright 2026 Salesforce, Inc. <a href="#">All rights reserved</a>.
+            Various trademarks held by their respective owners. Salesforce, Inc.
+            Salesforce Tower, 415 Mission Street, 3rd Floor, San Francisco, CA 94105,
+            United States
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="../js/nav.js" defer></script>
+<script src="solution.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,866 @@
+/* ══════════════════════════════════════════════════════════════════
+   COMPONENTS + PAGE CHROME
+   ────────────────────────────────────────────────────────────────
+   Ported verbatim from the audited `einstein-ai.html` build (page-shell
+   reset, blade system, gradient regions, sf-nav, sf-footer, sf-cta,
+   sf-card / sf-card-grid, hero-blade, section-header).
+
+   All visual values resolve from the DMS design tokens (single source
+   of truth). Fonts are loaded separately via assets/dms/fonts.css, so
+   the inline @font-face block from the source file is intentionally
+   omitted here.
+
+   These are the reusable building blocks. Prototype-specific section
+   styles live in page.css.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════
+   PAGE-SHELL RESET — recipe-page.md "Must-keep — the page-shell
+   box-sizing safety net". Without this every blade overflows the
+   viewport horizontally because padding-inline adds to width:100%.
+   ══════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { min-height: 100vh; }
+main { display: flex; flex-direction: column; width: 100%; }
+
+/* Generic blade / blade__content — recipe-page.md "What a single
+   blade looks like". Section paints full-bleed background; inner div
+   caps the content column at max-content-width. No max-width ever
+   goes on the <section>. */
+.blade {
+  width: 100%;
+  padding-inline: var(--space-grid-desktop-margin, 48px);
+  padding-block: 64px;
+  background: var(--color-surface-1, #FFFFFF);
+}
+.blade__content {
+  width: 100%;
+  max-width: var(--space-grid-desktop-max-content-width, 1280px);
+  margin-inline: auto;
+}
+@media (max-width: 1023.98px) and (min-width: 768px) {
+  .blade { padding-inline: var(--space-grid-tablet-portrait-margin, 32px); padding-block: 48px; }
+}
+@media (max-width: 767.98px) {
+  .blade { padding-inline: var(--space-grid-mobile-margin, 24px); padding-block: 48px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MULTI-BLADE GRADIENT REGIONS — recipe-blade-backgrounds.md
+   "Multi-blade gradient regions" + recipe-page.md super-blade
+   wrapper exception. The gradient paints ONCE on the wrapper; child
+   blades go transparent so they act as viewports onto one continuous
+   gradient (removes the seam that per-blade painting produces).
+   ══════════════════════════════════════════════════════════════════ */
+.sf-blade-region { width: 100%; }
+.sf-blade-region > .blade { background: transparent; }
+
+/* role: Night Gradient Evening — background is DATA, not a CSS custom
+   property (backgrounds are never var()-able per pre-flight.md §3).
+   Stops: Electric Blue 15 #001E5B 0% → Electric Blue 30 #022AC0 35.2%
+          → Electric Blue 50 #066AFE 75% → Sky Blue #00B3FF 100%
+   Ink on this surface resolves via var(--color-on-surface-1), which
+   the [data-theme='night'] cascade flips to Neutral 100 (#FFFFFF)
+   automatically. */
+.region-night {
+  background: linear-gradient(180deg, #001E5B 0%, #022AC0 35.2%, #066AFE 75%, #00B3FF 100%);
+}
+
+/* role: Day Gradient Morning
+   Stops: Cloud Blue 80 #90D0FE 0% → Cloud Blue 95 #EAF5FE 100%
+   Ink resolves via var(--color-on-surface-1), which under the Day
+   default (data-theme="day") is Electric Blue 15 (#001E5B). */
+.region-day {
+  background: linear-gradient(180deg, #90D0FE 0%, #EAF5FE 100%);
+}
+
+/* Solution-Based Pricing surfaces (the estimator flow + the solution-select
+   entry screen) use a flat Cloud Blue 90 background instead of the Day
+   gradient. Scoped to .region-cloudblue so it never affects other pages;
+   .sf-blade-region.region-cloudblue outweighs the .region-day gradient. */
+.sf-blade-region.region-cloudblue {
+  background: var(--color-cloud-blue-90, #CFE9FE);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   GLOBAL HEADER — recipe-page-chrome.md, copied verbatim.
+   ══════════════════════════════════════════════════════════════════ */
+.sf-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-surface-1, #FFFFFF);
+}
+.sf-nav__inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 72px;
+  padding-inline: 40px;
+  margin: 0;
+}
+.sf-nav__logo-full { display: block; }
+.sf-nav__logo-bug { display: none; }
+.sf-nav__hamburger { display: none; }
+.sf-nav__links { display: flex; align-items: center; gap: 0; }
+.sf-nav__links a {
+  font-family: var(--font-style-body-copy-2-bold-family, 'Salesforce Sans', Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-16, 16px);
+  line-height: 24px;
+  color: var(--color-on-surface-1, #001E5B);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.sf-nav__links a:hover { background: var(--color-surface-container-1, #FFFFFF); }
+.sf-nav__utilities { display: flex; align-items: center; gap: 0; margin-left: auto; }
+.sf-nav__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px;
+  border-radius: 100px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.sf-nav__icon .icon { width: 18px; height: 18px; }
+.sf-nav__icon:hover { background: var(--color-surface-container-1, #FFFFFF); }
+.sf-nav__login { gap: 4px; text-decoration: none; }
+.sf-nav__login-label {
+  font-family: var(--font-style-body-copy-2-bold-family, 'Salesforce Sans', Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-16, 16px);
+  line-height: 24px;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.sf-nav__cta { margin-left: 16px; }
+@media (max-width: 1023px) {
+  .sf-nav__inner { height: 56px; padding-inline: 16px; }
+  .sf-nav__logo-full { display: none; }
+  .sf-nav__logo-bug { display: block; }
+  .sf-nav__hamburger {
+    display: flex; flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 8px; order: -1;
+  }
+  .sf-nav__hamburger span { display: block; width: 20px; height: 2px; background: var(--color-on-surface-1, #001E5B); border-radius: 1px; }
+  .sf-nav .sf-nav__cta {
+    padding-inline: var(--space-interactive-sm, 12px);
+    padding-block: var(--space-interactive-2xs, 4px);
+    font-size: var(--font-size-14, 14px);
+  }
+  .sf-nav__links { display: none; }
+  .sf-nav__links.is-open {
+    display: flex; flex-direction: column; position: absolute; top: 56px; left: 0; right: 0;
+    background: var(--color-surface-1, #FFFFFF); border-bottom: 1px solid var(--color-border-1, #F3F3F3);
+    padding: 16px; gap: 4px; z-index: 49;
+  }
+  .sf-nav__icon--desktop-only { display: none; }
+  .sf-nav__login-label { display: none; }
+}
+@media (max-width: 767px) {
+  .sf-nav__icon[aria-label="Call us"] { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CONTEXT / SECONDARY NAV — slim bar below the global header.
+   Design reference: Figma node 31:2376 (Solution-based-pricing file).
+   White surface, top border hairline, "Pricing" display title + 3
+   section anchor links. Token-mapped from the Figma spec:
+     - Title: Display/Display 6 → font-size-24, on-surface-1 navy
+     - Links: CTA Large → font-size-16 bold, on-surface-2
+     - Border: neutral-90 → color-border-neutral
+   ══════════════════════════════════════════════════════════════════ */
+.sf-subnav {
+  width: 100%;
+  background: var(--color-surface-1, #FFFFFF);
+  /* Neutral-90 hairline separating the global header from this secondary bar.
+     Full-bleed (the bar is width:100%), so it spans edge to edge on every page. */
+  border-top: 1px solid var(--color-neutral-90, #E5E5E5);
+}
+.sf-subnav__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6, 32px);
+  padding-inline: 40px;
+  padding-block: 14px;
+}
+/* "Pricing" — the subnav's lead label, set in Display6 (Avant Garde 24px) so it
+   reads as the section title; the remaining tabs stay at 16px. Links to the hub. */
+.sf-subnav__title {
+  font-family: var(--font-style-display-6-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-6-weight, 600);
+  font-size: var(--font-size-24, 24px);
+  line-height: var(--font-style-display-6-line-height, 1.25);
+  color: var(--color-on-surface-1, #001E5B);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sf-subnav__title:hover { color: var(--color-link, #022AC0); }
+
+/* Section anchor links */
+.sf-subnav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6, 32px);
+}
+.sf-subnav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-style-body-copy-2-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-16, 16px);
+  line-height: 24px;
+  color: var(--color-on-surface-1, #001E5B);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 150ms ease-out;
+}
+.sf-subnav__link:hover { color: var(--color-link, #022AC0); }
+.sf-subnav__link[aria-current] { color: var(--color-fill-accent, #066AFE); }
+
+/* Dropdown chevron — rotates 180° while the "Pricing Buy" menu is open */
+.sf-subnav__chevron {
+  width: 12px;
+  height: 12px;
+  color: currentColor;
+  transition: transform 150ms ease-out;
+}
+
+/* "Pricing Buy" dropdown — click-toggle popover (behaviour in nav.js). The
+   toggle reuses .sf-subnav__link typography; these rules add the button reset,
+   the popover surface, and the open-state chevron flip. */
+.sf-subnav__dropdown { position: relative; display: inline-flex; }
+.sf-subnav__dropdown-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.sf-subnav__dropdown-toggle[aria-expanded="true"] .sf-subnav__chevron { transform: rotate(180deg); }
+.sf-subnav__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  display: none;
+  flex-direction: column;
+  min-width: 220px;
+  padding: var(--space-content-xs, 8px);
+  background: var(--color-surface-1, #FFFFFF);
+  border: 1px solid var(--color-border-1, #F3F3F3);
+  border-radius: var(--radius-card, 12px);
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+}
+.sf-subnav__dropdown-toggle[aria-expanded="true"] + .sf-subnav__menu { display: flex; }
+.sf-subnav__menu-item {
+  padding: var(--space-content-xs, 8px) var(--space-content-sm, 12px);
+  border-radius: var(--radius-input, 4px);
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  line-height: 20px;
+  color: var(--color-on-surface-1, #001E5B);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 150ms ease-out, color 150ms ease-out;
+}
+.sf-subnav__menu-item:hover {
+  background: var(--color-fill-info, #EAF5FE);
+  color: var(--color-link, #022AC0);
+}
+
+/* Rich menu variant — items pair a bold title with a muted description
+   (used by "Pricing Tools"). Wider surface; items wrap onto multiple lines
+   instead of the single-line default. The plain "Pricing By" menu, which
+   uses neither modifier, is unaffected. */
+.sf-subnav__menu--rich {
+  min-width: 300px;
+  max-width: 340px;
+  gap: 2px;
+}
+.sf-subnav__menu-item--rich {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: normal;
+}
+.sf-subnav__menu-item-title {
+  font-family: var(--font-style-body-copy-2-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-16, 16px);
+  line-height: 22px;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.sf-subnav__menu-item-desc {
+  font-size: var(--font-size-14, 14px);
+  line-height: 20px;
+  color: var(--color-on-surface-3, #444444);
+}
+.sf-subnav__menu-item--rich:hover .sf-subnav__menu-item-title { color: var(--color-link, #022AC0); }
+.sf-subnav__menu-item--rich:hover .sf-subnav__menu-item-desc { color: var(--color-on-surface-2, #181818); }
+
+/* Mobile — hide section links at narrow widths to avoid overflow */
+@media (max-width: 767px) {
+  .sf-subnav__inner { gap: var(--space-4, 16px); padding-inline: 16px; }
+  .sf-subnav__links { display: none; }
+}
+@media (max-width: 1023.98px) and (min-width: 768px) {
+  .sf-subnav__inner { padding-inline: 16px; gap: 24px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STEP BREADCRUMB (.est-crumbs) — shared wizard step indicator used by
+   BOTH the solution-estimator (estimator.js rebuilds it per render via
+   setBar) and the solve screen (static, step 1). Sequence:
+   Solutions · Discover · Configure · Buying Models · Estimate. Completed
+   steps are <button>s that navigate back (link colour + hover underline),
+   the current step is highlighted (accent, carries aria-current), future
+   steps are muted + inert. The chevron separators match the
+   .hero-back-link / sub-nav chevrons used elsewhere. Class name keeps the
+   `est-` prefix so no estimator markup/JS changes were needed on relocation.
+   ══════════════════════════════════════════════════════════════════ */
+.est-crumbs {
+  padding: 0 var(--space-content-xl, 32px);
+  text-align: center;
+}
+/* Breadcrumb rendered as a centered white pill on the Cloud Blue 90 surface:
+   inline-flex so it hugs its content, centered via the parent's text-align. */
+.est-crumbs__list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: var(--space-interactive-xs, 8px) var(--space-content-md, 16px);
+  background: var(--color-surface-1, #FFFFFF);
+  border: 1px solid var(--color-border-2, #E5E5E5);
+  border-radius: var(--radius-button, 9999px);
+  box-shadow: 0 1px 4px rgba(0, 30, 91, 0.08);
+}
+.est-crumbs .crumb-item {
+  display: inline-flex;
+  align-items: center;
+}
+/* Chevron separator between crumbs */
+.est-crumbs .crumb-sep {
+  width: 14px;
+  height: 14px;
+  margin: 0 var(--space-interactive-xs, 8px);
+  color: var(--color-on-surface-4, #747474);
+  flex-shrink: 0;
+}
+/* Base crumb: number badge + label */
+.est-crumbs .crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-interactive-xs, 8px);
+  margin: 0;
+  padding: var(--space-interactive-2xs, 4px) var(--space-interactive-xs, 8px);
+  border: none;
+  background: transparent;
+  text-decoration: none;
+  border-radius: var(--radius-3, 8px);
+  font-family: var(--font-style-body-copy-5-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-12, 12px);
+  line-height: 1;
+  color: var(--color-on-surface-4, #747474);
+  white-space: nowrap;
+}
+.est-crumbs .crumb-n {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-fill-info, #EAF5FE);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  color: inherit; /* number follows the crumb's state colour */
+  flex-shrink: 0;
+}
+/* Completed — clickable link back to that screen */
+.est-crumbs .crumb--done { color: var(--color-link, #022AC0); cursor: pointer; }
+.est-crumbs .crumb--done:hover { background: var(--color-fill-info, #EAF5FE); }
+.est-crumbs .crumb--done:hover .crumb-l { text-decoration: underline; }
+.est-crumbs .crumb--done:focus-visible {
+  outline: 2px solid var(--color-fill-accent, #066AFE);
+  outline-offset: 2px;
+}
+/* Current — highlighted, not a link */
+.est-crumbs .crumb--current { color: var(--color-fill-accent, #066AFE); }
+.est-crumbs .crumb--current .crumb-n {
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+/* Future — muted, inert (span, so not focusable/clickable) */
+.est-crumbs .crumb--future { color: var(--color-on-surface-4, #747474); }
+/* Narrow screens: trim the outer padding so the pill has room to wrap. */
+@media (max-width: 767px) {
+  .est-crumbs { padding-inline: var(--space-content-md, 16px); }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LEGAL FOOTER — recipe-page-chrome.md, copied verbatim.
+   ══════════════════════════════════════════════════════════════════ */
+.sf-footer__links { display: flex; gap: 24px; padding: 64px; background: var(--color-surface-1, #FFFFFF); }
+.sf-footer__brand { display: flex; flex-direction: column; gap: 28px; width: 280px; flex-shrink: 0; }
+.sf-footer__logo { display: block; }
+.sf-footer__social { display: flex; flex-wrap: wrap; gap: 14px; }
+.sf-footer__social a { display: block; line-height: 0; }
+.sf-footer__phone, .sf-footer__contact-link {
+  font-family: var(--font-style-body-copy-3-bold-family, 'Salesforce Sans', Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700); font-size: var(--font-size-14, 14px); line-height: 20px; color: var(--color-on-surface-3, #444);
+}
+.sf-footer__contact-link { text-decoration: underline; }
+.sf-footer__columns { display: flex; flex: 1; gap: 30px; }
+.sf-footer__column { flex: 1; }
+.sf-footer__column h3 {
+  font-family: var(--font-style-body-copy-3-bold-family, 'Salesforce Sans', Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700); font-size: var(--font-size-14, 14px); line-height: 20px; color: var(--color-on-surface-3, #444); margin: 0 0 36px;
+}
+.sf-footer__column ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.sf-footer__column a {
+  font-family: var(--font-style-body-copy-4-family, 'Salesforce Sans', Arial, sans-serif);
+  font-weight: var(--font-weight-regular, 400); font-size: var(--font-size-12, 12px); line-height: 18px; letter-spacing: 0.03px; color: #0B5CAB; text-decoration: none;
+}
+.sf-footer__column a:hover { text-decoration: underline; }
+.sf-footer__bottom { background: #032D60; padding: 20px 64px; }
+.sf-footer__bottom-inner { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.sf-footer__region {
+  display: flex; align-items: center; gap: 6px; background: none; border: none; cursor: pointer; color: var(--color-white, #fff);
+  font-family: var(--font-style-body-copy-2-bold-family, 'Salesforce Sans', Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700); font-size: var(--font-size-16, 16px); line-height: 24px; padding: 0 24px 11px;
+}
+.sf-footer__legal { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 24px; }
+.sf-footer__legal-links { display: flex; flex-wrap: wrap; gap: 10px 20px; }
+.sf-footer__legal-links a, .sf-footer__copyright, .sf-footer__copyright a {
+  font-family: var(--font-style-body-copy-4-family, 'Salesforce Sans', Arial, sans-serif);
+  font-weight: var(--font-weight-regular, 400); font-size: var(--font-size-12, 12px); line-height: 18px; letter-spacing: 0.03px; color: var(--color-white, #fff); text-decoration: underline;
+}
+.sf-footer__copyright { margin: 0; text-decoration: none; }
+@media (max-width: 1023px) {
+  .sf-footer__links { padding: 40px; }
+  .sf-footer__bottom { padding: 20px 40px; }
+}
+@media (max-width: 767px) {
+  .sf-footer__links { display: none; }
+  .sf-footer__bottom { padding: 20px 24px; }
+  .sf-footer__bottom-inner { flex-direction: column; align-items: center; text-align: center; }
+  .sf-footer__region { padding-bottom: 0; }
+  .sf-footer__legal-links { justify-content: center; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CTA SYSTEM — recipe-cta-buttons.quickstart.md, copied verbatim.
+   ══════════════════════════════════════════════════════════════════ */
+.sf-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none;
+  border-radius: var(--radius-button, 9999px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 150ms ease-out, transform 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out;
+}
+.sf-cta { will-change: transform; transform: translateZ(0); }
+.sf-cta:not([aria-disabled="true"]):not(.is-disabled):hover  { transform: translateY(-2px) scale(1.02); }
+.sf-cta:not([aria-disabled="true"]):not(.is-disabled):active { transform: translateY(0) scale(0.98); }
+.sf-cta:focus-visible { outline: 3px solid var(--color-border-focus, #066AFE); outline-offset: 2px; }
+.sf-cta--hero {
+  padding-inline: var(--space-interactive-xl, 32px);
+  padding-block: var(--space-interactive-sm, 12px);
+  gap: var(--space-interactive-xs, 8px);
+  font-size: var(--font-size-16, 16px);
+  line-height: var(--font-line-height-normal, 1.5);
+  letter-spacing: var(--font-letter-spacing-2, 0.002em);
+}
+.sf-cta--medium {
+  padding-inline: var(--space-interactive-lg, 24px);
+  padding-block: var(--space-interactive-xs, 8px);
+  gap: var(--space-interactive-xs, 8px);
+  font-size: var(--font-size-16, 16px);
+  line-height: var(--font-line-height-normal, 1.5);
+  letter-spacing: var(--font-letter-spacing-2, 0.002em);
+}
+/* role: fill-accent (Primary CTA fill) — var(--color-fill-accent) */
+.sf-cta--primary { background: var(--color-fill-accent, #066AFE); color: var(--color-on-fill-accent, #FFFFFF); border: none; }
+.sf-cta--primary:hover { background: var(--color-fill-accent-hover, #022AC0); }
+.sf-cta--primary:active { background: var(--color-fill-accent-active, #002775); }
+.sf-cta--primary:focus-visible { background: var(--color-fill-accent-hover, #022AC0); }
+.sf-cta--primary[aria-disabled="true"], .sf-cta--primary.is-disabled {
+  background: var(--color-fill-disabled-2, #C9C9C9); color: var(--color-on-fill-disabled-2, #FFFFFF); cursor: not-allowed; pointer-events: none;
+}
+.sf-cta--secondary {
+  background: transparent; color: var(--color-on-fill-neutral-accent, #022AC0); border: none;
+  box-shadow: inset 0 0 0 2px var(--color-border-accent, #022AC0);
+}
+.sf-cta--secondary:hover { background: var(--color-fill-neutral-hover, #EAF5FE); color: var(--color-on-fill-neutral-accent-hover, #002775); box-shadow: inset 0 0 0 2px var(--color-border-accent-hover, #002775); }
+.sf-cta--secondary:active { background: var(--color-fill-neutral-active, #EAF5FE); color: var(--color-on-fill-neutral-accent-active, #002775); box-shadow: inset 0 0 0 2px var(--color-border-accent-active, #002775); }
+.sf-cta--secondary:focus-visible { background: var(--color-fill-neutral-hover, #EAF5FE); color: var(--color-on-fill-neutral-accent-hover, #002775); box-shadow: inset 0 0 0 2px var(--color-border-accent-hover, #002775); }
+.sf-cta--secondary[aria-disabled="true"], .sf-cta--secondary.is-disabled {
+  background: var(--color-fill-disabled-2, #C9C9C9); color: var(--color-on-fill-disabled-2, #FFFFFF); box-shadow: none; cursor: not-allowed; pointer-events: none;
+}
+/* role: on-dark CTA repaint — DIRECTLY on the Night Evening gradient
+   (never inside a card). Primary → var(--color-fill-accent) resolves
+   solid white pill w/ navy text; Secondary → transparent + white
+   ghost border. */
+.sf-cta--on-dark.sf-cta--primary { background: var(--color-fill-accent, #FFFFFF); color: var(--color-on-fill-accent, #022AC0); border: none; }
+.sf-cta--on-dark.sf-cta--primary:hover { background: var(--color-fill-accent-hover, rgba(255,255,255,0.85)); }
+.sf-cta--on-dark.sf-cta--primary:active { background: var(--color-fill-accent-active, rgba(255,255,255,0.85)); }
+.sf-cta--on-dark.sf-cta--primary:focus-visible { background: var(--color-fill-accent-hover, rgba(255,255,255,0.85)); outline-color: var(--color-white, #FFFFFF); }
+.sf-cta--on-dark.sf-cta--primary[aria-disabled="true"], .sf-cta--on-dark.sf-cta--primary.is-disabled {
+  background: rgba(255,255,255,0.4); color: rgba(255,255,255,0.6); cursor: not-allowed; pointer-events: none;
+}
+.sf-cta--on-dark.sf-cta--secondary { background: transparent; color: var(--color-white, #FFFFFF); border: none; box-shadow: inset 0 0 0 2px #FFFFFF; }
+.sf-cta--on-dark.sf-cta--secondary:hover { background: rgba(255,255,255,0.12); color: var(--color-white, #FFFFFF); box-shadow: inset 0 0 0 2px #FFFFFF; }
+.sf-cta--on-dark.sf-cta--secondary:active { background: rgba(255,255,255,0.20); color: var(--color-white, #FFFFFF); box-shadow: inset 0 0 0 2px #FFFFFF; }
+.sf-cta--on-dark.sf-cta--secondary:focus-visible { background: rgba(255,255,255,0.20); color: var(--color-white, #FFFFFF); box-shadow: inset 0 0 0 2px #FFFFFF; outline-color: var(--color-white, #FFFFFF); }
+.sf-cta--on-dark.sf-cta--secondary[aria-disabled="true"], .sf-cta--on-dark.sf-cta--secondary.is-disabled {
+  background: transparent; color: rgba(255,255,255,0.4); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); cursor: not-allowed; pointer-events: none;
+}
+.sf-cta-link {
+  display: inline-flex; align-items: center; gap: var(--space-interactive-xs, 8px);
+  border-radius: var(--radius-4, 4px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-16, 16px); line-height: var(--font-line-height-normal, 1.5); letter-spacing: var(--font-letter-spacing-2, 0.002em);
+  color: var(--color-link, #022AC0); text-decoration: none; white-space: nowrap; cursor: pointer; outline: none;
+  transition: color 150ms ease-out;
+}
+.sf-cta-link__label {
+  position: relative; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px;
+  text-decoration-color: currentColor; transition: text-decoration-color 150ms ease-in-out 350ms;
+}
+.sf-cta-link__label::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: calc(0.25em - 2px); height: 2px; background: currentColor;
+  transform: scaleX(0); transform-origin: left; transition: transform 350ms cubic-bezier(0.4,0,0.2,1) 0ms; pointer-events: none;
+}
+.sf-cta-link:hover .sf-cta-link__label { text-decoration-color: transparent; transition: text-decoration-color 150ms ease-in-out 0ms; }
+.sf-cta-link:hover .sf-cta-link__label::after { transform: scaleX(1); transition: transform 350ms cubic-bezier(0.4,0,0.2,1) 150ms; }
+.sf-cta-link:hover { color: var(--color-link-hover, #002775); }
+.sf-cta-link:active { color: var(--color-link-active, #002775); }
+.sf-cta-link:focus-visible { outline: 3px solid var(--color-border-focus, #066AFE); outline-offset: 2px; }
+.sf-cta-link__chevron { flex-shrink: 0; width: 14px; height: 14px; }
+
+/* ══════════════════════════════════════════════════════════════════
+   CARD SYSTEM — recipe-card.quickstart.md base skeleton, adapted:
+   image slot replaced with an icon slot (no images in this build).
+   ══════════════════════════════════════════════════════════════════ */
+.sf-card, .sf-card *, .sf-card *::before, .sf-card *::after { box-sizing: border-box; }
+.sf-card:not([data-theme]), .sf-card[data-theme="day"] {
+  --color-background-1: var(--color-white, #FFFFFF);
+  --color-surface-1: var(--color-white, #FFFFFF);
+  --color-surface-container-1: var(--color-white, #FFFFFF);
+  --color-fill-accent: var(--color-electric-blue-50, #066AFE);
+  --color-fill-accent-hover: var(--color-electric-blue-30, #022AC0);
+  --color-fill-accent-active: var(--color-electric-blue-30, #022AC0);
+  --color-fill-neutral: var(--color-white, #FFFFFF);
+  --color-fill-neutral-hover: var(--color-cloud-blue-95, #EAF5FE);
+  --color-fill-neutral-active: var(--color-cloud-blue-95, #EAF5FE);
+  --color-on-surface-1: var(--color-electric-blue-15, #001E5B);
+  --color-on-surface-2: var(--color-neutral-10, #181818);
+  --color-on-surface-3: var(--color-neutral-30, #444444);
+  --color-on-surface-4: var(--color-neutral-50, #747474);
+  --color-on-fill-accent: var(--color-white, #FFFFFF);
+  --color-link: var(--color-electric-blue-30, #022AC0);
+  --color-link-hover: var(--color-electric-blue-20, #002775);
+  --color-link-active: var(--color-electric-blue-50, #066AFE);
+  --color-border-neutral: #D6D6D6; /* FLAG: no primitive matches #D6D6D6 (nearest neutral-80 #C9C9C9 / neutral-90 #E5E5E5); left literal */
+  --color-border-accent: var(--color-electric-blue-20, #002775);
+  --color-border-focus: var(--color-electric-blue-50, #066AFE);
+  --color-fill-info: var(--color-cloud-blue-95, #EAF5FE);
+  --color-on-fill-info: var(--color-electric-blue-50, #066AFE);
+}
+/* role: card surface — Day-island cards float solid white on ANY
+   surface, including a gradient region behind them (dual-island
+   contract). var(--color-surface-1) */
+.sf-card {
+  position: relative; /* required for .sf-cta-link--stretched ::after overlay */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  text-align: left;
+  background: var(--color-surface-1, #FFFFFF);
+  border: 1px solid rgba(24, 24, 24, 0.04);
+  box-shadow: 0 2px 8px -2px rgba(24, 24, 24, 0.08), 0 8px 12px -2px rgba(24, 24, 24, 0.16);
+  border-radius: var(--radius-card, 12px);
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+  container-type: inline-size;
+  container-name: sf-card;
+}
+.sf-card :where(p, h1, h2, h3, h4, h5, h6, span, a, li, blockquote) {
+  min-width: 0; max-width: 100%; overflow-wrap: anywhere;
+}
+.sf-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-fill-info, #EAF5FE);
+  color: var(--color-on-fill-info, #066AFE);
+  margin: var(--space-5, 24px) var(--space-5, 24px) 0;
+  flex-shrink: 0;
+}
+/* Branded SVG/PNG icons stand free (no info badge): full-colour brand icons
+   would clash inside the tinted circle, and this matches the calculator's
+   free-standing industry icons. */
+.sf-card__icon img { width: 40px; height: 40px; display: block; }
+/* Industry + product "Pricing per" cards: branded icon at the badge footprint. */
+.sf-card__icon--brand {
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
+  /* Left-align the brand glyph (Explore by Product / by Industry cards):
+     override the centring inherited from .sf-card__icon so the icon sits at
+     the card's left edge, aligned with the copy below (both 24px inset). */
+  align-self: flex-start;
+}
+.sf-card__icon--brand img { width: 56px; height: 56px; display: block; object-fit: contain; }
+/* Buying-model cards show the larger 3D model icon standing free (no badge). */
+.sf-card__icon--model {
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
+}
+.sf-card__icon--model img { width: 72px; height: 72px; display: block; object-fit: contain; }
+.sf-card__copy {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-5, 24px);
+}
+/* role: card headline ink — var(--color-on-surface-1). Display 6 is
+   the correct cascade step for a --3up band's 400px max cell. */
+.sf-card__title {
+  margin: 0 0 var(--space-content-sm, 12px) 0;
+  font-family: var(--font-style-display-6-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-6-weight, 600);
+  font-size: var(--font-style-display-6-size, 24px);
+  line-height: var(--font-style-display-6-line-height, 1.25);
+  letter-spacing: var(--font-style-display-6-letter-spacing, -0.0015em);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.sf-card__body {
+  margin: 0 0 var(--space-content-lg, 24px) 0;
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-style-body-copy-3-weight, 400);
+  font-size: var(--font-style-body-copy-3-size, 16px);
+  line-height: var(--font-style-body-copy-3-line-height, 1.5);
+  letter-spacing: var(--font-style-body-copy-3-letter-spacing, 0.00125em);
+  color: var(--color-on-surface-3, #444444);
+}
+.sf-card__copy > .sf-cta, .sf-card__copy > .sf-cta-link { margin-top: auto; }
+
+/* ══════════════════════════════════════════════════════════════════
+   CARD GRID — recipe-card-grid.md canonical flex-wrap pattern +
+   the four must-keep safety nets, copied verbatim. --3up + --2up
+   bands only (the two grids this build needs).
+   ══════════════════════════════════════════════════════════════════ */
+.sf-card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--space-grid-desktop-gutter, 40px);
+  width: 100%;
+}
+.sf-card-grid > * { min-width: 0; }
+.sf-card-grid :where(p, h1, h2, h3, h4, h5, h6, span, a, li, dt, dd, blockquote) {
+  min-width: 0; max-width: 100%; overflow-wrap: anywhere; word-break: normal;
+}
+.sf-card-grid--3up > * { flex: 1 1 400px; min-width: min(270px, 100%); max-width: min(400px, 100%); }
+.sf-card-grid--2up > * { flex: 1 1 620px; min-width: min(270px, 100%); max-width: min(620px, 100%); }
+/* Translucent-card variant — used by the Product / Industry "Explore" grids,
+   which now sit inside the full-height Day gradient (region-day). Dropping the
+   card fill to 50% white lets the gradient show through each tile; text stays
+   dark navy / near-black on the lightened surface (worst case ≈ 12:1 → AAA).
+   Scoped to this grid modifier so the Next-steps grid (on plain white) and
+   every other .sf-card in the build stay solid. */
+.sf-card-grid--translucent > .sf-card {
+  background: rgba(255, 255, 255, 0.5);
+}
+@media (max-width: 1439.98px) and (min-width: 1024px) { .sf-card-grid { gap: var(--space-grid-tablet-landscape-gutter, 32px); } }
+@media (max-width: 1023.98px) and (min-width: 768px) { .sf-card-grid { gap: var(--space-grid-tablet-portrait-gutter, 24px); } }
+@media (max-width: 767.98px) { .sf-card-grid { gap: var(--space-grid-mobile-gutter, 24px); } }
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO BLADE — `.hero-blade--1col`, centered single column.
+   ══════════════════════════════════════════════════════════════════ */
+.hero-blade--1col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: var(--space-grid-mobile-margin, 24px);
+  padding-block: 48px;
+}
+.hero-blade__cap { width: 100%; margin-inline: auto; }
+.hero-blade__content-1col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+/* Eyebrow icon stacked ABOVE the eyebrow text — never side-by-side. */
+.hero-blade__eyebrow-1col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--space-content-sm, 12px) 0;
+}
+/* role: eyebrow icon + text ink — var(--color-on-surface-1). Under a
+   Night wrapper's [data-theme='night'] cascade this resolves to
+   Neutral 100 (#FFFFFF) automatically — no hardcoded white needed. */
+.hero-blade__eyebrow-icon { color: var(--color-on-surface-1, #001E5B); }
+.hero-blade__eyebrow-1col span {
+  font-family: var(--font-style-body-copy-2-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-style-body-copy-2-bold-weight, 700);
+  font-size: var(--font-style-body-copy-2-bold-size, 18px);
+  line-height: var(--font-style-body-copy-2-bold-line-height, 1.5);
+  letter-spacing: var(--font-style-body-copy-2-bold-letter-spacing, 0.00125em);
+  color: var(--color-on-surface-1, #001E5B);
+}
+/* role: hero headline ink — var(--color-on-surface-1). Hero tier
+   ONLY (Display 4 → 3 → 2 cascade below). */
+.hero-blade__headline-1col {
+  margin: 0;
+  font-family: var(--font-style-display-4-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-4-weight, 600);
+  font-size: var(--font-style-display-4-size, 40px);
+  line-height: var(--font-style-display-4-line-height, 1.125);
+  letter-spacing: var(--font-style-display-4-letter-spacing, -0.0025em);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.hero-blade__body-1col {
+  margin-top: var(--space-content-lg, 24px);
+  font-family: var(--font-style-body-copy-1-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-style-body-copy-1-weight, 400);
+  font-size: var(--font-style-body-copy-1-size, 20px);
+  line-height: var(--font-style-body-copy-1-line-height, 1.5);
+  letter-spacing: var(--font-style-body-copy-1-letter-spacing, 0.00125em);
+  color: var(--color-on-surface-2, #181818);
+}
+.hero-blade__ctas-1col {
+  display: flex;
+  gap: var(--space-4, 16px);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-content-2xl, 48px);
+}
+@media (min-width: 768px) {
+  .hero-blade--1col { padding-inline: var(--space-grid-tablet-portrait-margin, 32px); padding-block: 48px; }
+}
+@media (min-width: 1024px) {
+  .hero-blade--1col { padding-inline: var(--space-grid-tablet-landscape-margin, 48px); padding-block: 64px; }
+  .hero-blade__headline-1col {
+    font-size: var(--font-style-display-3-size, 48px);
+    letter-spacing: var(--font-style-display-3-letter-spacing, -0.0025em);
+  }
+}
+@media (min-width: 1440px) {
+  .hero-blade--1col { padding-inline: var(--space-grid-desktop-margin, 48px); padding-block: 64px; }
+  .hero-blade__headline-1col {
+    font-size: var(--font-style-display-2-size, 56px);
+    letter-spacing: var(--font-style-display-2-letter-spacing, -0.003em);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SECTION HEADER — recipe-page.md "Body-blade section header",
+   copied verbatim. Display 5 → 4 cascade, Display 4 ceiling.
+   ══════════════════════════════════════════════════════════════════ */
+.section-header { text-align: center; margin-bottom: var(--space-content-2xl, 48px); }
+.section-header:last-child { margin-bottom: 0; }
+.section-header__eyebrow {
+  margin: 0 0 var(--space-content-sm, 12px) 0;
+  font-family: var(--font-style-body-copy-2-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-style-body-copy-2-bold-weight, 700);
+  font-size: var(--font-style-body-copy-2-bold-size, 18px);
+  line-height: var(--font-style-body-copy-2-bold-line-height, 1.5);
+  letter-spacing: var(--font-style-body-copy-2-bold-letter-spacing, 0.00125em);
+  color: var(--color-on-surface-1, #001E5B);
+}
+/* role: body-blade headline ink — var(--color-on-surface-1). Display
+   4 ceiling (Display 5 base). NEVER escalates to Display 2/3 — that
+   tier is hero-only. */
+.section-header__headline {
+  margin: 0;
+  font-family: var(--font-style-display-5-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-5-weight, 600);
+  font-size: var(--font-style-display-5-size, 32px);
+  line-height: var(--font-style-display-5-line-height, 1.25);
+  letter-spacing: var(--font-style-display-5-letter-spacing, -0.0015em);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.section-header__body {
+  margin-top: var(--space-content-lg, 24px);
+  max-width: 720px;
+  margin-inline: auto;
+  font-family: var(--font-style-body-copy-1-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-style-body-copy-1-weight, 400);
+  font-size: var(--font-style-body-copy-1-size, 20px);
+  line-height: var(--font-style-body-copy-1-line-height, 1.5);
+  letter-spacing: var(--font-style-body-copy-1-letter-spacing, 0.00125em);
+  color: var(--color-on-surface-2, #181818);
+}
+@media (min-width: 1024px) {
+  .section-header__headline {
+    font-family: var(--font-style-display-4-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+    font-weight: var(--font-style-display-4-weight, 600);
+    font-size: var(--font-style-display-4-size, 40px);
+    line-height: var(--font-style-display-4-line-height, 1.125);
+    letter-spacing: var(--font-style-display-4-letter-spacing, -0.0025em);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ASK PIPER — floating assistant CTA, injected once by nav.js.
+   Sits above every overlay (login 100, share-confirm 110, confetti 120).
+   ══════════════════════════════════════════════════════════════════ */
+.ask-piper {
+  position: fixed;
+  right: var(--space-content-lg, 24px);
+  bottom: var(--space-content-lg, 24px);
+  z-index: 200;
+  padding-block: var(--space-interactive-sm, 12px);
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.28);
+}
+.ask-piper .icon {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+@media (max-width: 767px) {
+  .ask-piper {
+    right: var(--space-content-md, 16px);
+    bottom: var(--space-content-2xl, 48px);
+  }
+}
