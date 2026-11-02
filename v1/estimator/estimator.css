@@ -526,6 +526,37 @@
   justify-content: flex-start;
   padding: var(--space-interactive-xs, 8px) 0 0;
 }
+.est-wizard .pc-uc-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-interactive-xs, 8px);
+}
+.est-wizard .pc-uc-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-3, 8px);
+  background: transparent;
+  color: var(--color-fill-accent, #066AFE);
+  cursor: pointer;
+}
+.est-wizard .pc-uc-edit .icon { width: 16px; height: 16px; }
+.est-wizard .pc-uc-edit:hover { background: var(--color-fill-neutral-hover, #EAF5FE); }
+.est-wizard .pc-uc-edit:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.est-wizard .pc-uc-price {
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-electric-blue-20, #002775);
+  white-space: nowrap;
+}
 .est-wizard .pc-flex-note .learn-link {
   display: inline;
   margin-top: 0;
@@ -1257,6 +1288,30 @@ body.share-confirm-open { overflow: hidden; }
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
   align-items: baseline;
+}
+.why-pop--bm {
+  width: min(22.5rem, calc(100vw - var(--space-container-padding-xs, 16px) - var(--space-container-padding-xs, 16px)));
+  max-width: min(36rem, calc(100vw - var(--space-container-padding-xs, 16px) - var(--space-container-padding-xs, 16px)));
+  overflow-wrap: break-word;
+}
+.why-pop--bm .why-pop__title,
+.why-pop--bm .why-pop__benefit,
+.why-pop--bm .why-pop__name {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+  max-width: 100%;
+}
+.why-pop--bm .why-pop__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-content-xs, 8px);
+}
+.why-pop--bm .why-pop__row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
 }
 .why-more__list {
   display: flex;

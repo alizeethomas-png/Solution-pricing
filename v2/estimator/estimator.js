@@ -71,7 +71,7 @@ var GEOS=[
 // The rc arrays on PRODS reference these indices to drive "Recommended
 // For You". (The in-flow problems STEP is removed; the data stays.)
 var PROBS=[["Grow sales & pipeline","CRM, forecasting, deal management","&#128188;"],["Improve customer service","Case management, omnichannel support","&#127911;"],["Automate marketing","Campaigns, journeys, personalisation","&#128227;"],["Deploy AI agents","Automate tasks 24/7 with Agentforce","&#129302;"],["Unify customer data","Single view, identity resolution, AI grounding","&#128202;"],["Launch or scale ecommerce","B2C & B2B digital commerce","&#128705;"],["Integrate systems","APIs, data flows, legacy integration","&#128279;"],["Analytics & dashboards","BI, reporting, embedded analytics","&#128200;"],["Collaboration & productivity","Team messaging & workflows","&#128172;"],["Industry-specific platform","Financial Services Cloud, Health Cloud","&#127970;"]];
-var BMS=[["Pay-As-You-Go (PAYG)","","","No upfront commitment. Pay monthly based on actual usage at list price. Maximum flexibility for net-new customers or experimentation.","Monthly at consumption","None (list price)","","Signing PAYG forfeits Foundations Flex Credits. Pre-purchased credits go dormant if PAYG is active on the same org."],["Pre-Purchase","","","Buy Flex Credits upfront at the highest available discount. Credits paid at signature, consumed over the contract term.","At signature","Maximum available","","Cannot co-exist with PAYG as the active model. Credits go dormant if PAYG is activated."],["Pre-Commit","","","Commit to a minimum monthly spend; billed monthly against that commitment. Shortfall invoiced at end of term.","Monthly","Standardised tiers","$1M+ ACV","Customer pays shortfall at end of term. Only recommend when customer has confidence in usage volume."],["Bonus Credits","","","Strategic incentive credits tied to higher upfront commitments. Seller lever to preserve pricing tiers.","At signature","Included in deal","Deal-specific",""]];
+var BMS=[["Pay-As-You-Go","","","No upfront commitment. Pay monthly based on actual usage at list price. Maximum flexibility for net-new customers or experimentation.","Monthly at consumption","None (list price)","","Signing PAYG forfeits Foundations Flex Credits. Pre-purchased credits go dormant if PAYG is active on the same org."],["Pre-Purchase","","","Buy Flex Credits upfront at the highest available discount. Credits paid at signature, consumed over the contract term.","At signature","Maximum available","","Cannot co-exist with PAYG as the active model. Credits go dormant if PAYG is activated."],["Pre-Commit","","","Commit to a minimum monthly spend; billed monthly against that commitment. Shortfall invoiced at end of term.","Monthly","Standardised tiers","$1M+ ACV","Customer pays shortfall at end of term. Only recommend when customer has confidence in usage volume."],["Bonus Credits","","","Strategic incentive credits tied to higher upfront commitments. Seller lever to preserve pricing tiers.","At signature","Included in deal","Deal-specific",""]];
 var BMIC=["&#128081;","&#128179;","&#128197;","&#127873;"];
 // Buying-model card illustrations (3D icons) — one per rendered card (first 3 of BMS):
 // PAYG → stopwatch, Pre-Purchase → rocket, Pre-Commit → bar chart. Files live in
@@ -321,8 +321,9 @@ var S={
   // Data 360 keeps its existing defaults (pre-selected, not gated).
   d3P:10,d3S:"few",d3U:"segmentation",
   afEst:null,d3Est:null,
-  // Flex-credit modal estimate (Agentforce). Survives modal close; not URL-persisted.
-  afFlex:null
+  // Flex-credit modal estimates. Survive modal close; not URL-persisted.
+  afFlex:null,
+  d360Flex:null
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────
@@ -335,20 +336,36 @@ function fmtFlexEst(n){
     if(s.slice(-2)===".0") s=s.slice(0,-2);
     return s+"k";
   }
-  return fmt(n);
+  var r=Math.round(n*10)/10;
+  if(Math.abs(r-Math.round(r))<1e-9) return fmt(Math.round(r));
+  return r.toFixed(1);
 }
-function afFlexHas(){
-  var c=S.afFlex&&S.afFlex.cases;
+function flexStoreHas(store){
+  var c=store&&store.cases;
   if(!c) return false;
   for(var k in c) if(Object.prototype.hasOwnProperty.call(c,k)) return true;
   return false;
 }
-function afFlexTotal(){
-  var t=0,c=S.afFlex&&S.afFlex.cases;
+function flexStoreTotal(store){
+  var t=0,c=store&&store.cases;
   if(!c) return 0;
   for(var k in c) if(Object.prototype.hasOwnProperty.call(c,k)) t+=c[k].price||0;
   return t;
 }
+function flexStoreList(store){
+  var c=store&&store.cases, out=[], k;
+  if(!c) return out;
+  for(k in c) if(Object.prototype.hasOwnProperty.call(c,k)){
+    out.push({id:k, nm:c[k].nm||k, price:c[k].price||0});
+  }
+  return out;
+}
+function afFlexHas(){ return flexStoreHas(S.afFlex); }
+function afFlexTotal(){ return flexStoreTotal(S.afFlex); }
+function afFlexList(){ return flexStoreList(S.afFlex); }
+function d360FlexHas(){ return flexStoreHas(S.d360Flex); }
+function d360FlexTotal(){ return flexStoreTotal(S.d360Flex); }
+function d360FlexList(){ return flexStoreList(S.d360Flex); }
 function ds(){return S.szi!==null?SIZES[S.szi][2]:10;}
 function hasFlexSelected(){
   return PRODS.some(function(p){return p.tp==="flex"&&S.cfg[p.id]&&S.cfg[p.id].on;});
@@ -409,13 +426,13 @@ function periodToggleHtml(center){
 function priceStack(amount,id,approx,exact){
   return "<div class='st'>"
     +(exact?"":"<div class='stk-start'>Starting at</div>")
-    +"<div class='stv'"+(id?" id='"+id+"'":"")+">"+(approx?"~$":"$")+(exact?fmtFlexEst(amount):fmt(amount))+"</div>"
+    +"<div class='stv'"+(id?" id='"+id+"'":"")+">$"+(exact?fmtFlexEst(amount):fmt(amount))+"</div>"
     +"<div class='stk'>"+periodLabel()+"</div>"
     +"</div>";
 }
 function shareCtaHtml(enabled){
   return "<div class='share-wrap'>"
-    +"<button type='button' class='sf-cta sf-cta--primary sf-cta--medium share-cta"+(enabled?"":" is-disabled")+"' id='share-cta' aria-haspopup='menu' aria-expanded='false' aria-controls='share-menu' onclick='toggleShareMenu(event)'"+(enabled?"":" disabled")+">Share <i class='icon icon--chevrondown' aria-hidden='true'></i></button>"
+    +"<button type='button' class='sf-cta sf-cta--primary sf-cta--medium share-cta"+(enabled?"":" is-disabled")+"' id='share-cta' aria-haspopup='menu' aria-expanded='false' aria-controls='share-menu' aria-label='Save' onclick='toggleShareMenu(event)'"+(enabled?"":" disabled")+">Save <i class='icon icon--chevrondown' aria-hidden='true'></i></button>"
     +"<ul id='share-menu' class='share-menu' role='menu' hidden>"
     +"<li role='none'><button type='button' class='share-menu__item' role='menuitem' onclick='shareAction(\"save\")'>Save estimation</button></li>"
     +"<li role='none'><button type='button' class='share-menu__item' role='menuitem' onclick='shareAction(\"export\")'>Export full report</button></li>"
@@ -678,21 +695,30 @@ function prodPrice(p,cfg){
       var tot=afFlexTotal();
       return {mo:tot,ann:tot,exact:true};
     }
+    if(p.id==="d360" && d360FlexHas()){
+      var dTot=d360FlexTotal();
+      return {mo:dTot,ann:dTot,exact:true};
+    }
     var e=p.id==="af"?calcAF():calcD3();
     return{mo:e.mo,ann:e.yr};
   }
   return null; // custom / contact-sales
 }
 function syncFlexProductCard(){
-  var pi=-1;
-  for(var i=0;i<PRODS.length;i++) if(PRODS[i].id==="af"){pi=i;break;}
-  if(pi<0) return;
-  var p=PRODS[pi];
-  var cfg=S.cfg[p.id];
-  if(!cfg||!cfg.on) return;
-  var el=document.getElementById("pp"+pi);
-  var sum=el?el.closest(".pc-sum"):null;
-  if(sum) sum.outerHTML=pcSum(pi,p,cfg);
+  var ids=["af","d360"], n, i, j;
+  for(n=0;n<ids.length;n++){
+    var pi=-1;
+    for(i=0;i<PRODS.length;i++) if(PRODS[i].id===ids[n]){pi=i;break;}
+    if(pi<0) continue;
+    var p=PRODS[pi];
+    var cfg=S.cfg[p.id];
+    if(!cfg||!cfg.on) continue;
+    var nms=document.querySelectorAll(".pc-nm");
+    var card=null;
+    for(j=0;j<nms.length;j++) if(nms[j].textContent===p.nm){card=nms[j].closest(".pc");break;}
+    if(!card) continue;
+    card.outerHTML=pCard(pi,!!recProdSet()[pi]);
+  }
 }
 
 // ── Product card (Configure step) ────────────────────────────────
@@ -716,6 +742,14 @@ function flexCalcCta(pid){
   var kind=pid==="d360"?"d360":"af";
   return "<div class='pc-flex-cta'><button type='button' class='sf-cta sf-cta--primary sf-cta--medium' onclick='event.stopPropagation();openFlexModal(\""+kind+"\",this)'>Calculate your Flex Credit</button></div>";
 }
+function afUseCaseRow(uc, kind){
+  kind=kind||"af";
+  var nm=escWhy(uc.nm||uc.id);
+  var left="<span class='pc-uc-label'>"+nm
+    +"<button type='button' class='pc-uc-edit' aria-label='Edit "+nm+"' onclick='event.stopPropagation();openFlexModal(\""+kind+"\",this,\""+escWhy(uc.id)+"\")'>"
+    +"<i class='icon icon--edit' aria-hidden='true'></i></button></span>";
+  return pcRow(left,"<span class='pc-uc-price'>$"+fmtFlexEst(uc.price||0)+"</span>");
+}
 function pcPanel(pi,p,cfg){
   if(p.tp==="custom")return "<div class='pc-cfg'><div class='cfg-cs'>"+(p.note||"")+"</div></div>";
   var r="";
@@ -726,7 +760,17 @@ function pcPanel(pi,p,cfg){
   } else if(p.tp==="org"){
     var oo="";for(var j=0;j<p.eds.length;j++)oo+=opt(j,p.eds[j],cfg.ei);
     r+=pcRow("Plan","<select class='ss' onchange='chE("+pi+",this.value)'>"+oo+"</select>");
-  } else if(p.id==="af"||p.id==="d360"){
+  } else if(p.id==="af"){
+    if(afFlexHas()){
+      var list=afFlexList();
+      for(var u=0;u<list.length;u++) r+=afUseCaseRow(list[u]);
+    }
+    r+=flexCalcCta(p.id);
+  } else if(p.id==="d360"){
+    if(d360FlexHas()){
+      var dList=d360FlexList();
+      for(var d=0;d<dList.length;d++) r+=afUseCaseRow(dList[d],"d360");
+    }
     r+=flexCalcCta(p.id);
   }
   return "<div class='pc-cfg'>"+r+"</div>";
@@ -1057,14 +1101,14 @@ function rEstimate(){
   // in each row's detail line, so the table does not grow a third column.
   var rows=sl.map(sr);
   if(hAF)rows.push("<div class='srow'><div class='srow-l'><img class='prod-ico' src='../assets/product-icons/agentforce.svg' alt='' aria-hidden='true'><div><div class='srow-n'>Agentforce</div><div class='srow-d'>"+af.det+" &middot; "+S.afI+" daily interactions</div>"+learnMore("af","Agentforce",false)+"</div></div>"+priceStack(isAnnual()?afA:afMo,null,true)+"</div>");
-  if(hD3)rows.push("<div class='srow'><div class='srow-l'><img class='prod-ico' src='../assets/product-icons/data-cloud.svg' alt='' aria-hidden='true'><div><div class='srow-n'>Data 360</div><div class='srow-d'>"+d3.det+" &middot; "+fmtK(S.d3P*10000)+" profiles &middot; "+d3.t.lb+(d3sv>0?" <span style='color:var(--color-on-surface-success,#2E844A);font-weight:var(--font-weight-bold, 700)'>&#8595; Saving ~$"+fmt(d3sv)+"/yr vs list</span>":"")+"</div>"+learnMore("d360","Data 360",false)+"</div></div>"+priceStack(isAnnual()?d3A:d3Mo,null,true)+"</div>");
+  if(hD3)rows.push("<div class='srow'><div class='srow-l'><img class='prod-ico' src='../assets/product-icons/data-cloud.svg' alt='' aria-hidden='true'><div><div class='srow-n'>Data 360</div><div class='srow-d'>"+d3.det+" &middot; "+fmtK(S.d3P*10000)+" profiles &middot; "+d3.t.lb+(d3sv>0?" <span style='color:var(--color-on-surface-success,#2E844A);font-weight:var(--font-weight-bold, 700)'>&#8595; Saving $"+fmt(d3sv)+"/yr vs list</span>":"")+"</div>"+learnMore("d360","Data 360",false)+"</div></div>"+priceStack(isAnnual()?d3A:d3Mo,null,true)+"</div>");
   if(!rows.length){
     h+="<div class='warn'>No products selected yet. Go back to configure your bundle.</div>";
   } else {
     h+="<div class='sbox'>"
       +"<div class='shdr'><div><div class='shdr-nm'>Your Salesforce products</div><div class='shdr-sub'>Salesforce List Pricing</div></div></div>";
     if(totShow>0){
-      h+="<div class='gt'><div><div class='gt-l'>Total estimated "+(isAnnual()?"annual":"monthly")+" investment</div><div class='gt-s'>List pricing &middot; "+bmNm+" &middot; Discounts not yet applied"+(d3sv>0?" &middot; incl. ~$"+fmt(d3sv)+" D360 volume saving":"")+"</div></div>"
+      h+="<div class='gt'><div><div class='gt-l'>Total estimated "+(isAnnual()?"annual":"monthly")+" investment</div><div class='gt-s'>List pricing &middot; "+bmNm+" &middot; Discounts not yet applied"+(d3sv>0?" &middot; incl. $"+fmt(d3sv)+" D360 volume saving":"")+"</div></div>"
         +"<div class='gt-figs'>"+priceStack(totShow,null,true)+"</div></div>";
     }
     h+=rows.join("")+"</div>";
@@ -1072,7 +1116,7 @@ function rEstimate(){
   var anyOn=PRODS.some(function(p){return S.cfg[p.id]&&S.cfg[p.id].on;});
   h+="<div class='foot'>"
     +btnBack("render(4)","Back to Purchase options")
-    +footPrimary(shareCtaHtml(anyOn),true,true)
+    +footPrimary(shareCtaHtml(anyOn),false,true)
     +"</div>"
     +"<div class='legal'>Powered by Agentforce &middot; research-informed indicative pricing<br>Indicative estimate at list pricing. Actual cost will vary based on negotiated discounts. Validate with your Salesforce Account Executive before budgeting.</div>";
   return h;
@@ -1213,6 +1257,11 @@ function showWhy(btn){
     whyUi.pinEye=false;
   }
   whyUi.eye=btn;
+  var popEl=document.getElementById("why-pop");
+  if(popEl){
+    if(hideKicker) popEl.classList.add("why-pop--bm");
+    else popEl.classList.remove("why-pop--bm");
+  }
   var title=document.getElementById("why-pop-title");
   var kicker=document.querySelector("#why-pop .why-pop__kicker");
   if(title) title.textContent=titleText;

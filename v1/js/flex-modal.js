@@ -3,18 +3,26 @@
    Plain script (no ES module) so estimator/index.html can load it
    from disk. Both flavours share one shell; only the title + cards
    swap. openFlexModal(kind) is global for inline onclick in estimator.js.
-   Agentforce Configure opens Step 2; Data 360 Configure stays a no-op.
+   Agentforce and Data 360 Configure both open Step 2.
    ══════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
   var LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+  var STEP1_SUB = "To estimate your Flex Credits, add your use cases and configure each one based on your business needs.";
+  var STEP2_SUB = "Review this use case and adjust the volume inputs to estimate Flex Credits for your team. Totals update as you type.";
 
   var DEFAULT_USERS = 10;
   var DEFAULT_QUERIES = 45;
   var REF_CREDITS = 305200;
   var REF_PRICE = 1500;
   var REF_UNITS = DEFAULT_USERS * DEFAULT_QUERIES;
+
+  var D360_DEFAULT_RUNS = 550;
+  var D360_DEFAULT_METRICS = 25;
+  var D360_REF_CREDITS = 1300;
+  var D360_REF_PRICE = 6.3;
+  var D360_REF_UNITS = D360_DEFAULT_RUNS * D360_DEFAULT_METRICS;
 
   var CATALOG = {
     af: {
@@ -35,14 +43,14 @@
     },
     d360: {
       title: "Data 360 Use Cases",
+      configureTitle: "Configure your Use Case",
       chevron: false,
       cards: [
-        { nm: "Segment & Target Audiences", ds: LOREM, rec: true },
-        { nm: "Surface a Unified view of my Customer", ds: LOREM, rec: true },
-        { nm: "Unified Reporting & Analytics", ds: LOREM },
-        { nm: "Automate Workflows for my teams", ds: LOREM },
-        { nm: "Power AI search experiences", ds: LOREM },
-        { nm: "Power Sub-second Real Time Web experiences", ds: LOREM }
+        { nm: "Automate Workflows for My Teams", ds: "Trigger and enrich your process automation workflows in real-time based on unified data changes to eliminate manual tasks and accelerate cross-functional business processes at scale" },
+        { nm: "Real-Time Web Experiences", ds: "Deliver instant web personalization by adapting content based on real-time behavior. Enhance engagement and conversion rates with seamless, consistent experiences across every customer session" },
+        { nm: "Segment & Target Audiences", ds: "With Data 360, marketers can build dynamic, high-value segments using unified customer data and AI-powered insights to deliver more personalized, cross-channel engagement" },
+        { nm: "Surface a Unified View of my Customer", ds: "Unify fragmented data into a single, real-time customer profile. Empower your teams with a 360-degree view to deliver personalized engagement and consistent experiences across every touchpoint" },
+        { nm: "Unified Reporting & Analytics", ds: "Transform fragmented data into a single source of truth and empower every user to turn trusted data into actionable insights and accurate reports across your entire ecosystem" }
       ]
     }
   };
@@ -55,6 +63,8 @@
     cardId: null,
     users: DEFAULT_USERS,
     queries: DEFAULT_QUERIES,
+    runs: D360_DEFAULT_RUNS,
+    metrics: D360_DEFAULT_METRICS,
     sectionOpen: true
   };
 
@@ -81,9 +91,15 @@
     return null;
   }
 
+  function flexStoreKey() {
+    return state.kind === "d360" ? "d360Flex" : "afFlex";
+  }
+
   function savedCase(id) {
-    if (typeof S === "undefined" || !S.afFlex || !S.afFlex.cases) return null;
-    return S.afFlex.cases[id] || null;
+    if (typeof S === "undefined") return null;
+    var store = S[flexStoreKey()];
+    if (!store || !store.cases) return null;
+    return store.cases[id] || null;
   }
 
   function badges(card) {
@@ -96,16 +112,12 @@
 
   function cardHtml(card, withChevron) {
     var id = cardId(card);
-    var saved = state.kind === "af" && savedCase(id);
+    var saved = savedCase(id);
     var cta;
-    if (state.kind === "af") {
-      if (saved) {
-        cta = "<button type='button' class='sf-cta sf-cta--secondary sf-cta--medium' data-flex-action='configure' data-card-id='" + esc(id) + "' aria-label='Edit " + esc(card.nm) + "'>Edit</button>";
-      } else {
-        cta = "<button type='button' class='sf-cta sf-cta--primary sf-cta--medium' data-flex-action='configure' data-card-id='" + esc(id) + "' aria-label='Configure " + esc(card.nm) + "'>Configure</button>";
-      }
+    if (saved) {
+      cta = "<button type='button' class='sf-cta sf-cta--secondary sf-cta--medium' data-flex-action='configure' data-card-id='" + esc(id) + "' aria-label='Edit " + esc(card.nm) + "'>Edit</button>";
     } else {
-      cta = "<button type='button' class='sf-cta sf-cta--primary sf-cta--medium' aria-label='Configure " + esc(card.nm) + "'>Configure</button>";
+      cta = "<button type='button' class='sf-cta sf-cta--primary sf-cta--medium' data-flex-action='configure' data-card-id='" + esc(id) + "' aria-label='Configure " + esc(card.nm) + "'>Configure</button>";
     }
     return "<article class='flex-modal__card' role='listitem' data-card-id='" + esc(id) + "'>"
       + (withChevron ? "<i class='icon icon--chevrondown flex-modal__card-chevron' aria-hidden='true'></i>" : "")
@@ -120,9 +132,18 @@
       + "</article>";
   }
 
-  function compute(users, queries) {
-    var u = Math.max(0, Number(users) || 0);
-    var q = Math.max(0, Number(queries) || 0);
+  function compute() {
+    if (state.kind === "d360") {
+      var runs = Math.max(0, Number(state.runs) || 0);
+      var metrics = Math.max(0, Number(state.metrics) || 0);
+      var dUnits = runs * metrics;
+      return {
+        credits: Math.round(dUnits * (D360_REF_CREDITS / D360_REF_UNITS)),
+        price: dUnits * (D360_REF_PRICE / D360_REF_UNITS)
+      };
+    }
+    var u = Math.max(0, Number(state.users) || 0);
+    var q = Math.max(0, Number(state.queries) || 0);
     var units = u * q;
     return {
       credits: Math.round(units * (REF_CREDITS / REF_UNITS)),
@@ -132,13 +153,15 @@
 
   function fmtCompact(n) {
     if (!n) return "0";
-    if (n >= 1000) {
+    if (Math.abs(n) >= 1000) {
       var k = Math.round((n / 1000) * 10) / 10;
       var s = k.toFixed(1);
       if (s.slice(-2) === ".0") s = s.slice(0, -2);
       return s + "k";
     }
-    return String(Math.round(n));
+    var r = Math.round(n * 10) / 10;
+    if (Math.abs(r - Math.round(r)) < 1e-9) return String(Math.round(r));
+    return r.toFixed(1);
   }
 
   function fmtPriceDisp(n) {
@@ -167,25 +190,8 @@
       + "</div>";
   }
 
-  function configureHtml() {
-    var card = findCard(state.cardId);
-    if (!card) return "";
-    var m = compute(state.users, state.queries);
-    var open = state.sectionOpen !== false;
-    var emp = card.emp
-      ? "<span class='flex-modal__badge flex-modal__badge--emp'>Employee Facing</span>"
-      : (card.cust ? "<span class='flex-modal__badge flex-modal__badge--cust'>Customer Facing</span>" : "");
-    return "<div class='flex-cfg'>"
-      + "<article class='flex-cfg__card'>"
-      + "<header class='flex-cfg__head'>"
-      + "<div class='flex-cfg__head-l'>"
-      + "<div class='flex-cfg__name-row'><h3 class='flex-cfg__name'>" + esc(card.nm) + "</h3>" + emp + "</div>"
-      + "<p class='flex-cfg__caption'>Calculation for the first year</p>"
-      + "</div>"
-      + metricPair(m.credits, m.price, "on-fill")
-      + "</header>"
-      + "<div class='flex-cfg__body'>"
-      + "<button type='button' class='flex-cfg__section' data-flex-action='toggle-section' aria-expanded='" + (open ? "true" : "false") + "'>"
+  function afFieldsHtml(m, open) {
+    return "<button type='button' class='flex-cfg__section' data-flex-action='toggle-section' aria-expanded='" + (open ? "true" : "false") + "'>"
       + "<i class='icon icon--chevrondown flex-cfg__section-chevron" + (open ? " is-open" : "") + "' aria-hidden='true'></i>"
       + "<span class='flex-cfg__section-title'>Global Search Queries</span>"
       + metricPair(m.credits, m.price, "on-surface")
@@ -199,7 +205,46 @@
       + "<label class='flex-cfg__label' for='flex-cfg-queries'>How many Global Search Queries does an average user do per month? Assume 20 working days per month</label>"
       + "<input class='flex-cfg__input' id='flex-cfg-queries' type='number' min='0' step='1' value='" + esc(state.queries) + "' data-flex-field='queries' aria-label='Global Search Queries per user per month'>"
       + "</div>"
+      + "</div>";
+  }
+
+  function d360FieldsHtml() {
+    return "<div class='flex-cfg__fields'>"
+      + "<div class='flex-cfg__row'>"
+      + "<label class='flex-cfg__label' for='flex-cfg-runs'>On average, how many times per day would such a workflow run?</label>"
+      + "<input class='flex-cfg__input' id='flex-cfg-runs' type='number' min='0' step='1' value='" + esc(state.runs) + "' data-flex-field='runs' aria-label='Workflow runs per day'>"
       + "</div>"
+      + "<div class='flex-cfg__row'>"
+      + "<div class='flex-cfg__copy'>"
+      + "<label class='flex-cfg__label' for='flex-cfg-metrics'>How many calculated metrics will your automations require?</label>"
+      + "<p class='flex-cfg__hint'>Automation flows can incorporate calculated metrics that you define in Data 360. For example, a customer satisfaction score has fallen by 30%, automatically triggering outreach.</p>"
+      + "</div>"
+      + "<input class='flex-cfg__input' id='flex-cfg-metrics' type='number' min='0' step='1' value='" + esc(state.metrics) + "' data-flex-field='metrics' aria-label='Calculated metrics required'>"
+      + "</div>"
+      + "</div>";
+  }
+
+  function configureHtml() {
+    var card = findCard(state.cardId);
+    if (!card) return "";
+    var m = compute();
+    var open = state.sectionOpen !== false;
+    var emp = card.emp
+      ? "<span class='flex-modal__badge flex-modal__badge--emp'>Employee Facing</span>"
+      : (card.cust ? "<span class='flex-modal__badge flex-modal__badge--cust'>Customer Facing</span>" : "");
+    var bodyClass = state.kind === "d360" ? "flex-cfg__body flex-cfg__body--plain" : "flex-cfg__body";
+    var fields = state.kind === "d360" ? d360FieldsHtml() : afFieldsHtml(m, open);
+    return "<div class='flex-cfg'>"
+      + "<article class='flex-cfg__card'>"
+      + "<header class='flex-cfg__head'>"
+      + "<div class='flex-cfg__head-l'>"
+      + "<div class='flex-cfg__name-row'><h3 class='flex-cfg__name'>" + esc(card.nm) + "</h3>" + emp + "</div>"
+      + "<p class='flex-cfg__caption'>Calculation for the first year</p>"
+      + "</div>"
+      + metricPair(m.credits, m.price, "on-fill")
+      + "</header>"
+      + "<div class='" + bodyClass + "'>"
+      + fields
       + "</div>"
       + "<footer class='flex-cfg__foot'>"
       + "<div class='flex-cfg__total'>Total</div>"
@@ -220,7 +265,7 @@
     var title = document.getElementById("flex-modal-title");
     var steps = document.getElementById("flex-modal-steps");
     var sub = document.getElementById("flex-modal-sub");
-    var configuring = state.step === 2 && state.kind === "af";
+    var configuring = state.step === 2;
     if (dialog) {
       if (configuring) dialog.classList.add("flex-modal--configure");
       else dialog.classList.remove("flex-modal--configure");
@@ -228,8 +273,8 @@
     if (title) title.textContent = configuring ? data.configureTitle : data.title;
     if (steps) steps.innerHTML = stepsHtml();
     if (sub) {
-      if (configuring) sub.setAttribute("hidden", "");
-      else sub.removeAttribute("hidden");
+      sub.removeAttribute("hidden");
+      sub.textContent = configuring ? STEP2_SUB : STEP1_SUB;
     }
   }
 
@@ -237,7 +282,7 @@
     var stage = document.getElementById("flex-modal-stage");
     if (!stage) return;
     paintChrome();
-    if (state.step === 2 && state.kind === "af") {
+    if (state.step === 2) {
       stage.innerHTML = configureHtml();
     } else {
       stage.innerHTML = listHtml();
@@ -246,7 +291,7 @@
   }
 
   function refreshCfgMetrics() {
-    var m = compute(state.users, state.queries);
+    var m = compute();
     var cred = fmtCompact(m.credits);
     var price = fmtPriceDisp(m.price);
     var creds = document.querySelectorAll("#flex-modal-stage [data-flex-credits]");
@@ -268,26 +313,40 @@
     var saved = savedCase(id);
     state.step = 2;
     state.cardId = id;
-    state.users = saved ? saved.users : DEFAULT_USERS;
-    state.queries = saved ? saved.queries : DEFAULT_QUERIES;
+    if (state.kind === "d360") {
+      state.runs = saved ? saved.runs : D360_DEFAULT_RUNS;
+      state.metrics = saved ? saved.metrics : D360_DEFAULT_METRICS;
+    } else {
+      state.users = saved ? saved.users : DEFAULT_USERS;
+      state.queries = saved ? saved.queries : DEFAULT_QUERIES;
+    }
     state.sectionOpen = true;
     renderStage();
-    var input = document.getElementById("flex-cfg-users");
+    var input = document.getElementById(state.kind === "d360" ? "flex-cfg-runs" : "flex-cfg-users");
     if (input) input.focus();
   }
 
   function persistCase() {
     if (typeof S === "undefined" || !state.cardId) return;
-    var m = compute(state.users, state.queries);
-    if (!S.afFlex) S.afFlex = { cases: {} };
-    if (!S.afFlex.cases) S.afFlex.cases = {};
-    S.afFlex.cases[state.cardId] = {
-      users: Number(state.users) || 0,
-      queries: Number(state.queries) || 0,
+    var m = compute();
+    var key = flexStoreKey();
+    if (!S[key]) S[key] = { cases: {} };
+    if (!S[key].cases) S[key].cases = {};
+    var card = findCard(state.cardId);
+    var rec = {
+      nm: card ? card.nm : state.cardId,
       credits: m.credits,
-      price: Math.round(m.price)
+      price: Math.round(m.price * 10) / 10
     };
-    if (typeof syncFlexProductCard === "function") syncFlexProductCard();
+    if (state.kind === "d360") {
+      rec.runs = Number(state.runs) || 0;
+      rec.metrics = Number(state.metrics) || 0;
+    } else {
+      rec.users = Number(state.users) || 0;
+      rec.queries = Number(state.queries) || 0;
+      rec.price = Math.round(m.price);
+    }
+    S[key].cases[state.cardId] = rec;
   }
 
   function onRootClick(e) {
@@ -295,13 +354,12 @@
     if (!t || !state.open) return;
     var act = t.getAttribute("data-flex-action");
     if (act === "configure") {
-      if (state.kind !== "af") return;
       e.preventDefault();
       showStep2(t.getAttribute("data-card-id"));
     } else if (act === "add") {
       e.preventDefault();
       persistCase();
-      showStep1();
+      closeFlexModal();
     } else if (act === "another") {
       e.preventDefault();
       showStep1();
@@ -375,7 +433,7 @@
     root.addEventListener("input", onRootInput);
   }
 
-  function openFlexModal(kind, trigger) {
+  function openFlexModal(kind, trigger, cardId) {
     var data = CATALOG[kind];
     if (!data) return;
     ensure();
@@ -386,17 +444,22 @@
     state.sectionOpen = true;
     state.trigger = trigger || document.activeElement;
     state.open = true;
-    renderStage();
+    if (cardId) showStep2(cardId);
+    else renderStage();
     var root = document.getElementById("flex-modal-root");
     root.hidden = false;
     document.body.classList.add("flex-modal-open");
     document.addEventListener("keydown", onKey);
-    document.getElementById("flex-modal-close").focus();
+    var focusEl = document.getElementById("flex-cfg-users")
+      || document.getElementById("flex-cfg-runs")
+      || document.getElementById("flex-modal-close");
+    if (focusEl) focusEl.focus();
   }
 
   function closeFlexModal(silent) {
     if (!state.open) return;
     var trigger = state.trigger;
+    var kind = state.kind;
     state.open = false;
     state.kind = null;
     state.trigger = null;
@@ -407,9 +470,16 @@
     document.body.classList.remove("flex-modal-open");
     document.removeEventListener("keydown", onKey);
     if (typeof syncFlexProductCard === "function") syncFlexProductCard();
-    if (trigger && silent !== true && typeof trigger.focus === "function") trigger.focus();
+    var focusEl = trigger;
+    if (!focusEl || typeof focusEl.focus !== "function" || (focusEl.isConnected === false)) {
+      var sel = kind === "d360"
+        ? ".pc.on .pc-flex-cta button[onclick*=\"d360\"]"
+        : ".pc.on .pc-flex-cta button[onclick*=\"af\"]";
+      focusEl = document.querySelector(sel) || document.querySelector(".pc.on .pc-flex-cta button");
+    }
+    if (focusEl && silent !== true && typeof focusEl.focus === "function") focusEl.focus();
   }
 
-  window.openFlexModal = function (kind, trigger) { openFlexModal(kind, trigger); };
+  window.openFlexModal = function (kind, trigger, cardId) { openFlexModal(kind, trigger, cardId); };
   window.closeFlexModal = function () { closeFlexModal(); };
 })();
