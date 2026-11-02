@@ -320,12 +320,35 @@ var S={
   afI:50,afC:"standard",afM:"flex",
   // Data 360 keeps its existing defaults (pre-selected, not gated).
   d3P:10,d3S:"few",d3U:"segmentation",
-  afEst:null,d3Est:null
+  afEst:null,d3Est:null,
+  // Flex-credit modal estimate (Agentforce). Survives modal close; not URL-persisted.
+  afFlex:null
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────
 function fmt(n){return Math.round(n).toLocaleString();}
 function fmtK(n){return n>=1e6?(n/1e6).toFixed(1)+"M":n>=1000?Math.round(n/1000)+"K":String(n);}
+function fmtFlexEst(n){
+  if(n>=1000){
+    var k=Math.round((n/1000)*10)/10;
+    var s=k.toFixed(1);
+    if(s.slice(-2)===".0") s=s.slice(0,-2);
+    return s+"k";
+  }
+  return fmt(n);
+}
+function afFlexHas(){
+  var c=S.afFlex&&S.afFlex.cases;
+  if(!c) return false;
+  for(var k in c) if(Object.prototype.hasOwnProperty.call(c,k)) return true;
+  return false;
+}
+function afFlexTotal(){
+  var t=0,c=S.afFlex&&S.afFlex.cases;
+  if(!c) return 0;
+  for(var k in c) if(Object.prototype.hasOwnProperty.call(c,k)) t+=c[k].price||0;
+  return t;
+}
 function ds(){return S.szi!==null?SIZES[S.szi][2]:10;}
 function hasFlexSelected(){
   return PRODS.some(function(p){return p.tp==="flex"&&S.cfg[p.id]&&S.cfg[p.id].on;});
@@ -383,10 +406,10 @@ function periodToggleHtml(center){
     +"<button type='button' class='period-toggle__btn"+(ann?" is-on":"")+"' role='radio' aria-checked='"+(ann?"true":"false")+"' onclick='setPeriod(\"ann\")'>Annual</button>"
     +"</div></div>";
 }
-function priceStack(amount,id,approx){
+function priceStack(amount,id,approx,exact){
   return "<div class='st'>"
-    +"<div class='stk-start'>Starting at</div>"
-    +"<div class='stv'"+(id?" id='"+id+"'":"")+">"+(approx?"~$":"$")+fmt(amount)+"</div>"
+    +(exact?"":"<div class='stk-start'>Starting at</div>")
+    +"<div class='stv'"+(id?" id='"+id+"'":"")+">"+(approx?"~$":"$")+(exact?fmtFlexEst(amount):fmt(amount))+"</div>"
     +"<div class='stk'>"+periodLabel()+"</div>"
     +"</div>";
 }
@@ -642,15 +665,34 @@ function liveSum(pi){
   var p=PRODS[pi];var cfg=S.cfg[p.id];if(!cfg)return;
   var pp=prodPrice(p,cfg);if(!pp)return;
   var el=document.getElementById("pp"+pi);
-  if(el)el.textContent="$"+fmt(periodAmt(pp));
+  if(el)el.textContent="$"+(pp.exact?fmtFlexEst(periodAmt(pp)):fmt(periodAmt(pp)));
 }
 // Per-card Monthly/Annual price. Flex uses the unchanged engine (calcAF /
 // calcD3); seat/org use list math. Returns null for "contact sales".
+// Agentforce prefers the Flex Credit modal estimate once a use case is added.
 function prodPrice(p,cfg){
   if(p.tp==="seat"){var pr=(p.pr||[])[cfg.ei]||0;var mo=pr*(cfg.seats||ds());return{mo:mo,ann:mo*12};}
   if(p.tp==="org"){var pr2=(p.pr||[])[cfg.ei]||0;return pr2>0?{mo:pr2,ann:pr2*12}:null;}
-  if(p.tp==="flex"){var e=p.id==="af"?calcAF():calcD3();return{mo:e.mo,ann:e.yr};}
+  if(p.tp==="flex"){
+    if(p.id==="af" && afFlexHas()){
+      var tot=afFlexTotal();
+      return {mo:tot,ann:tot,exact:true};
+    }
+    var e=p.id==="af"?calcAF():calcD3();
+    return{mo:e.mo,ann:e.yr};
+  }
   return null; // custom / contact-sales
+}
+function syncFlexProductCard(){
+  var pi=-1;
+  for(var i=0;i<PRODS.length;i++) if(PRODS[i].id==="af"){pi=i;break;}
+  if(pi<0) return;
+  var p=PRODS[pi];
+  var cfg=S.cfg[p.id];
+  if(!cfg||!cfg.on) return;
+  var el=document.getElementById("pp"+pi);
+  var sum=el?el.closest(".pc-sum"):null;
+  if(sum) sum.outerHTML=pcSum(pi,p,cfg);
 }
 
 // ── Product card (Configure step) ────────────────────────────────
@@ -662,7 +704,7 @@ function pcRow(label,control){return "<div class='pc-row'><div class='pc-row-l'>
 function pcSum(pi,p,cfg){
   var pp=prodPrice(p,cfg);
   if(!pp)return "<div class='pc-sum pc-sum--cs'>Contact sales</div>";
-  return "<div class='pc-sum'>"+priceStack(periodAmt(pp),"pp"+pi)+"</div>";
+  return "<div class='pc-sum'>"+priceStack(periodAmt(pp),"pp"+pi,false,!!pp.exact)+"</div>";
 }
 function flexCalcNote(){
   return "<div class='pc-flex-note'><p>The numbers are based on industry benchmarks. Please use <a class='learn-link' href='../calculator/index.html' target='_blank' rel='noopener'>FlexCreditCalculator</a> to personalize your estimation.</p></div>";

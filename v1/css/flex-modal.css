@@ -28,6 +28,7 @@ body.flex-modal-open { overflow: hidden; }
 }
 
 .flex-modal {
+  --flex-modal-col: 640px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -114,140 +115,78 @@ body.flex-modal-open { overflow: hidden; }
 
 .flex-modal__sub {
   margin: 0;
-  max-width: 640px;
+  width: 100%;
+  max-width: var(--flex-modal-col, 640px);
   font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
   font-size: var(--font-size-16, 16px);
   line-height: var(--font-line-height-normal, 1.5);
   color: var(--color-on-surface-1, #001E5B);
 }
+.flex-modal__sub[hidden] { display: none !important; }
 
 .flex-modal__main {
   position: relative;
   z-index: 1;
   flex: 1 1 auto;
   min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(240px, 331px) minmax(0, 1fr);
-  gap: var(--space-content-lg, 24px);
-  padding: 0 var(--space-content-xl, 32px) var(--space-content-md, 16px);
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--space-content-3xl, 64px) var(--space-content-md, 16px);
   align-items: stretch;
 }
 
-.flex-modal__aside {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-content-md, 16px);
-  padding-top: var(--space-interactive-xs, 8px);
-}
-
-.flex-modal__search {
-  display: flex;
-  align-items: center;
-  gap: var(--space-interactive-xs, 8px);
-  height: 44px;
-  padding: 0 var(--space-content-md, 16px);
-  background: var(--color-background-1, #FFFFFF);
-  border: 1.5px solid var(--color-border-neutral, #747474);
-  border-radius: var(--radius-button, 9999px);
-}
-.flex-modal__search .icon {
-  width: 16px;
-  height: 16px;
-  color: var(--color-on-surface-4, #747474);
-}
-.flex-modal__search input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: none;
-  background: transparent;
-  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
-  font-size: var(--font-size-14, 14px);
-  color: var(--color-on-surface-1, #001E5B);
-}
-.flex-modal__search input::placeholder { color: var(--color-on-surface-4, #747474); }
-.flex-modal__search:focus-within {
-  border-color: var(--color-border-focus, #066AFE);
-  box-shadow: 0 0 0 3px rgba(6, 106, 254, 0.16);
-}
-
-.flex-modal__filter-label {
-  margin: var(--space-content-sm, 12px) 0 0;
-  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
-  font-weight: var(--font-style-display-8-weight, 600);
-  font-size: var(--font-size-20, 20px);
-  color: var(--color-on-surface-1, #001E5B);
-}
-
-.flex-modal__filter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: var(--space-interactive-sm, 12px) 0;
-  border: 0;
-  border-bottom: 1px solid var(--color-neutral-90, #E5E5E5);
-  background: transparent;
-  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
-  font-size: var(--font-size-16, 16px);
-  font-weight: var(--font-weight-bold, 700);
-  color: var(--color-on-surface-1, #001E5B);
-  cursor: pointer;
-  text-align: left;
-}
-.flex-modal__filter .icon {
-  width: 16px;
-  height: 16px;
-  color: var(--color-on-surface-1, #001E5B);
-}
-.flex-modal__filter:focus-visible {
-  outline: 2px solid var(--color-border-focus, #066AFE);
-  outline-offset: 2px;
-}
-
-/* Card column — the only scrolling region. overflow-y: scroll keeps a
-   visible gutter (not overlay/auto-hiding). Head stays put above. */
-.flex-modal__list {
+.flex-modal__stage {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: scroll !important;
   overscroll-behavior: contain;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-content-md, 16px);
-  padding: var(--space-content-md, 16px);
-  scrollbar-gutter: stable;
+  padding: var(--space-content-md, 16px) 0;
   scrollbar-width: auto;
   scrollbar-color: var(--color-neutral-50, #747474) var(--color-cloud-blue-95, #EAF5FE);
 }
-.flex-modal__list::-webkit-scrollbar {
+.flex-modal__stage::-webkit-scrollbar {
   -webkit-appearance: none;
   appearance: none;
   width: var(--space-content-sm, 12px);
   height: var(--space-content-sm, 12px);
   background: var(--color-cloud-blue-95, #EAF5FE);
 }
-.flex-modal__list::-webkit-scrollbar-track {
+.flex-modal__stage::-webkit-scrollbar-track {
   background: var(--color-cloud-blue-95, #EAF5FE);
   border-radius: var(--radius-3, 8px);
 }
-.flex-modal__list::-webkit-scrollbar-thumb {
+.flex-modal__stage::-webkit-scrollbar-thumb {
   background: var(--color-on-surface-4, #747474);
   border-radius: var(--radius-3, 8px);
   border: 2px solid var(--color-cloud-blue-95, #EAF5FE);
   min-height: var(--space-content-2xl, 48px);
 }
-.flex-modal__list::-webkit-scrollbar-thumb:hover {
+.flex-modal__stage::-webkit-scrollbar-thumb:hover {
   background: var(--color-on-surface-3, #444444);
 }
 
+/* Card column — left/right edges match the intro text. Incomplete rows
+   (if a wrap ever happens) stay centered via justify-content. */
+.flex-modal__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  gap: var(--space-content-md, 16px);
+  width: 100%;
+  max-width: var(--flex-modal-col, 640px);
+}
 .flex-modal__card {
   display: flex;
   align-items: flex-start;
+  flex: 1 1 100%;
+  width: 100%;
   gap: var(--space-content-md, 16px);
   padding: var(--space-content-md, 16px) var(--space-content-lg, 24px);
   background: var(--color-background-1, #FFFFFF);
@@ -285,6 +224,9 @@ body.flex-modal-open { overflow: hidden; }
   color: var(--color-on-surface-2, #181818);
 }
 .flex-modal__card .sf-cta { flex-shrink: 0; align-self: center; }
+.flex-modal__card .sf-cta--secondary {
+  background: var(--color-background-1, #FFFFFF);
+}
 
 .flex-modal__badge {
   display: inline-flex;
@@ -325,29 +267,224 @@ body.flex-modal-open { overflow: hidden; }
   color: var(--color-on-surface-4, #747474);
 }
 
+/* ── Step 2: Configure ─────────────────────────────────────────── */
+.flex-cfg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-content-lg, 24px);
+  width: 100%;
+  max-width: 960px;
+}
+.flex-cfg__card {
+  overflow: hidden;
+  background: var(--color-background-1, #FFFFFF);
+  border-radius: var(--radius-hero-card, 16px);
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+}
+.flex-cfg__head,
+.flex-cfg__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-content-md, 16px);
+  padding: var(--space-content-md, 16px) var(--space-content-lg, 24px);
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+.flex-cfg__head-l { min-width: 0; text-align: left; }
+.flex-cfg__name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-interactive-xs, 8px);
+}
+.flex-cfg__name {
+  margin: 0;
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-8-weight, 600);
+  font-size: var(--font-size-20, 20px);
+  line-height: 1.3;
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+.flex-cfg__caption {
+  margin: var(--space-interactive-2xs, 4px) 0 0;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  line-height: 1.5;
+  color: var(--color-cloud-blue-95, #EAF5FE);
+}
+.flex-cfg__metrics {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-content-xl, 32px);
+  flex-shrink: 0;
+}
+.flex-cfg__metric { text-align: right; }
+.flex-cfg__metric-v {
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-20, 20px);
+  line-height: 1.2;
+}
+.flex-cfg__metric-l {
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  line-height: 1.4;
+}
+.flex-cfg__metrics--on-fill .flex-cfg__metric-v,
+.flex-cfg__metrics--on-fill .flex-cfg__metric-l {
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+.flex-cfg__metrics--on-surface .flex-cfg__metric-v {
+  color: var(--color-fill-accent, #066AFE);
+  font-size: var(--font-size-16, 16px);
+}
+.flex-cfg__metrics--on-surface .flex-cfg__metric-l {
+  color: var(--color-on-surface-4, #747474);
+}
+
+.flex-cfg__body {
+  padding: var(--space-content-md, 16px) var(--space-content-lg, 24px) var(--space-content-lg, 24px);
+  background: var(--color-background-1, #FFFFFF);
+}
+.flex-cfg__section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-interactive-xs, 8px);
+  width: 100%;
+  padding: var(--space-interactive-xs, 8px) 0 var(--space-content-md, 16px);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.flex-cfg__section:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+  border-radius: var(--radius-3, 8px);
+}
+.flex-cfg__section-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--color-on-surface-1, #001E5B);
+  flex-shrink: 0;
+  transform: rotate(0deg);
+}
+.flex-cfg__section-chevron.is-open { transform: rotate(180deg); }
+.flex-cfg__section-title {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-8-weight, 600);
+  font-size: var(--font-size-16, 16px);
+  line-height: 1.4;
+}
+.flex-cfg__section .flex-cfg__metrics { margin-left: auto; }
+
+.flex-cfg__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-content-lg, 24px);
+}
+.flex-cfg__fields[hidden] { display: none !important; }
+.flex-cfg__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-content-lg, 24px);
+  padding-top: var(--space-content-md, 16px);
+  border-top: 1px solid var(--color-neutral-90, #E5E5E5);
+}
+.flex-cfg__label {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  line-height: 1.5;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.flex-cfg__input {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 220px;
+  height: 48px;
+  padding: 0 var(--space-content-md, 16px);
+  border: 0;
+  border-radius: var(--radius-2, 12px);
+  background: var(--color-background-1, #FFFFFF);
+  box-shadow: 0 0 0 4px var(--color-cloud-blue-95, #EAF5FE), 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  font-weight: var(--font-weight-bold, 700);
+  line-height: 1.5;
+  color: var(--color-on-surface-1, #001E5B);
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.flex-cfg__input::-webkit-outer-spin-button,
+.flex-cfg__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.flex-cfg__input:focus {
+  box-shadow: 0 0 0 4px var(--color-cloud-blue-80, #90D0FE), 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+}
+
+.flex-cfg__total {
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-8-weight, 600);
+  font-size: var(--font-size-16, 16px);
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+
+.flex-cfg__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-content-lg, 24px);
+}
+.flex-cfg__text-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: var(--font-weight-regular, 400);
+  line-height: 1.5;
+  color: var(--color-fill-accent, #066AFE);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.flex-cfg__text-link:hover { color: var(--color-fill-accent-hover, #022AC0); }
+.flex-cfg__text-link:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+  border-radius: var(--radius-4, 4px);
+}
+
 @media (max-width: 1023.98px) {
   .flex-modal {
     height: min(920px, calc(100vh - var(--space-content-lg, 24px)));
     border-radius: var(--space-content-xl, 32px);
   }
   .flex-modal__title { font-size: var(--font-size-32, 32px); }
-  .flex-modal__main {
-    grid-template-columns: 1fr;
-    gap: var(--space-content-sm, 12px);
-  }
-  .flex-modal__aside {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .flex-modal__search { width: 100%; }
-  .flex-modal__filter-label { margin: 0; }
-  .flex-modal__filter { width: auto; min-width: 160px; }
+  .flex-modal__main { padding-inline: var(--space-content-xl, 32px); }
 }
 @media (max-width: 767px) {
   .flex-modal-root { padding: var(--space-content-sm, 12px); }
   .flex-modal__head { padding-inline: var(--space-content-lg, 24px); }
   .flex-modal__title { font-size: var(--font-size-24, 24px); padding-inline: var(--space-content-lg, 24px); }
+  .flex-modal__main { padding-inline: var(--space-content-lg, 24px); }
   .flex-modal__card { flex-wrap: wrap; }
   .flex-modal__card .sf-cta { margin-left: auto; }
+  .flex-cfg__head,
+  .flex-cfg__foot,
+  .flex-cfg__row,
+  .flex-cfg__section {
+    flex-wrap: wrap;
+  }
+  .flex-cfg__input { width: 100%; }
 }
