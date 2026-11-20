@@ -1,12 +1,12 @@
 # Solution-Based Pricing — Prototype Handoff
 
 A static, front-end-only prototype for user testing of a **solutions-based
-pricing** experience for salesforce.com. It ships as **two versions behind a
+pricing** experience for salesforce.com. It ships as **three versions behind a
 selector**, for A/B-style testing.
 
 - **No build step, no dependencies, no server-side code, no environment
   variables.** Plain HTML/CSS/JS. Deploy by serving this folder as static files.
-- Total size ≈ **2.8 MB** (both versions + shared design-system assets).
+- Total size ≈ **3.4 MB** (three versions + shared design-system assets).
 - Background/strategy docs live one level up in the repo at `../../docs/`
   (`brief.md`, `decisions.md`, `references.md`) — context only, **not** part of
   the deployable.
@@ -41,10 +41,11 @@ Then open the site **root** (`/`) — that's the version selector.
 
 ```
 pricing-landing/                ← deploy root (serve THIS folder)
-├─ index.html                   ← ★ ENTRY POINT: version selector (V1 | V2)
+├─ index.html                   ← ★ ENTRY POINT: version selector (V1 | V2 | V3)
 ├─ HANDOFF.md                   ← this file
 ├─ v1/                          ← V1 prototype (flow ends at Configure)
-└─ v2/                          ← V2 prototype (full 5-step flow)
+├─ v2/                          ← V2 prototype (full 5-step flow)
+└─ v3/                          ← V3 prototype (Commercial Entry Point SPA)
 
 v1/ and v2/ are each a COMPLETE, self-contained copy of the prototype:
 
@@ -89,16 +90,18 @@ v2/
 
 | Route | File | What it is |
 |---|---|---|
-| `/` | `index.html` | **Selector.** Two cards → V1 / V2. Users land here first. |
+| `/` | `index.html` | **Selector.** Three cards → V1 / V2 / V3. Users land here first. |
 | `/v1/` | `v1/index.html` | **V1** landing → nav, Product/Industry, build flow. |
 | `/v2/` | `v2/index.html` | **V2** landing → the full experience. |
+| `/v3/` | `v3/index.html` | **V3** Commercial Entry Point SPA (hash routes from `#/`). |
 | build flow start | `{v1,v2}/solution/index.html` | The "solve" screen that opens the flow. |
 | wizard engine | `{v1,v2}/estimator/estimator.js` | Step order, breadcrumb, CTAs. |
 
-Each of the three `index.html` files opens with a `★ ENTRY POINT` banner comment
-so they're greppable (`grep -rn "ENTRY POINT"`). The `solution → estimator`
+Each version `index.html` opens with a `★ ENTRY POINT` banner comment
+so they're greppable (`grep -rn "ENTRY POINT"`). The V1/V2 `solution → estimator`
 handoff passes state purely via URL query string (`?g=<goal indices>&q=<text>`)
-— there is **no** localStorage/session/cookie state anywhere.
+— there is **no** localStorage/session/cookie state in V1 or V2. V3 keeps
+sessionStorage / localStorage as in the Romil reference (resume + saved estimates).
 
 ---
 
@@ -127,6 +130,23 @@ Verify anytime with: `diff -qr v1 v2`.
 > had been used — are **`estimator/estimator.js`** and **`solution/index.html`**.
 > Everything else (all CSS/JS/assets) is identical; the CTA change is a
 > label/action swap and the breadcrumb count is data-driven, so no CSS forked.
+
+---
+
+## V3 — Commercial Entry Point
+
+V3 is a self-contained hash-router SPA copied from
+`docs/prototype-Romil-11.20.26/prototype-v5/` (read-only reference). It does
+**not** share files with V1 or V2.
+
+Guided flow: **About you → Options → Customize → Next steps.** First screen
+is `v3/index.html` (`#/`). Other hashes: `#/explore`, `#/recommend`,
+`#/estimate`, `#/next`, `#/editions`, `#/account`, `#/seller`, and related
+account/compare/try/handoff routes. See `v3/HANDOFF.md`.
+
+On the Salesforce pricing landing (`{v1,v2}/index.html`), the **Solution-Based
+Pricing** card is the only landing-page change: it links to the version
+selector (`../index.html`) so testers can choose V1, V2, or V3.
 
 ---
 
@@ -196,7 +216,7 @@ icon glyph has its SVG present.
 - No redirects/rewrites needed — it's a real multi-page site (every link is a
   real file), so no SPA fallback required.
 - The selector (`/index.html`) pulls its brand font + logo from `v2/` (to avoid
-  triplicating fonts). Keep `v1/`, `v2/`, and `index.html` together as one unit.
+  triplicating fonts). Keep `v1/`, `v2/`, `v3/`, and `index.html` together as one unit.
 - Git lives at the **repo root one level up**; there is no `.git` inside this
   folder, so a zip of `pricing-landing/` stays clean.
 

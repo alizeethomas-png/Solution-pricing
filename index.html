@@ -3,9 +3,10 @@
 <head>
   <!-- ═══════════════════════════════════════════════════════════════════
        ★ ENTRY POINT — TOP-LEVEL SELECTOR (deploy root: /index.html)
-       The first page users land on. Two cards link to the two versions:
+       The first page users land on. Cards link to the three versions:
          • "V1 Prototype"  →  v1/index.html
          • "V2 Prototype"  →  v2/index.html
+         • "V3 Prototype"  →  v3/index.html
        Self-contained (inline styles); pulls brand font + logo from v2/.
        Full project map: HANDOFF.md (this same folder).
        ═══════════════════════════════════════════════════════════════════ -->
@@ -59,7 +60,7 @@
       justify-content: center;
       gap: 48px;
       padding: 64px 24px;
-      max-width: 960px;
+      max-width: 1180px;
       margin: 0 auto;
     }
 
@@ -99,10 +100,10 @@
       color: var(--body-gray);
     }
 
-    /* ── Two-up version cards ──────────────────────────────────────── */
+    /* ── Version cards ─────────────────────────────────────────────── */
     .chooser__grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
       width: 100%;
     }
@@ -207,6 +208,13 @@
         <h2 class="vcard__title">V2 Prototype</h2>
         <p class="vcard__body">The full five-step flow: Your business &rarr; Solutions &rarr; Select products &rarr; Purchase options &rarr; Estimate.</p>
         <span class="vcard__cta">Launch V2 <span aria-hidden="true">&rarr;</span></span>
+      </a>
+
+      <a class="vcard" href="v3/index.html">
+        <span class="vcard__kicker">Version 3</span>
+        <h2 class="vcard__title">V3 Prototype</h2>
+        <p class="vcard__body">Find my plan: About you &rarr; Options &rarr; Customize &rarr; Next steps. Existing customers can sign in to add seats or Flex Credits.</p>
+        <span class="vcard__cta">Launch V3 <span aria-hidden="true">&rarr;</span></span>
       </a>
     </div>
   </main>
