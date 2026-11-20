@@ -110,3 +110,20 @@
     });
   });
 })();
+
+/* ══════════════════════════════════════════════════════════════════
+   Ask Piper — same floating CTA as v1/v2 landing pages. Mounted once
+   so CEP screens match the rest of the v3 pricing flow.
+   ══════════════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+  if (document.getElementById("ask-piper")) return;
+  var a = document.createElement("a");
+  a.id = "ask-piper";
+  a.className = "sf-cta sf-cta--primary sf-cta--medium ask-piper";
+  a.href = "#";
+  a.setAttribute("aria-label", "Ask Piper");
+  a.innerHTML = "<i class='icon icon--sparkles' aria-hidden='true'></i> Ask Piper";
+  document.body.appendChild(a);
+})();
+

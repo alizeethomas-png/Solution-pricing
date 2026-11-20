@@ -62,41 +62,7 @@
        "Flex Credit Calculator" item points here (this page); on the other
        three it points to ./calculator/index.html (or ../calculator/…).
        ═══════════════════════════════════════════════════════════════════ -->
-  <nav class="sf-subnav" aria-label="Pricing sections">
-    <div class="sf-subnav__inner">
-      <a class="sf-subnav__title" href="../index.html">Pricing</a>
-      <a class="sf-subnav__link" href="../index.html">Overview</a>
-      <div class="sf-subnav__links">
-        <div class="sf-subnav__dropdown">
-          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-buy-menu">
-            Pricing By
-            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
-          </button>
-          <div class="sf-subnav__menu" id="pricing-buy-menu" role="menu">
-            <a class="sf-subnav__menu-item" role="menuitem" href="../product/index.html">Pricing by Product</a>
-            <a class="sf-subnav__menu-item" role="menuitem" href="../industry/index.html">Pricing by Industries</a>
-          </div>
-        </div>
-        <div class="sf-subnav__dropdown">
-          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-tools-menu">
-            Pricing Tools
-            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
-          </button>
-          <div class="sf-subnav__menu sf-subnav__menu--rich" id="pricing-tools-menu" role="menu">
-            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="./index.html" aria-current="page">
-              <span class="sf-subnav__menu-item-title">Flex Credit Calculator</span>
-              <span class="sf-subnav__menu-item-desc">Estimate how many Flex Credits you&rsquo;ll need and understand their potential cost.</span>
-            </a>
-            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../estimator/index.html">
-              <span class="sf-subnav__menu-item-title">Solution Estimator</span>
-              <span class="sf-subnav__menu-item-desc">Get guidance on which products can support your solution and estimate their cost.</span>
-            </a>
-          </div>
-        </div>
-        <a class="sf-subnav__link" href="../buying-models/index.html">Buying Models</a>
-      </div>
-    </div>
-  </nav>
+  <nav id="sf-subnav-host" class="sf-subnav" aria-label="Pricing sections" data-base=".." data-current="calculator"></nav>
 
   <!-- ═══════════════════════════════════════════════════════════════════
        CALCULATOR — "Before you start". Header + elevated selection panel
@@ -454,6 +420,7 @@
 
 </main>
 
+<script src="../js/pricing-subnav.js" defer></script>
 <script src="../js/nav.js" defer></script>
 <script src="../js/faq.js" defer></script>
 <script src="calculator.js" defer></script>

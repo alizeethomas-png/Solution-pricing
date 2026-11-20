@@ -13,7 +13,7 @@ console.log("Discovery and estimate");
 t("R02 no answers still returns non-personalized options", function () { var o = E.options({}); ok(o.options.length >= 2); eq(o.recommended, null); eq(o.personalized, false); });
 t("R03 FX-A recommends Pro (cheapest full coverage), not the most expensive", function () { eq(E.options({ size: "s1", goals: ["g_sales"] }).recommended, "pro"); });
 t("R03 FX-B flags complex SMB need", function () { var o = E.options({ size: "s1", goals: ["g_ai", "g_data"] }); ok(o.complex); eq(o.recommended, "core"); });
-t("R04 suggested companions are not priced until accepted", function () {
+t("R04 suggested add-ons are not priced until accepted", function () {
   var a = E.estimate({ ed: "core", seats: 10, accepted: {}, actions: 0 });
   var b = E.estimate({ ed: "core", seats: 10, accepted: { afaddon: 10 }, actions: 0 });
   eq(a.knownAnnual, 195 * 10 * 12); eq(b.knownAnnual, 195 * 10 * 12 + 125 * 10 * 12);
@@ -34,7 +34,13 @@ t("R08 seat change recalculates deterministically", function () { for (var n = 1
 t("R09 usage under included credits → no incremental charge", function () { var c = E.creditCalc(1000, 500000); eq(c.annual, 240000); eq(c.packs, 0); eq(c.cost, 0); });
 t("R09 usage over included credits → only incremental, rounded to 100K packs", function () { var c = E.creditCalc(5000, 500000); eq(c.incremental, 700000); eq(c.packs, 7); eq(c.cost, 3500); });
 t("R10 services never summed into total", function () { var e = E.estimate({ ed: "core", seats: 10, accepted: {}, goals: ["g_integrate"] }); eq(e.knownAnnual, 195 * 120); eq(e.services.band.id, "high"); });
-t("Incompatible companion is excluded and marks partial", function () { var e = E.estimate({ ed: "st", seats: 5, accepted: { d360: 5 } }); ok(e.lines[1].incompatible); ok(e.partial); eq(e.knownAnnual, 25 * 5 * 12); });
+t("Incompatible add-on is excluded and marks partial", function () { var e = E.estimate({ ed: "st", seats: 5, accepted: { d360: 5 } }); ok(e.lines[1].incompatible); ok(e.partial); eq(e.knownAnnual, 25 * 5 * 12); });
+t("Add-on unavailable on Pro is excluded from the total", function () {
+  var e = E.estimate({ ed: "pro", seats: 10, accepted: { afaddon: 10, d360: 5 } });
+  ok(e.lines.filter(function (l) { return l.id === "afaddon"; })[0].incompatible);
+  ok(e.lines.filter(function (l) { return l.id === "d360"; })[0].incompatible);
+  eq(e.knownAnnual, 100 * 10 * 12);
+});
 t("R11 PayGo blocked with Agentforce add-on; alternative offered", function () { var r = E.buyingModelCheck("payg", "core", { afaddon: 1 }, true); ok(!r.ok); eq(r.alternative, "Pre-purchase"); });
 t("R26 free text maps to controlled goals; unknown text not understood", function () { var r = E.suggestGoals("AI agent for order status and unify customer data"); ok(r.ids.indexOf("g_ai") >= 0 && r.ids.indexOf("g_data") >= 0); eq(E.suggestGoals("blue elephants").understood, false); });
 

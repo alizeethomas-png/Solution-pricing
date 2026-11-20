@@ -5,7 +5,7 @@
    Rules enforced here:
      • unknown price → amount null, total partial (never $0)      R07
      • included entitlements shown once, deducted first          R05/R09
-     • companions only priced when explicitly accepted            R04
+     • add-ons only priced when explicitly accepted               R04
      • services range never summed into the software total       R10
      • unsupported buying model → reason + alternative           R11
      • account fixture price beats public list for expansion     §7
@@ -43,7 +43,7 @@
     var m = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     var p = s.split("-"); return m[+p[1] - 1] + " " + (+p[2]) + ", " + p[0];
   }
-  var ED_ORDER = ["st", "pro", "core", "adv", "max"];
+  var ED_ORDER = ["st", "pro", "core", "svc_core", "adv", "svc_adv", "max"];
   function edRank(id) { return ED_ORDER.indexOf(id); }
 
   /* ── goal suggestion (R26: rules, reversible, no AI pricing) ──── */
@@ -108,7 +108,7 @@
     if (rec && sz && (sz.id === "s1" || sz.id === "s2")) {
       var r = byId(opts, rec);
       if (edRank(rec) >= 2) { complex = true; complexWhy.push("Your goals need a Sales Cloud edition, which is more than most small teams start with."); }
-      if (r.suggested.length >= 2) { complex = true; complexWhy.push("It also needs " + r.suggested.length + " companion products."); }
+      if (r.suggested.length >= 2) { complex = true; complexWhy.push("It also needs " + r.suggested.length + " add-ons."); }
     }
     return { options: opts, recommended: rec, personalized: goals.length > 0, seats: seats, complex: complex, complexWhy: complexWhy, salesLed: !!(sz && sz.salesLed) };
   }

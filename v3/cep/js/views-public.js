@@ -7,6 +7,65 @@
   var R = CEP.routes, A = CEP.act, I = CEP.inp;
   var STEPS = [["About you", "#/explore"], ["Options", "#/recommend"], ["Customize", "#/estimate"], ["Next steps", "#/next"]];
 
+  var ROW_TIPS = {
+    Price: "List price per user per month. The total below is for the number of users you entered, before taxes and add-ons.",
+    Billing: "Whether you can pay month to month, or only on an annual contract.",
+    "Flex Credits included": "Credits that come with the edition each year for AI and Data 360 usage. Changing edition does not stack unused credits.",
+    Included: "Capabilities that come with this edition. They are not charged again as add-ons.",
+    "Not included": "Limits of this edition, and things you would add separately or get by choosing a higher edition.",
+    Try: "A free trial for this edition, if one is offered.",
+    "Try first": "A free trial for this edition, if one is offered.",
+    Slack: "The Slack plan that comes with this edition.",
+    Limitations: "Limits of this edition, and things you would add separately or get by choosing a higher edition.",
+    "Goals covered": "How many of your selected goals this edition covers on its own, before any add-ons."
+  };
+  var FEATURE_TIPS = {
+    "Lead, account and opportunity management": "Track people, companies and deals in one CRM.",
+    "Basic case management": "Log and close simple customer support cases.",
+    "Email marketing": "Send email campaigns from the same CRM.",
+    "Slack Free": "Team chat with Slack’s free plan.",
+    "Everything in Starter": "Includes the Starter Suite capabilities, then adds more.",
+    "Forecasting and quoting": "See expected revenue and send quotes from the CRM.",
+    "Workflow automation": "Set rules so routine steps run without extra clicks.",
+    "Service with knowledge base": "Support cases plus a library of answers for your team.",
+    "Full Sales Cloud CRM": "Complete sales tools: pipeline, forecasting, quoting and more.",
+    "Built-in AI and 500K Flex Credits per org/year": "AI features plus 500,000 Flex Credits per org each year for agent actions and Data 360.",
+    "Slack Business+": "Paid Slack with more security and admin controls than Slack Free.",
+    "Tableau Next": "Analytics in Salesforce for exploring CRM data.",
+    "Premier Success": "A higher support tier than standard success plans.",
+    "Everything in Core": "Includes Sales Cloud Core capabilities, then adds more.",
+    "1M Flex Credits per org/year": "One million Flex Credits per org each year for AI and Data 360 usage.",
+    "Security suite": "Extra security tools, such as stronger monitoring and controls.",
+    "Full sandbox": "A full copy of your org for testing before you change production.",
+    "Everything in Advanced": "Includes Sales Cloud Advanced capabilities, then adds more.",
+    "Agentforce for employees included": "Unmetered AI agents for your own employees, at no extra per-user add-on price.",
+    "2.75M Flex Credits per org/year": "2.75 million Flex Credits per org each year for AI and Data 360 usage.",
+    "Slack Enterprise+": "Slack’s highest plan, with enterprise-grade security and compliance.",
+    "Full Service Cloud CRM": "Complete service tools: cases, routing, knowledge and more.",
+    "Built-in AI and 250K Flex Credits per org/year": "AI features plus 250,000 Flex Credits per org each year for agent actions and Data 360.",
+    "Case routing and knowledge": "Send cases to the right team and keep answers in a knowledge base.",
+    "Everything in Service Cloud Core": "Includes Service Cloud Core capabilities, then adds more.",
+    "Author dashboards and data sources": "Build charts and connect the data they use.",
+    "Tableau Prep": "Clean and combine data before you analyze it.",
+    "One Creator license": "A license for one person who authors Tableau content.",
+    "No forecasting or quoting": "You cannot build a sales forecast or send quotes on this edition.",
+    "No built-in AI agents": "This edition does not include Agentforce. Choose a higher edition or an add-on.",
+    "No Data 360": "Unified customer profiles are not available on this edition.",
+    "Annual contract required": "You cannot pay month to month on this edition.",
+    "Covers one function (sales)": "This edition is for sales teams. Service, marketing and other clouds are add-ons.",
+    "Covers one function (service)": "This edition is for service teams. Sales and other clouds are add-ons.",
+    "Unmetered employee Agentforce is an add-on": "Built-in AI and included credits are here. Unlimited employee agents cost extra except on Max.",
+    "Pay as you go and Pre-commit buying models aren’t available": "Usage on this edition is bought up front, not billed monthly in arrears.",
+    "Priced for teams that want the full platform": "Max is the all-in edition. Most teams start on Core or Advanced.",
+    "Viewers and Explorers sold separately": "People who only view or explore dashboards need a different Tableau license.",
+    "Not a CRM edition": "Tableau does not include sales or service CRM. Pair it with a CRM edition if you need both.",
+    "No included Flex Credits": "This edition does not come with Flex Credits for Agentforce or Data 360."
+  };
+  function featLine(t) {
+    var tip = FEATURE_TIPS[t] || "What this edition includes or leaves out.";
+    return '<span class="cep-feat">' + esc(t) + CEP.infoTip(t, tip) + "</span>";
+  }
+
   function prodIcon(n) { return '<img class="sx-gico" src="assets/product-icons/' + n + '.svg" alt="" width="28" height="28" />'; }
   /* Neutral outcome glyphs — deliberately NOT Salesforce product icons, so
      the goal step describes outcomes without steering to products. */
@@ -168,7 +227,7 @@
     h += '<section class="cep-why-blade" aria-labelledby="why-h"><div class="cep-why-blade__top"><div><span class="cep-badge">★ Recommended for you</span><h2 class="sx-h3" id="why-h">Why we recommend ' + esc(e.name) + '</h2><p class="sx-mod__d">' + esc(e.blurb) + "</p></div>" +
       (priced ? '<div class="cep-why-blade__p"><strong>' + E.money(CEP.uv(e.price)) + "</strong><span>" + CEP.perUnitLbl("user (seat)") + "</span><small>" + CEP.pt(rec.baseAnnual) + " for " + E.num(rec.seats) + " users (seats) · " + CEP.billNote(e.billing.indexOf("monthly") >= 0 && s.pub.billing === "monthly") + "</small></div>" :
         '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing<small>A specialist prepares your price</small>" : "Priced by Sales<small>Not available for your region</small>") + "</span></div>") + "</div>";
-    h += '<p class="cep-why-blade__sum"><strong>' + (rec.reach === rec.rows.length ? "It can cover all " + rec.rows.length + " of your goals" : "It covers the most of your goals (" + rec.reach + " of " + rec.rows.length + ")") + (rec.suggested.length ? " with " + rec.suggested.length + " companion product" + (rec.suggested.length > 1 ? "s" : "") : " on its own") + (ent ? ", with the fewest extra products." : ", at the lowest estimated cost among options that do.") + "</strong></p>";
+    h += '<p class="cep-why-blade__sum"><strong>' + (rec.reach === rec.rows.length ? "It can cover all " + rec.rows.length + " of your goals" : "It covers the most of your goals (" + rec.reach + " of " + rec.rows.length + ")") + (rec.suggested.length ? " with " + rec.suggested.length + " add-on" + (rec.suggested.length > 1 ? "s" : "") : " on its own") + (ent ? ", with the fewest extra products." : ", at the lowest estimated cost among options that do.") + "</strong></p>";
     h += '<ul class="cep-why-blade__g">' + rec.rows.map(function (r) { return "<li>" + (r.base === "full" ? CEP.ic.check : r.base === "partial" ? CEP.ic.part : CEP.ic.gap) + "<span><strong>" + esc(r.goal.name) + "</strong> " + esc(r.reason) + "</span></li>"; }).join("") + "</ul>";
     if (rec.suggested.length) h += '<p class="cep-why-blade__need"><strong>Would also need (not added yet):</strong> ' + rec.suggested.map(function (m) { var mm = E.mod(m); return esc(mm.name) + (priced ? " (" + (mm.price === null ? "priced by Sales" : (mm.status === "from" ? "from " : "") + CEP.pu(mm.price === "edition" ? e.price : mm.price, mm.unit)) + ")" : ""); }).join(", ") + ". You choose these in the next step.</p>";
     if (rec.unmet.length) h += '<p class="sx-gl__w">Can’t fully cover: ' + rec.unmet.map(function (r) { return esc(r.goal.name); }).join(", ") + "</p>";
@@ -181,20 +240,23 @@
       var isRec = x.id === rec.id;
       return '<th scope="col" class="' + (isRec ? "is-rec" : "") + '">' + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(x.edition.name) + (s.pub.edPicked && x.id === chosen && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
     }).join("") + "</tr></thead><tbody>";
-    function trow(label, f) { return '<tr><th scope="row">' + esc(label) + "</th>" + show.map(function (x) { return '<td class="' + (x.id === rec.id ? "is-rec" : "") + '">' + f(x) + "</td>"; }).join("") + "</tr>"; }
-    h += trow("Price", function (x) { return priced ? '<strong class="cep-cmp-p">' + E.money(CEP.uv(x.perUser)) + "</strong><small>" + CEP.perUnitLbl("user (seat)") + "</small><small>" + CEP.pt(x.baseAnnual) + " for " + E.num(x.seats) + " users (seats)</small>" : '<span class="cep-tailored">' + (ent ? "Tailored" : "Priced by Sales") + "</span>"; });
-    h += trow("Goals covered", function (x) { return "<strong>" + x.full + " of " + x.rows.length + "</strong> on its own" + (x.reach > x.full ? "<small>" + x.reach + " with companions</small>" : ""); });
+    function trow(label, f, tip) {
+      return '<tr><th scope="row"><span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span></th>" + show.map(function (x) { return '<td class="' + (x.id === rec.id ? "is-rec" : "") + '">' + f(x) + "</td>"; }).join("") + "</tr>";
+    }
+    h += trow("Price", function (x) { return priced ? '<strong class="cep-cmp-p">' + E.money(CEP.uv(x.perUser)) + "</strong><small>" + CEP.perUnitLbl("user (seat)") + "</small><small>" + CEP.pt(x.baseAnnual) + " for " + E.num(x.seats) + " users (seats)</small>" : '<span class="cep-tailored">' + (ent ? "Tailored" : "Priced by Sales") + "</span>"; }, ROW_TIPS.Price);
+    h += trow("Goals covered", function (x) { return "<strong>" + x.full + " of " + x.rows.length + "</strong> on its own" + (x.reach > x.full ? "<small>" + x.reach + " with add-ons</small>" : ""); }, ROW_TIPS["Goals covered"]);
     c.goals.forEach(function (gid) {
-      h += trow(E.goal(gid).name, function (x) {
+      var g = E.goal(gid);
+      h += trow(g.name, function (x) {
         var r = x.rows.filter(function (rr) { return rr.goal.id === gid; })[0];
         return '<span class="sx-lv">' + (r.base === "full" ? CEP.ic.check + " Covered" : r.base === "partial" ? CEP.ic.part + " Partly" : CEP.ic.gap + " Not covered") + "</span>" + (r.fixes.length ? "<small>Needs " + r.fixes.map(function (f) { return esc(E.mod(f).name); }).join(", ") + "</small>" : (r.needsUpgrade ? "<small>Needs a higher edition</small>" : ""));
-      });
+      }, g.desc);
     });
-    h += trow("Flex Credits included", function (x) { return x.edition.credits ? E.credits(x.edition.credits) + " per org/year" : '<span class="sx-na">None</span>'; });
-    h += trow("Slack", function (x) { return esc(x.edition.slack); });
-    h += trow("Billing", function (x) { return x.edition.billing.indexOf("monthly") >= 0 ? "Monthly or annual" : "Annual contract"; });
-    h += trow("Try first", function (x) { var t = FX.trials[x.id]; return t ? esc(t.name) + "<small>30 days</small>" : "—"; });
-    h += trow("Limitations", function (x) { return "<small>" + x.edition.limits.map(esc).join("<br>") + "</small>"; });
+    h += trow("Flex Credits included", function (x) { return x.edition.credits ? E.credits(x.edition.credits) + " per org/year" : '<span class="sx-na">None</span>'; }, ROW_TIPS["Flex Credits included"]);
+    h += trow("Slack", function (x) { return esc(x.edition.slack); }, ROW_TIPS.Slack);
+    h += trow("Billing", function (x) { return x.edition.billing.indexOf("monthly") >= 0 ? "Monthly or annual" : "Annual contract"; }, ROW_TIPS.Billing);
+    h += trow("Try first", function (x) { var t = FX.trials[x.id]; return t ? esc(t.name) + "<small>30 days</small>" : "—"; }, ROW_TIPS["Try first"]);
+    h += trow("Limitations", function (x) { return "<small>" + x.edition.limits.map(featLine).join("<br>") + "</small>"; }, ROW_TIPS.Limitations);
     h += '<tr class="cep-cmp-act"><th scope="row"></th>' + show.map(function (x) { return '<td class="' + (x.id === rec.id ? "is-rec" : "") + '">' + (x.id === chosen ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sx-link" data-act="pickEd" data-id="' + x.id + '">Choose ' + esc(short(x.edition)) + " instead</button>") + "</td>"; }).join("") + "</tr>";
     h += "</tbody></table></div>";
     h += '<p class="sx-fine">' + (ent ? "Enterprise pricing is tailored by Sales. Public list prices are on the packaged editions page." : "Source: " + esc(FX.meta.priceSource) + ". Illustrative list prices for research; not a quote. Excludes taxes.") + "</p>";
@@ -202,12 +264,21 @@
     CEP.track("recommendation_viewed", { rec: rec.id });
     return CEP.page(h, { rail: true, top: top });
   };
-  function short(e) { return e.name.replace("Sales Cloud ", ""); }
-  function row(label, cells) { return '<tr><th scope="row">' + esc(label) + "</th>" + cells.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>"; }
+  function short(e) {
+    var map = {
+      st: "Starter", pro: "Pro Suite", core: "Sales Core", adv: "Sales Advanced", max: "Max",
+      svc_core: "Service Core", svc_adv: "Service Advanced", tab: "Tableau"
+    };
+    return map[e.id] || e.name;
+  }
+  function row(label, cells, tip) {
+    return '<tr><th scope="row">' + (label ? '<span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span>" : "") + "</th>" + cells.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>";
+  }
   A.pickEd = function (el) {
     var id = el.getAttribute("data-id"), s = S(), prev = s.pub.ed;
     s.pub.ed = id; s.pub.edPicked = true; if (!s.pub.seats) { var sz = E.size(s.ctx.size); s.pub.seats = sz ? sz.seats : 10; }
     if (E.ed(id).billing.indexOf(s.pub.billing) < 0) s.pub.billing = "annual";
+    CEP.pruneAccepted(id);
     CEP.track("sku_selected", { edition: id, from: prev }); CEP.track("option_compared", { chosen: id });
     CEP.save(); CEP.render();
   };
@@ -217,6 +288,7 @@
     s.pub.ed = id; s.pub.edPicked = true; if (!s.pub.seats) { var sz = E.size(s.ctx.size); s.pub.seats = sz ? sz.seats : 10; }
     if (E.ed(id).billing.indexOf(s.pub.billing) < 0) s.pub.billing = "annual";
     if (el.getAttribute("data-origin")) s.pub.origin = el.getAttribute("data-origin");
+    CEP.pruneAccepted(id);
     CEP.track("sku_selected", { edition: id, from: prev });
     CEP.save(); if (CEP.route() === "/estimate") CEP.render(); else CEP.go("#/estimate");
   };
@@ -234,9 +306,9 @@
   I.seats = function (el) { var v = Math.max(1, Math.floor(+el.value || 1)); S().pub.seats = v; CEP.track("price_assumptions_changed", { seats: v }); CEP.save(); CEP.render(); };
 
   /* ═════════ COMPARE PACKAGED EDITIONS (product-led entry) ═════════ */
+  var CATALOG = ["st", "pro", "core", "svc_core", "adv", "svc_adv", "max", "tab"];
   var FAMILIES = [
-    { id: "smb", name: "Small business suites", eds: ["st", "pro"], d: "Starter and Pro Suite: sales, service and marketing in one CRM." },
-    { id: "sales", name: "Sales Cloud editions", eds: ["core", "adv", "max"], d: "Core, Advanced and Max editions with included AI and Flex Credits." }
+    { id: "all", name: "Packaged editions", eds: CATALOG, d: "Ready-made editions across Salesforce products. This isn’t the full catalog. Prices are illustrative list prices." }
   ];
   function edCard(id) {
     var e = E.ed(id), rg = E.region(S().ctx.region);
@@ -247,9 +319,8 @@
     var s = S(); s.pub.lastRoute = "#/editions";
     var h = '<h1 class="sx-h2">Compare packaged editions</h1><p class="sx-sub">Ready-made editions that fit common business goals. This isn’t our full product catalog. Prices are illustrative list prices.</p>';
     h += '<div class="cep-notsure"><span>' + CEP.ic.info + " <strong>Not sure which one?</strong> Answer a few questions and we’ll recommend one.</span><a class=\"sf-cta sf-cta--secondary sf-cta--medium\" href=\"#/start\">Find my plan</a></div>";
-    h += '<div class="cep-row-between cep-edhead"><span></span>' + CEP.periodToggle("pt-ed") + "</div>";
-    h += '<section class="cep-edsec" aria-labelledby="ed-smb"><div class="cep-row-between"><h2 class="sx-h3" id="ed-smb">For small businesses</h2><a class="sx-link" href="#/product?f=smb">Compare side by side →</a></div><div class="cep-edgrid cep-edgrid--2">' + edCard("st") + edCard("pro") + "</div></section>";
-    h += '<section class="cep-edsec" aria-labelledby="ed-ent"><div class="cep-row-between"><h2 class="sx-h3" id="ed-ent">Enterprise</h2><a class="sx-link" href="#/product?f=sales">Compare side by side →</a></div><p class="sx-mod__d">Companies with 1,000+ employees get tailored pricing from Sales. These are public list prices.</p><div class="cep-edgrid">' + edCard("core") + edCard("adv") + edCard("max") + "</div></section>";
+    h += '<div class="cep-row-between cep-edhead"><h2 class="sx-h3" id="ed-all">Packaged editions</h2>' + CEP.periodToggle("pt-ed") + "</div>";
+    h += '<section class="cep-edsec" aria-labelledby="ed-all"><div class="cep-row-between"><span></span><a class="sx-link" href="#/product">Compare side by side →</a></div><div class="cep-edgrid">' + CATALOG.map(edCard).join("") + "</div></section>";
     h += '<section class="cep-edsec" aria-labelledby="ed-ai"><h2 class="sx-h3" id="ed-ai">AI agents (Agentforce)</h2><p class="sx-mod__d">If you want AI agents, this is how: pay per user, or by usage with Flex Credits.</p><div class="cep-edgrid cep-edgrid--2">' +
       '<article class="cep-edc"><h3 class="sx-h4">Agentforce add-on</h3><p class="cep-edc__p"><strong>' + CEP.pu(125, "user (seat)/mo") + '</strong><small>Included in Sales Cloud Max</small></p><p class="sx-mod__d">Unmetered AI agents for your own employees, added to a Core or Advanced edition.</p><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="aiPlan">Find a plan with AI agents</button></article>' +
       '<article class="cep-edc"><h3 class="sx-h4">Flex Credits</h3><p class="cep-edc__p"><strong>$500 per 100K credits</strong><small>$0.005 per credit · 20 credits (about $0.10) per agent action</small></p><p class="sx-mod__d">Pay for agent actions and Data 360 usage. Core, Advanced and Max already include some credits.</p><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + FX.links.flexCalculator + '" target="_blank" rel="noopener noreferrer">Estimate credits in the calculator ' + CEP.ic.ext + "</a></article></div></section>";
@@ -259,10 +330,11 @@
   R["/browse"] = R["/editions"];
   A.aiPlan = function () { var c = S().ctx; if (c.goals.indexOf("g_ai") < 0 && c.goals.length < 4) c.goals.push("g_ai"); if (!S().pub.actions) S().pub.actions = FX.usage.defaultActions; CEP.track("context_changed", { field: "goals", via: "editions_ai" }); CEP.save(); CEP.go("#/explore"); };
   R["/product"] = function () {
-    var s = S(), fid = (location.hash.split("f=")[1] || s.pub.browseProduct || "smb").split("&")[0];
+    var s = S(), fid = (location.hash.split("f=")[1] || s.pub.browseProduct || "all").split("&")[0];
+    if (fid === "smb" || fid === "sales") fid = "all";
     s.pub.browseProduct = fid; s.pub.lastRoute = "#/product?f=" + fid;
     var f = FAMILIES.filter(function (x) { return x.id === fid; })[0] || FAMILIES[0];
-    var h = '<p class="sx-eyebrow"><a href="#/editions">Packaged editions</a> › ' + esc(f.name) + '</p><h1 class="sx-h2">' + esc(f.name) + ' pricing</h1><p class="sx-sub">' + esc(f.d) + "</p>";
+    var h = '<p class="sx-eyebrow"><a href="#/editions">Packaged editions</a></p><h1 class="sx-h2">Edition comparison</h1><p class="sx-sub">' + esc(f.d) + "</p>";
     var seats = CEP.sel().seats, cur = s.pub.currency, rg = E.region(s.ctx.region);
     var monthlyOk = f.eds.some(function (id) { return E.ed(id).billing.indexOf("monthly") >= 0; });
     h += '<div class="sx-row cep-ctl"><div><label class="sx-lbl" for="seats">Users (seats)</label>' + stepper("seats", seats, "users (seats)") + "</div>" +
@@ -278,12 +350,12 @@
       var el = rg.ineligible && rg.ineligible.indexOf(id) >= 0;
       if (el) return '<span class="sx-na">Not offered in ' + esc(rg.name) + "</span>";
       return est.priceable ? "<strong>" + CEP.pu(e.price, "user/mo") + "</strong><small>" + CEP.pt(est.knownAnnual) + " for " + seats + " users (seats) · " + CEP.billNote(e.billing.indexOf("monthly") >= 0 && s.pub.billing === "monthly") + "</small>" : "Not priced";
-    }));
-    h += row("Billing", f.eds.map(function (id) { return E.ed(id).billing.indexOf("monthly") >= 0 ? "Monthly or annual" : "Annual contract"; }));
-    h += row("Flex Credits included", f.eds.map(function (id) { var e = E.ed(id); return e.credits ? E.credits(e.credits) + "/org/yr" : '<span class="sx-na">None</span>'; }));
-    h += row("Included", f.eds.map(function (id) { return "<small>" + E.ed(id).includes.map(esc).join("<br>") + "</small>"; }));
-    h += row("Not included", f.eds.map(function (id) { return "<small>" + E.ed(id).limits.map(esc).join("<br>") + "</small>"; }));
-    h += row("Try", f.eds.map(function (id) { var t = FX.trials[id]; return t ? esc(t.name) : "—"; }));
+    }), ROW_TIPS.Price);
+    h += row("Billing", f.eds.map(function (id) { return E.ed(id).billing.indexOf("monthly") >= 0 ? "Monthly or annual" : "Annual contract"; }), ROW_TIPS.Billing);
+    h += row("Flex Credits included", f.eds.map(function (id) { var e = E.ed(id); return e.credits ? E.credits(e.credits) + "/org/yr" : '<span class="sx-na">None</span>'; }), ROW_TIPS["Flex Credits included"]);
+    h += row("Included", f.eds.map(function (id) { return "<small>" + E.ed(id).includes.map(featLine).join("<br>") + "</small>"; }), ROW_TIPS.Included);
+    h += row("Not included", f.eds.map(function (id) { return "<small>" + E.ed(id).limits.map(featLine).join("<br>") + "</small>"; }), ROW_TIPS["Not included"]);
+    h += row("Try", f.eds.map(function (id) { var t = FX.trials[id]; return t ? esc(t.name) : "—"; }), ROW_TIPS.Try);
     h += row("", f.eds.map(function (id) { var el = rg.ineligible && rg.ineligible.indexOf(id) >= 0; return '<button class="sf-cta sf-cta--primary sf-cta--medium" data-act="chooseEd" data-id="' + id + '" data-origin="editions"' + (el ? ' aria-disabled="true"' : "") + ">Estimate this edition</button>"; }));
     h += "</tbody></table></div>";
     var seatOver = f.eds.indexOf("st") >= 0 && seats > 10;
@@ -314,7 +386,7 @@
     if (!s.pub.ed) return CEP.page(CEP.crumbs(STEPS, 2) + '<h1 class="sx-h2">Choose an option first</h1><p class="sx-sub">Your answers are saved.</p>' + stepNav("#/recommend", "Back to options", null, null), { rail: true });
     s.pub.lastRoute = "#/estimate";
     var est = CEP.est(), e = est.edition, sel = CEP.sel();
-    var h = CEP.crumbs(STEPS, 2) + '<h1 class="sx-h2">Customize your estimate</h1><p class="sx-sub">Your main number comes first. Adjust the edition and users (seats), then add companion products if you need them.</p>';
+    var h = CEP.crumbs(STEPS, 2) + '<h1 class="sx-h2">Customize your estimate</h1><p class="sx-sub">Your main number comes first. Adjust the edition and users (seats), then include add-ons if you need them.</p>';
     // 1 configuration
     var sz = E.size(s.ctx.size), eds = sz ? sz.eds : ["st", "pro", "core", "adv", "max"];
     if (eds.indexOf(e.id) < 0) eds = eds.concat([e.id]);
@@ -343,25 +415,27 @@
     h += "</tbody></table></div></div>";
     CEP.track("estimate_rendered", { known: est.knownAnnual, partial: est.partial });
     if (est.partial) CEP.track("estimate_partial", { unknown: est.unknown });
-    // 3 companions (below the main number)
+    // 3 add-ons (below the main number)
     var rel = relevantModules(e.id);
     if (rel.length) {
-      h += '<div class="sx-cb"><h2 class="sx-h4" style="margin-top:0">Companion products</h2><p class="sx-mod__d">Suggested from your goals. Nothing is added until you include it.</p><div class="sx-mods">' + rel.map(function (m) {
-        var on = s.pub.accepted[m.id] !== undefined, inc = m.includedIn && m.includedIn.indexOf(e.id) >= 0, ok = m.reqEd.indexOf(e.id) >= 0 || inc;
+      h += '<div class="sx-cb"><h2 class="sx-h4" style="margin-top:0">Add-ons</h2><p class="sx-mod__d">Suggested from your goals. Nothing is added until you include it.</p><div class="sx-mods">' + rel.map(function (m) {
+        var inc = m.includedIn && m.includedIn.indexOf(e.id) >= 0, ok = CEP.modOk(m, e.id);
+        var on = ok && s.pub.accepted[m.id] !== undefined;
         var price = m.price === null ? "Priced by Sales" : (m.status === "from" ? "From " : "") + CEP.pu(m.price === "edition" ? e.price : m.price, m.unit);
         var why = m.goalName ? "For “" + esc(m.goalName) + "”: " : "";
-        var act = inc ? '<span class="sx-chip is-est">Included in ' + esc(short(e)) + "</span>" : (!ok ? '<span class="sx-chip is-pre">Needs a higher edition</span>' :
+        var act = inc ? '<span class="sx-chip is-est">Included in ' + esc(short(e)) + "</span>" : (!ok ? '<span class="sx-chip is-pre">Not available on this edition</span>' :
           '<button class="sf-cta sf-cta--' + (on ? "secondary" : "primary") + ' sf-cta--medium" data-act="toggleMod" data-id="' + m.id + '" aria-pressed="' + on + '">' + (on ? "Remove" : "Include") + "</button>");
         var qty = on && ok && !inc && m.qtyFrom !== "org" ? '<div class="sx-mod__c"><label class="sx-lbl" for="q-' + m.id + '">' + (m.qtyFrom === "profiles" ? "Thousands of profiles" : "Users (seats)") + '</label><input id="q-' + m.id + '" type="number" min="1" value="' + s.pub.accepted[m.id] + '" data-in="modQty" data-id="' + m.id + '" /></div>' : "";
-        var declined = s.pub.declined[m.id] && !on && m.goalName ? '<p class="sx-gl__w">Not included, so “' + esc(m.goalName) + "” stays not fully covered.</p>" : "";
-        return '<div class="sx-mod' + (on ? " is-on" : "") + '"><div class="sx-mod__t"><strong>' + esc(m.name) + '</strong><span class="sx-mod__d">' + why + esc(m.why) + '</span><span class="sx-mod__p">' + price + " " + (m.status !== "illustrative" ? CEP.status(m.status) : "") + "</span>" + qty + declined + '</div><div class="sx-mod__a">' + act + "</div></div>";
+        var declined = s.pub.declined[m.id] && !on && ok && m.goalName ? '<p class="sx-gl__w">Not included, so “' + esc(m.goalName) + "” stays not fully covered.</p>" : "";
+        var unavailable = !ok && !inc ? '<p class="sx-gl__w">Not available with ' + esc(e.name) + ". It is not selected and is excluded from the total.</p>" : "";
+        return '<div class="sx-mod' + (on ? " is-on" : "") + (ok ? "" : " is-off") + '"' + (ok ? "" : ' aria-disabled="true"') + '><div class="sx-mod__t"><strong>' + esc(m.name) + '</strong><span class="sx-mod__d">' + why + esc(m.why) + '</span><span class="sx-mod__p">' + price + " " + (m.status !== "illustrative" ? CEP.status(m.status) : "") + "</span>" + qty + declined + unavailable + '</div><div class="sx-mod__a">' + act + "</div></div>";
       }).join("") + "</div></div>";
     }
     // 4 AI usage
     var showUsage = s.ctx.goals.indexOf("g_ai") >= 0 || s.pub.actions > 0 || s.pub.accepted.afaddon !== undefined;
     if (showUsage) {
       h += '<div class="sx-cb"><h2 class="sx-h4" style="margin-top:0">AI agent usage (variable)</h2>';
-      if (E.edRank(e.id) < 2) h += CEP.note("w", "AI agents aren’t available on " + esc(e.name) + ". Choose Core or higher to include agent usage, or set usage to 0.");
+      if (E.edRank(e.id) < 2) h += CEP.note("w", "AI agents aren’t available on " + esc(e.name) + ". Choose a Core or higher CRM edition to include agent usage, or set usage to 0.");
       h += '<label class="sx-lbl" for="actions">Agent actions per month</label>' + stepper("actions", s.pub.actions || 0, "actions/mo");
       if (est.credits) {
         var cc = est.credits;
@@ -451,7 +525,8 @@
   }
   A.chooseEdHere = function (el) { A.chooseEd(el); };
   A.toggleMod = function (el) {
-    var id = el.getAttribute("data-id"), s = S();
+    var id = el.getAttribute("data-id"), s = S(), m = E.mod(id);
+    if (!CEP.modOk(m, s.pub.ed)) return;
     if (s.pub.accepted[id] !== undefined) { delete s.pub.accepted[id]; s.pub.declined[id] = true; CEP.track("sku_selected", { module: id, included: false }); }
     else { s.pub.accepted[id] = E.defaultQty(id, CEP.sel().seats); delete s.pub.declined[id]; CEP.track("sku_selected", { module: id, included: true }); }
     CEP.save(); CEP.render();
@@ -498,7 +573,7 @@
         return '<span class="sx-lv">' + (r.status === "full" ? CEP.ic.check + " Covered" : r.status === "partial" ? CEP.ic.part + " Partly" : CEP.ic.gap + " Not covered") + "</span>" + by;
       }), { goal: true });
     });
-    add("Companion products", ests.map(function (e) { var l = e.lines.filter(function (x) { return x.id !== "ed" && x.cat === "software"; }); return l.length ? l.map(function (x) { return esc(x.label) + (x.included ? " <small>Included</small>" : x.incompatible ? " <small>Not compatible</small>" : x.amount === null ? " <small>Not priced</small>" : ""); }).join("<br>") : '<span class="sx-na">None</span>'; }));
+    add("Add-ons", ests.map(function (e) { var l = e.lines.filter(function (x) { return x.id !== "ed" && x.cat === "software"; }); return l.length ? l.map(function (x) { return esc(x.label) + (x.included ? " <small>Included</small>" : x.incompatible ? " <small>Not compatible</small>" : x.amount === null ? " <small>Not priced</small>" : ""); }).join("<br>") : '<span class="sx-na">None</span>'; }));
     add("Flex Credits included", ests.map(function (e) { return e.edition.credits ? E.credits(e.edition.credits) + "/org/yr" : '<span class="sx-na">None</span>'; }));
     add("AI usage", ests.map(function (e, i) { var a = vs[i].sel.actions || 0; if (!a) return '<span class="sx-na">None entered</span>'; if (!e.credits) return E.num(a) + " actions/mo <small>Not available on this edition</small>"; return E.num(a) + " actions/mo<small>" + (e.credits.packs ? E.credits(e.credits.incremental) + " beyond included credits" : "Covered by included credits") + "</small>"; }));
     add("Slack", ests.map(function (e) { return esc(e.edition.slack); }));
@@ -648,7 +723,7 @@
     h += '<div class="sx-share"><h2 class="sx-h4" style="margin-top:4px">What would be shared</h2><ul class="cep-sharelist">' + groups.map(function (g) {
       return '<li><label class="sx-chk"><input type="checkbox" data-in="handInc" data-k="' + g[0] + '"' + (hd.include[g[0]] ? " checked" : "") + " /> <strong>" + esc(g[1]) + '</strong></label><span class="sx-mod__d">' + esc(g[2]) + "</span></li>";
     }).join("") + '<li><span class="sx-mod__d">Also shared: the next step you chose (' + esc(s.pub.next || "talk to sales") + ") and your contact details below.</span></li></ul></div>";
-    h += '<div class="sx-form"><div class="sx-grid2">' + field("hname", "Full name", hd.name, "text", hd.err && !hd.name) + field("hemail", "Work email", hd.email, "email", hd.err && !/.+@.+\..+/.test(hd.email)) + "</div><div class=\"sx-grid2\">" + field("hcompany", "Company", hd.company, "text", false) + field("hphone", "Phone (optional)", hd.phone, "tel", false) + "</div>" +
+    h += '<div class="sx-form"><div class="sx-grid2">' + field("hname", "Full name", hd.name, "text", hd.err && !hd.name) + field("hemail", "Work email", hd.email, "email", hd.err && !/.+@.+\..+/.test(hd.email)) + "</div><div class=\"sx-grid2\">" + field("hcompany", "Company", hd.company, "text", false) + field("hphone", "Phone", hd.phone, "tel", hd.err && !(hd.phone && /\d/.test(hd.phone))) + "</div>" +
       '<label class="sx-chk"><input type="checkbox" id="hconsent" data-in="handConsent"' + (hd.consent ? " checked" : "") + " /> I agree to share the items above with Salesforce so a specialist can contact me (simulated consent).</label>" + (hd.err && !hd.consent ? '<p class="sx-err">Tick the consent box to continue, or choose “Don’t share”.</p>' : "") + "</div>";
     h += '<div class="sx-foot"><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + back + '">← Back</a><span class="sx-foot__n"></span><div class="sx-btnrow"><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="handDecline">Don’t share</button><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="copySummary">Copy summary</button><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="handSend">Review and send (simulated)</button></div></div>';
     return CEP.page(h, { rail: true });
@@ -661,7 +736,8 @@
     return null;
   }
   function field(id, label, val, type, bad) {
-    return '<div><label class="sx-lbl" for="' + id + '">' + esc(label) + '</label><input id="' + id + '" type="' + type + '" value="' + esc(val) + '" data-in="hand" data-live="1" data-k="' + id.slice(1) + '"' + (bad ? ' aria-invalid="true" aria-describedby="' + id + '-e"' : "") + " />" + (bad ? '<p class="sx-err" id="' + id + '-e">' + (id === "hemail" ? "Enter a valid work email." : "Enter your name.") + "</p>" : "") + "</div>";
+    var err = id === "hemail" ? "Enter a valid work email." : (id === "hphone" ? "Enter a phone number." : "Enter your name.");
+    return '<div><label class="sx-lbl" for="' + id + '">' + esc(label) + '</label><input id="' + id + '" type="' + type + '" value="' + esc(val) + '" data-in="hand" data-live="1" data-k="' + id.slice(1) + '"' + (bad ? ' aria-invalid="true" aria-describedby="' + id + '-e"' : "") + " />" + (bad ? '<p class="sx-err" id="' + id + '-e">' + err + "</p>" : "") + "</div>";
   }
   I.hand = function (el) { S().hand[el.getAttribute("data-k")] = el.value; CEP.save(); };
   I.handInc = function (el) { S().hand.include[el.getAttribute("data-k")] = el.checked; CEP.save(); };
@@ -670,7 +746,7 @@
   A.handSend = function () {
     var hd = S().hand;
     ["name", "email", "company", "phone"].forEach(function (k) { var el = document.getElementById("h" + k); if (el) hd[k] = el.value; });
-    var ok = hd.name && /.+@.+\..+/.test(hd.email) && hd.consent;
+    var ok = hd.name && /.+@.+\..+/.test(hd.email) && hd.phone && /\d/.test(hd.phone) && hd.consent;
     if (!ok) { hd.err = true; CEP.save(); CEP.render(); var bad = document.querySelector('[aria-invalid="true"], #hconsent'); if (bad) bad.focus(); return; }
     hd.err = false; hd.sent = true; hd.declined = false;
     CEP.track("sales_handoff_mock", { consent: true, shared: Object.keys(hd.include).filter(function (k) { return hd.include[k]; }) });

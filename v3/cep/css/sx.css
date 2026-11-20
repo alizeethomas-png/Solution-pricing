@@ -211,6 +211,7 @@ input:focus, select:focus { border-color: var(--sx-accent); }
 .sx-mods { display: grid; gap: 10px; margin-top: 12px; }
 .sx-mod { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; background: #fff; border: 2px solid var(--sx-border); border-radius: 12px; transition: border-color 150ms ease-out; }
 .sx-mod.is-on { border-color: var(--sx-accent); background: rgba(234, 245, 254, .4); }
+.sx-mod.is-off { opacity: .62; background: var(--color-neutral-95, #F3F3F3); border-color: var(--color-border-neutral, #747474); }
 .sx-mod__t { display: flex; flex-direction: column; gap: 3px; min-width: 0; font-size: 14px; }
 .sx-mod__t strong { font-family: var(--sx-display); font-weight: 600; font-size: 16px; color: var(--sx-ink); }
 .sx-mod__d { font-size: 13px; color: var(--color-on-surface-3, #444); line-height: 1.4; }

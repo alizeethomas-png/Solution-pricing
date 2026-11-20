@@ -270,6 +270,8 @@ main { display: flex; flex-direction: column; width: 100%; }
   white-space: nowrap;
   transition: background 150ms ease-out, color 150ms ease-out;
 }
+.sf-subnav__menu-item[aria-current] { color: var(--color-fill-accent, #066AFE); }
+.sf-subnav__menu-item--rich[aria-current] .sf-subnav__menu-item-title { color: var(--color-fill-accent, #066AFE); }
 .sf-subnav__menu-item:hover {
   background: var(--color-fill-info, #EAF5FE);
   color: var(--color-link, #022AC0);

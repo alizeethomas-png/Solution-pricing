@@ -17,7 +17,7 @@
       ctx: { industry: null, size: null, region: "na", goals: [], freeText: "", suggested: [], skipped: false },
       view: { period: "mo", audience: "new" },
       me: { signedIn: false, email: "", name: "" }, pendingGate: null,
-      pub: { ed: null, seats: null, billing: "annual", accepted: {}, declined: {}, actions: 0, currency: "USD", model: "prepurchase", saved: [], compare: [], next: null, lastRoute: "#/explore", browseProduct: "smb" },
+      pub: { ed: null, seats: null, billing: "annual", accepted: {}, declined: {}, actions: 0, currency: "USD", model: "prepurchase", saved: [], compare: [], next: null, lastRoute: "#/explore", browseProduct: "all" },
       trial: { state: null, tasks: [], kind: null },
       hand: { consent: false, name: "", email: "", company: "", phone: "", sent: false, declined: false, include: { goals: true, products: true, estimate: true, assumptions: true, context: true } },
       acct: { role: null, signedIn: false, mode: null,
@@ -155,6 +155,15 @@
     ext: '<svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 3h6v6M17 3l-8 8M15 12v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     warn: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l8 14.5H2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 8v4M10 14.5v.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
   };
+  var tipN = 0;
+  CEP.resetTips = function () { tipN = 0; };
+  CEP.infoTip = function (label, text) {
+    tipN += 1;
+    var id = "cep-tip-" + tipN;
+    return '<button type="button" class="cep-tip" aria-label="' + esc("More about " + label) + '" aria-describedby="' + id + '">' +
+      CEP.ic.info +
+      '<span id="' + id + '" class="cep-tip__pop" role="tooltip">' + esc(text) + "</span></button>";
+  };
   CEP.status = function (st) {
     var map = {
       illustrative: ["is-from", "Illustrative list price"], partial: ["is-sub", "Partial total"], from: ["is-sub", "Starting price"],
@@ -226,8 +235,26 @@
   };
 
   /* ── public estimate selection helpers ───────────────────────── */
+  CEP.modOk = function (m, edId) {
+    if (!m) return false;
+    var inc = m.includedIn && m.includedIn.indexOf(edId) >= 0;
+    return inc || m.reqEd.indexOf(edId) >= 0;
+  };
+  /* Drop add-ons that the current edition cannot include. Does not
+     restore them if the buyer later switches back to a higher edition. */
+  CEP.pruneAccepted = function (edId) {
+    var acc = CEP.S.pub.accepted || {};
+    var e = edId || CEP.S.pub.ed;
+    if (!e) return;
+    var changed = false;
+    Object.keys(acc).forEach(function (id) {
+      if (!CEP.modOk(E.mod(id), e)) { delete acc[id]; changed = true; }
+    });
+    if (changed) CEP.save();
+  };
   CEP.sel = function () {
     var S = CEP.S, sz = E.size(S.ctx.size);
+    CEP.pruneAccepted(S.pub.ed);
     return { ed: S.pub.ed, seats: S.pub.seats || (sz ? sz.seats : 10), billing: S.pub.billing, accepted: S.pub.accepted,
       actions: S.pub.actions, region: S.ctx.region, currency: S.pub.currency, goals: S.ctx.goals, showServices: S.rs.showServices };
   };
@@ -299,6 +326,7 @@
   };
   var lastPath = null;
   CEP.render = function () {
+    CEP.resetTips();
     var path = CEP.route();
     var fn = CEP.routes[path] || CEP.routes["/404"];
     var app = document.getElementById("app");
@@ -330,10 +358,23 @@
 
   /* ── delegated events ─────────────────────────────────────────── */
   document.addEventListener("click", function (e) {
+    var tip = e.target.closest(".cep-tip");
+    var open = document.querySelectorAll(".cep-tip.is-open");
+    for (var i = 0; i < open.length; i++) if (open[i] !== tip) open[i].classList.remove("is-open");
+    if (tip) {
+      e.preventDefault();
+      tip.classList.toggle("is-open");
+      return;
+    }
     var el = e.target.closest("[data-act]");
     if (!el) return;
     var name = el.getAttribute("data-act");
     if (CEP.act[name]) { e.preventDefault(); if (el.getAttribute("aria-disabled") === "true" && !el.hasAttribute("data-allow-disabled")) return; CEP.act[name](el, e); }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    var tips = document.querySelectorAll(".cep-tip.is-open");
+    for (var i = 0; i < tips.length; i++) tips[i].classList.remove("is-open");
   });
   function onInput(e) {
     var el = e.target.closest("[data-in]"); if (!el) return;

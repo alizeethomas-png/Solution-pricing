@@ -426,3 +426,65 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
 .cep-lrow__t strong.cep-yours, .cep-yours { font: 700 13px var(--sx-body); color: var(--sx-ink); }
 .sx-cv .cep-period-w { margin-top: 10px; }
 .sx-cv .cep-period-w .cep-period { margin-top: 0; }
+
+/* Info tips on comparison-table row labels and feature lines */
+.cep-th-lab, .cep-feat {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+}
+.cep-feat { margin: 2px 0; max-width: 100%; }
+.cep-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: -4px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-fill-accent, #066AFE);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cep-tip:hover, .cep-tip:focus-visible { background: var(--color-cloud-blue-95, #EAF5FE); }
+.cep-tip:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.cep-tip svg { display: block; pointer-events: none; }
+.cep-tip__pop {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 40;
+  width: max-content;
+  max-width: min(260px, 70vw);
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--color-on-surface-1, #001E5B);
+  color: var(--color-background-1, #FFFFFF);
+  font: 400 13px/1.4 var(--sx-body);
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.28);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  text-align: left;
+  white-space: normal;
+}
+.cep-tip:hover .cep-tip__pop,
+.cep-tip:focus .cep-tip__pop,
+.cep-tip:focus-visible .cep-tip__pop,
+.cep-tip.is-open .cep-tip__pop {
+  visibility: visible;
+  opacity: 1;
+}
+.sx-mod.is-off {
+  opacity: 0.62;
+  background: var(--color-neutral-95, #F3F3F3);
+  border-color: var(--color-border-neutral, #747474);
+}

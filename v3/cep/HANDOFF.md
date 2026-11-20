@@ -80,7 +80,7 @@ These changes follow the Romil/Christian review on Nov 9 and the decisions confi
   - A full-width "Why we recommend [edition]" blade shows the price per user (seat), goal coverage, the reasons and what else it would need.
   - Below it is one comparison table with a "★ Recommended" column label and "Choose … instead" links. The option cards and the "Browse all products" link are removed.
   - "Users (seats)" is used throughout.
-- **Step 3, Customize:** the order is edition and users (seats), then the main number and line items, then companion products, AI usage, buying model and assumptions.
+- **Step 3, Customize:** the order is edition and users (seats), then the main number and line items, then add-ons, AI usage, buying model and assumptions.
 - **Step 4, Next steps:** Start free trial, Talk to Sales (a slightly larger secondary button) and Save and compare.
   - Save, Compare, Download and Start free trial all open the same simulated "Sign in / Create account" dialog first.
   - For enterprise, Talk to Sales is the primary option.
@@ -151,7 +151,7 @@ These changes follow the Romil/Christian review on Nov 9 and the decisions confi
   - The page also offers a Service Cloud trial when service is part of the plan, and points to the industry trial org for Financial Services and Life Sciences.
   - "Have your own use case?" leads to Talk to Sales.
   - The use-case starters are labeled as a prototype concept.
-- **Compare saved versions** now has the same rows as the side-by-side table at the Options step: price per user, how well each goal is covered (including through companions), companion products, included Flex Credits, AI usage, Slack, billing, trial, limitations, software, usage, known total, services and items not priced. Rows that differ are highlighted, and there's a "Show only rows that differ" filter.
+- **Compare saved versions** now has the same rows as the side-by-side table at the Options step: price per user, how well each goal is covered (including through add-ons), add-ons, included Flex Credits, AI usage, Slack, billing, trial, limitations, software, usage, known total, services and items not priced. Rows that differ are highlighted, and there's a "Show only rows that differ" filter.
 - **Expand my Salesforce** has a username and password form only. "Continue without signing in" and the seller option are removed. Researchers pick which test user the sign-in logs in as (authorized buyer or admin who can't buy) in Research controls. The seller workspace link stays in the footer under "Salesforce employees".
 - **Prices show monthly by default, with a Monthly/Annual switch (v2.1):**
   - The switch appears in the plan summary, on the options page, the product page, the estimate total and the compare page. One setting applies everywhere in the session.
@@ -160,7 +160,7 @@ These changes follow the Romil/Christian review on Nov 9 and the decisions confi
   - These stay as they are: one-time charges (prorated seats, Flex Credit packs, services ranges), credit allowances (per org per year), and the seller Commit workspace, which stays annual because it's internal deal planning.
 - **Starting page (v2.2):** the two entry cards are replaced by one "How it works" section. It has a switch with two tabs, "I'm new to Salesforce" (shown first) and "I'm already a customer". Each tab shows its own 3 steps and button(s). The tabs work with the keyboard: arrow keys move between them. The hero keeps "Find my plan" as the main button and adds a line underneath: "Already a customer? Sign in to add seats or top up Flex Credits." Switching tabs is tracked as `context_changed {audience}`.
 - **Fixes after a full review (v2.3):**
-  - **Monthly/Annual switch:** it didn't change the per-user and per-unit prices, which are the large numbers on option cards, product tables, companions, line items, compare, account rates and seat rates. Now every recurring price follows the switch, for example $195/user/mo becomes $2,340/user/yr. The switch was also added to the account overview and the add-seats page.
+  - **Monthly/Annual switch:** it didn't change the per-user and per-unit prices, which are the large numbers on option cards, product tables, add-ons, line items, compare, account rates and seat rates. Now every recurring price follows the switch, for example $195/user/mo becomes $2,340/user/yr. The switch was also added to the account overview and the add-seats page.
   - **Clearer "partial total" messages:** they now say why the total is partial: not priced, not available with this edition, or a starting price. Before, they said "not priced" even when the only cause was a starting price.
   - **No empty coverage reasons:** option cards no longer leave a blank reason for some goals. Wording is now "goals" throughout.
   - **No internal wording on customer screens:** "Monetization validation" and "prototype fixture" were removed, and Max's limitations were rewritten.
@@ -209,7 +209,7 @@ To open the controls, use the footer link **Research controls** or press **Alt+S
 - **`js/fixtures.js`** holds all commercial data. Copy is kept separate in `FX.copy` (R30).
 - **Public list prices** were read from salesforce.com on Oct 28, 2026 (the same set as v8). They are labeled illustrative.
 - **Synthetic data:** the account, contracts, packs, proration, services ranges and the Commit policy are all invented.
-- **`js/engine.js`** holds the deterministic rules. It never shows an unknown price as $0. Included credits and Agentforce are counted once, and companion products are priced only after the buyer accepts them. Services are never added to the total. The account price fixture takes precedence over the list price.
+- **`js/engine.js`** holds the deterministic rules. It never shows an unknown price as $0. Included credits and Agentforce are counted once, and add-ons are priced only after the buyer accepts them. Services are never added to the total. The account price fixture takes precedence over the list price.
 - **Flex Credit calculator:** the CTA opens `https://www.salesforce.com/agentforce/pricing/calculator/` (its page title is "Flex Credit Pricing Calculator") in a new tab with no parameters. When the buyer returns, they type in the estimate. The prototype scales it to the remaining term, subtracts the available balance, and suggests a number of packs. It never orders automatically.
 - **Trial links:** Starter Suite uses `salesforce.com/small-business/starter/free-trial/` and Pro Suite uses `salesforce.com/small-business/pro-suite/`.
 
