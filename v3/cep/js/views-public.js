@@ -29,25 +29,30 @@
     "Workflow automation": "Set rules so routine steps run without extra clicks.",
     "Service with knowledge base": "Support cases plus a library of answers for your team.",
     "Full Sales Cloud CRM": "Complete sales tools: pipeline, forecasting, quoting and more.",
-    "Built-in AI and 500K Flex Credits per org/year": "AI features plus 500,000 Flex Credits per org each year for agent actions and Data 360.",
-    "Slack Business+": "Paid Slack with more security and admin controls than Slack Free.",
-    "Tableau Next": "Analytics in Salesforce for exploring CRM data.",
-    "Premier Success": "A higher support tier than standard success plans.",
-    "Everything in Core": "Includes Sales Cloud Core capabilities, then adds more.",
+    "500K Flex Credits per org/year": "500,000 Flex Credits per org each year for agent actions and Data 360. Same Core allowance on Sales, Service and Sales & Service.",
+    "Slack Business+": "Paid Slack with more security and admin controls than Slack Free. Included in Core and Advanced.",
+    "Tableau Next (Consumer + one Creator per org)": "Tableau Next is in every Core and Advanced edition: Consumer for the org, plus one Creator.",
+    "Tableau Next (in Agentforce 1 Edition)": "Tableau Next ships inside Agentforce 1 Edition on Max.",
+    "Data Cloud provisioning": "Turns Data Cloud / Data 360 on for the org. Extra profiles are a separate add-on.",
+    "Premier Success": "A higher support tier. On the Core BOM only.",
+    "Sales Cloud Unlimited CRM": "The Unlimited-tier Sales Cloud SKU that Advanced is built on.",
+    "Service Cloud Unlimited CRM": "The Unlimited-tier Service Cloud SKU that Advanced is built on.",
     "1M Flex Credits per org/year": "One million Flex Credits per org each year for AI and Data 360 usage.",
-    "Security suite": "Extra security tools, such as stronger monitoring and controls.",
-    "Full sandbox": "A full copy of your org for testing before you change production.",
-    "Everything in Advanced": "Includes Sales Cloud Advanced capabilities, then adds more.",
-    "Agentforce for employees included": "Unmetered AI agents for your own employees, at no extra per-user add-on price.",
+    "Security suite": "Security Center, Data Detect, and backup/archive capacity on the Advanced and Max BOMs.",
+    "Enablement, Sales Insights and Account Research": "Sales Advanced BOM items on top of Core.",
+    "Customer Signals Intelligence and Help Agent Access": "Service Advanced BOM items on top of Core.",
+    "Agentforce 1 Sales Edition": "The Max base SKU for Sales. Includes Slack Enterprise+ and Agentforce.",
+    "Agentforce 1 Service Edition": "The Max base SKU for Service. Includes Slack Enterprise+ and Agentforce.",
+    "Agentforce 1 Sales and Service": "Max combined BOM: Agentforce 1 Sales plus Agentforce 1 Service.",
+    "Agentforce for employees included": "Unmetered AI agents for your own employees, at no extra per-user add-on price. Included in every Max edition.",
     "2.75M Flex Credits per org/year": "2.75 million Flex Credits per org each year for AI and Data 360 usage.",
-    "Slack Enterprise+": "Slack’s highest plan, with enterprise-grade security and compliance.",
+    "Slack Enterprise+": "Slack’s highest plan. Comes with Agentforce 1 Edition on Max.",
+    "Agentforce Contact Center Digital": "Digital contact-center agents on the Max BOM.",
+    "Agentforce Contact Center": "Workforce Management and Digital contact-center items on the Service Max BOM.",
     "Full Service Cloud CRM": "Complete service tools: cases, routing, knowledge and more.",
-    "Built-in AI and 250K Flex Credits per org/year": "AI features plus 250,000 Flex Credits per org each year for agent actions and Data 360.",
-    "Case routing and knowledge": "Send cases to the right team and keep answers in a knowledge base.",
-    "Everything in Service Cloud Core": "Includes Service Cloud Core capabilities, then adds more.",
-    "Author dashboards and data sources": "Build charts and connect the data they use.",
-    "Tableau Prep": "Clean and combine data before you analyze it.",
-    "One Creator license": "A license for one person who authors Tableau content.",
+    "Sales and Service Cloud CRM": "Both Sales and Service on one combined Core SKU.",
+    "Sales and Service Unlimited CRM": "Both Sales and Service on one combined Advanced SKU.",
+    "Sales enablement plus Help Agent Access": "Enablement, insights and Help Agent Access from the combined Advanced BOM.",
     "No forecasting or quoting": "You cannot build a sales forecast or send quotes on this edition.",
     "No built-in AI agents": "This edition does not include Agentforce. Choose a higher edition or an add-on.",
     "No Data 360": "Unified customer profiles are not available on this edition.",
@@ -229,7 +234,7 @@
         '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing<small>A specialist prepares your price</small>" : "Priced by Sales<small>Not available for your region</small>") + "</span></div>") + "</div>";
     h += '<p class="cep-why-blade__sum"><strong>' + (rec.reach === rec.rows.length ? "It can cover all " + rec.rows.length + " of your goals" : "It covers the most of your goals (" + rec.reach + " of " + rec.rows.length + ")") + (rec.suggested.length ? " with " + rec.suggested.length + " add-on" + (rec.suggested.length > 1 ? "s" : "") : " on its own") + (ent ? ", with the fewest extra products." : ", at the lowest estimated cost among options that do.") + "</strong></p>";
     h += '<ul class="cep-why-blade__g">' + rec.rows.map(function (r) { return "<li>" + (r.base === "full" ? CEP.ic.check : r.base === "partial" ? CEP.ic.part : CEP.ic.gap) + "<span><strong>" + esc(r.goal.name) + "</strong> " + esc(r.reason) + "</span></li>"; }).join("") + "</ul>";
-    if (rec.suggested.length) h += '<p class="cep-why-blade__need"><strong>Would also need (not added yet):</strong> ' + rec.suggested.map(function (m) { var mm = E.mod(m); return esc(mm.name) + (priced ? " (" + (mm.price === null ? "priced by Sales" : (mm.status === "from" ? "from " : "") + CEP.pu(mm.price === "edition" ? e.price : mm.price, mm.unit)) + ")" : ""); }).join(", ") + ". You choose these in the next step.</p>";
+    if (rec.suggested.length) h += '<p class="cep-why-blade__need"><strong>Would also need (not added yet):</strong> ' + rec.suggested.map(function (m) { var mm = E.mod(m); var up = E.modUnitPrice(mm, e); return esc(mm.name) + (priced ? " (" + (up === null ? "priced by Sales" : (mm.status === "from" ? "from " : "") + CEP.pu(up, mm.unit)) + ")" : ""); }).join(", ") + ". You choose these in the next step.</p>";
     if (rec.unmet.length) h += '<p class="sx-gl__w">Can’t fully cover: ' + rec.unmet.map(function (r) { return esc(r.goal.name); }).join(", ") + "</p>";
     h += '<div class="sx-btnrow">' + (chosen === rec.id ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + rec.id + '">Use ' + esc(short(e)) + " instead</button>") + "</div></section>";
 
@@ -266,8 +271,9 @@
   };
   function short(e) {
     var map = {
-      st: "Starter", pro: "Pro Suite", core: "Sales Core", adv: "Sales Advanced", max: "Max",
-      svc_core: "Service Core", svc_adv: "Service Advanced", tab: "Tableau"
+      st: "Starter", pro: "Pro Suite", core: "Sales Core", adv: "Sales Advanced", max: "Sales Max",
+      svc_core: "Service Core", svc_adv: "Service Advanced", svc_max: "Service Max",
+      crm_core: "Sales & Service Core", crm_adv: "Sales & Service Advanced", crm_max: "Sales & Service Max"
     };
     return map[e.id] || e.name;
   }
@@ -306,9 +312,12 @@
   I.seats = function (el) { var v = Math.max(1, Math.floor(+el.value || 1)); S().pub.seats = v; CEP.track("price_assumptions_changed", { seats: v }); CEP.save(); CEP.render(); };
 
   /* ═════════ COMPARE PACKAGED EDITIONS (product-led entry) ═════════ */
-  var CATALOG = ["st", "pro", "core", "svc_core", "adv", "svc_adv", "max", "tab"];
+  var CATALOG = ["st", "pro", "core", "adv", "max", "svc_core", "svc_adv", "svc_max", "crm_core", "crm_adv", "crm_max"];
   var FAMILIES = [
-    { id: "all", name: "Packaged editions", eds: CATALOG, d: "Ready-made editions across Salesforce products. This isn’t the full catalog. Prices are illustrative list prices." }
+    { id: "suites", name: "Starter and Pro Suite", eds: ["st", "pro"], d: "Starter Suite and Pro Suite." },
+    { id: "sales", name: "Sales Cloud", eds: ["core", "adv", "max"], d: "Portfolio 2.0 Sales editions. List prices from the Product Explorer BOM: $195 / $395 / $550." },
+    { id: "service", name: "Service Cloud", eds: ["svc_core", "svc_adv", "svc_max"], d: "Portfolio 2.0 Service editions. Same list prices as Sales: $195 / $395 / $550." },
+    { id: "crm", name: "Sales & Service", eds: ["crm_core", "crm_adv", "crm_max"], d: "Combined CRM editions. Cheaper than buying Sales and Service separately ($250 / $475 / $675)." }
   ];
   function edCard(id) {
     var e = E.ed(id), rg = E.region(S().ctx.region);
@@ -320,21 +329,29 @@
     var h = '<h1 class="sx-h2">Compare packaged editions</h1><p class="sx-sub">Ready-made editions that fit common business goals. This isn’t our full product catalog. Prices are illustrative list prices.</p>';
     h += '<div class="cep-notsure"><span>' + CEP.ic.info + " <strong>Not sure which one?</strong> Answer a few questions and we’ll recommend one.</span><a class=\"sf-cta sf-cta--secondary sf-cta--medium\" href=\"#/start\">Find my plan</a></div>";
     h += '<div class="cep-row-between cep-edhead"><h2 class="sx-h3" id="ed-all">Packaged editions</h2>' + CEP.periodToggle("pt-ed") + "</div>";
-    h += '<section class="cep-edsec" aria-labelledby="ed-all"><div class="cep-row-between"><span></span><a class="sx-link" href="#/product">Compare side by side →</a></div><div class="cep-edgrid">' + CATALOG.map(edCard).join("") + "</div></section>";
+    h += '<p class="sx-mod__d">Starter, Pro, Sales, Service, and combined Sales &amp; Service editions. Compare any of them side by side.</p>';
+    h += '<p><a class="sx-link" href="#/product">Compare side by side →</a></p>';
+    h += '<div class="cep-edgrid">' + CATALOG.map(edCard).join("") + "</div>";
     h += '<section class="cep-edsec" aria-labelledby="ed-ai"><h2 class="sx-h3" id="ed-ai">AI agents (Agentforce)</h2><p class="sx-mod__d">If you want AI agents, this is how: pay per user, or by usage with Flex Credits.</p><div class="cep-edgrid cep-edgrid--2">' +
-      '<article class="cep-edc"><h3 class="sx-h4">Agentforce add-on</h3><p class="cep-edc__p"><strong>' + CEP.pu(125, "user (seat)/mo") + '</strong><small>Included in Sales Cloud Max</small></p><p class="sx-mod__d">Unmetered AI agents for your own employees, added to a Core or Advanced edition.</p><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="aiPlan">Find a plan with AI agents</button></article>' +
-      '<article class="cep-edc"><h3 class="sx-h4">Flex Credits</h3><p class="cep-edc__p"><strong>$500 per 100K credits</strong><small>$0.005 per credit · 20 credits (about $0.10) per agent action</small></p><p class="sx-mod__d">Pay for agent actions and Data 360 usage. Core, Advanced and Max already include some credits.</p><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + FX.links.flexCalculator + '" target="_blank" rel="noopener noreferrer">Estimate credits in the calculator ' + CEP.ic.ext + "</a></article></div></section>";
+      '<article class="cep-edc"><h3 class="sx-h4">Agentforce add-on</h3><p class="cep-edc__p"><strong>' + CEP.pu(125, "user (seat)/mo") + '</strong><small>Included in every Max edition</small></p><p class="sx-mod__d">Unmetered AI agents for your own employees, added to a Core or Advanced edition. Already in Sales Max, Service Max and Sales & Service Max.</p><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="aiPlan">Find a plan with AI agents</button></article>' +
+      '<article class="cep-edc"><h3 class="sx-h4">Flex Credits</h3><p class="cep-edc__p"><strong>$500 per 100K credits</strong><small>$0.005 per credit · 20 credits (about $0.10) per agent action</small></p><p class="sx-mod__d">Pay for agent actions and Data 360 usage. Every Core includes 500K, Advanced 1M, Max 2.75M — the same on Sales, Service and Sales & Service.</p><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + FX.links.flexCalculator + '" target="_blank" rel="noopener noreferrer">Estimate credits in the calculator ' + CEP.ic.ext + "</a></article></div></section>";
+    h += '<p class="sx-fine">Tableau Next (Consumer + one Creator per org) is included in Portfolio 2.0 editions, not sold here as a standalone edition. Extra Viewers or Creators are outside this estimate.</p>';
     h += stepNav("#/", "Back", null, null);
     return CEP.page(h, {});
   };
   R["/browse"] = R["/editions"];
   A.aiPlan = function () { var c = S().ctx; if (c.goals.indexOf("g_ai") < 0 && c.goals.length < 4) c.goals.push("g_ai"); if (!S().pub.actions) S().pub.actions = FX.usage.defaultActions; CEP.track("context_changed", { field: "goals", via: "editions_ai" }); CEP.save(); CEP.go("#/explore"); };
   R["/product"] = function () {
-    var s = S(), fid = (location.hash.split("f=")[1] || s.pub.browseProduct || "all").split("&")[0];
-    if (fid === "smb" || fid === "sales") fid = "all";
+    var s = S(), fid = (location.hash.split("f=")[1] || s.pub.browseProduct || "sales").split("&")[0];
+    if (fid === "smb") fid = "suites";
+    if (fid === "all" || fid === "tab") fid = "sales";
     s.pub.browseProduct = fid; s.pub.lastRoute = "#/product?f=" + fid;
-    var f = FAMILIES.filter(function (x) { return x.id === fid; })[0] || FAMILIES[0];
-    var h = '<p class="sx-eyebrow"><a href="#/editions">Packaged editions</a></p><h1 class="sx-h2">Edition comparison</h1><p class="sx-sub">' + esc(f.d) + "</p>";
+    var f = FAMILIES.filter(function (x) { return x.id === fid; })[0] || FAMILIES[1];
+    var h = '<p class="sx-eyebrow"><a href="#/editions">Packaged editions</a></p><h1 class="sx-h2">Edition comparison</h1>';
+    h += '<div class="sx-seg" role="group" aria-label="Edition family">' + FAMILIES.map(function (fam) {
+      return '<a class="sx-link" href="#/product?f=' + fam.id + '" aria-current="' + (fam.id === f.id ? "page" : "false") + '"' + (fam.id === f.id ? ' style="font-weight:700"' : "") + ">" + esc(fam.name) + "</a>";
+    }).join(" · ") + "</div>";
+    h += '<p class="sx-sub">' + esc(f.d) + "</p>";
     var seats = CEP.sel().seats, cur = s.pub.currency, rg = E.region(s.ctx.region);
     var monthlyOk = f.eds.some(function (id) { return E.ed(id).billing.indexOf("monthly") >= 0; });
     h += '<div class="sx-row cep-ctl"><div><label class="sx-lbl" for="seats">Users (seats)</label>' + stepper("seats", seats, "users (seats)") + "</div>" +
@@ -421,7 +438,8 @@
       h += '<div class="sx-cb"><h2 class="sx-h4" style="margin-top:0">Add-ons</h2><p class="sx-mod__d">Suggested from your goals. Nothing is added until you include it.</p><div class="sx-mods">' + rel.map(function (m) {
         var inc = m.includedIn && m.includedIn.indexOf(e.id) >= 0, ok = CEP.modOk(m, e.id);
         var on = ok && s.pub.accepted[m.id] !== undefined;
-        var price = m.price === null ? "Priced by Sales" : (m.status === "from" ? "From " : "") + CEP.pu(m.price === "edition" ? e.price : m.price, m.unit);
+        var up = E.modUnitPrice(m, e);
+        var price = up === null ? "Priced by Sales" : (m.status === "from" ? "From " : "") + CEP.pu(up, m.unit);
         var why = m.goalName ? "For “" + esc(m.goalName) + "”: " : "";
         var act = inc ? '<span class="sx-chip is-est">Included in ' + esc(short(e)) + "</span>" : (!ok ? '<span class="sx-chip is-pre">Not available on this edition</span>' :
           '<button class="sf-cta sf-cta--' + (on ? "secondary" : "primary") + ' sf-cta--medium" data-act="toggleMod" data-id="' + m.id + '" aria-pressed="' + on + '">' + (on ? "Remove" : "Include") + "</button>");
@@ -435,7 +453,7 @@
     var showUsage = s.ctx.goals.indexOf("g_ai") >= 0 || s.pub.actions > 0 || s.pub.accepted.afaddon !== undefined;
     if (showUsage) {
       h += '<div class="sx-cb"><h2 class="sx-h4" style="margin-top:0">AI agent usage (variable)</h2>';
-      if (E.edRank(e.id) < 2) h += CEP.note("w", "AI agents aren’t available on " + esc(e.name) + ". Choose a Core or higher CRM edition to include agent usage, or set usage to 0.");
+      if (E.isSmb(e.id)) h += CEP.note("w", "AI agents aren’t available on " + esc(e.name) + ". Choose a Core or higher CRM edition to include agent usage, or set usage to 0.");
       h += '<label class="sx-lbl" for="actions">Agent actions per month</label>' + stepper("actions", s.pub.actions || 0, "actions/mo");
       if (est.credits) {
         var cc = est.credits;
@@ -469,7 +487,7 @@
     var salesCard = '<article class="cep-nextc' + (ent ? " is-primary" : "") + '"><h2 class="sx-h4">Talk to Sales</h2><p class="sx-mod__d">' + (ent ? "A specialist prepares tailored pricing, including volume and commitment options." : "Get help from a specialist. You see exactly what’s shared first.") + '</p><a class="sf-cta sf-cta--' + (ent ? "primary sf-cta--hero" : "secondary sf-cta--hero") + '" href="#/handoff" data-act="next" data-v="sales" data-allow-disabled>Talk to Sales</a></article>';
     var saveCard = ent ? "" : '<article class="cep-nextc"><h2 class="sx-h4">Save and compare</h2><p class="sx-mod__d">Keep this estimate, compare versions side by side, or download a summary.</p><p class="sx-fine">Sign in or create an account first.</p><div class="sx-btnrow"><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="gate" data-g="save">Save this estimate</button><button class="sx-link" data-act="gate" data-g="compare">Compare saved' + (s.pub.saved.length ? " (" + s.pub.saved.length + ")" : "") + '</button><button class="sx-link" data-act="gate" data-g="download">Download summary</button></div></article>';
     h += '<div class="cep-next">' + (ent ? salesCard + trialCard : trialCard + salesCard + saveCard) + "</div>";
-    if (e && E.edRank(e.id) < 2 && !ent) h += '<p class="sx-fine">Ready to buy ' + esc(e.name) + '? <button class="sx-link" data-act="buyOnline">Buy online</button></p>';
+    if (e && E.isSmb(e.id) && !ent) h += '<p class="sx-fine">Ready to buy ' + esc(e.name) + '? <button class="sx-link" data-act="buyOnline">Buy online</button></p>';
     else if (e && !ent) h += '<p class="sx-fine">' + esc(e.name) + " is bought with a Salesforce account team, so there’s no online checkout.</p>";
     h += stepNav("#/estimate", "Back", null, null);
     return CEP.page(h, { rail: true });
@@ -664,7 +682,8 @@
       (tr.pageName ? '<p class="sx-fine">Opens the salesforce.com page “' + esc(tr.pageName) + "”.</p>" : "") +
       '<ul class="cep-kv cep-kv--2"><li><span>Length</span>' + esc(tr.duration) + "</li><li><span>Users</span>" + esc(tr.users) + "</li><li><span>What’s included</span>" + esc(tr.includes) + "</li><li><span>Sign-up</span>" + esc(tr.card) + "</li><li><span>Your data</span>" + esc(tr.data) + "</li><li><span>When it ends</span>" + esc(tr.ends) + ". Nothing is charged.</li><li><span>Afterwards</span>" + esc(tr.after) + "</li><li><span>Help</span>" + esc(tr.support) + "</li></ul>" +
       (tr.maxNote ? CEP.note("w", "There’s no public trial for Max. This opens the Advanced trial; ask Sales to see Max-only features.") : "") + "</div>";
-    var wantsService = s.pub.accepted.svc !== undefined || (s.ctx.goals.indexOf("g_service") >= 0 && E.edRank(e.id) >= 2);
+    var salesOnly = e.id === "core" || e.id === "adv" || e.id === "max";
+    var wantsService = salesOnly && (s.pub.accepted.svc !== undefined || s.ctx.goals.indexOf("g_service") >= 0);
     if (wantsService) h += CEP.note("", "<strong>Also try Service Cloud.</strong> Your plan includes customer service, which is a separate 30-day trial. <a href=\"" + FX.links.serviceTrial + "\" target=\"_blank\" rel=\"noopener noreferrer\" data-act=\"svcTrial\" data-allow-disabled>Open Service Cloud trial " + CEP.ic.ext + "</a>");
     if (ind && ind.industryTrial) h += CEP.note("", "<strong>" + esc(ind.industryTrial) + " trial org.</strong> Salesforce also offers a 30-day " + esc(ind.industryTrial) + " trial on its free-trials page (Industry-Based Trials tab). <a href=\"" + FX.links.industryTrials + "\" target=\"_blank\" rel=\"noopener noreferrer\">See industry trials " + CEP.ic.ext + "</a>");
 
@@ -723,7 +742,7 @@
     h += '<div class="sx-share"><h2 class="sx-h4" style="margin-top:4px">What would be shared</h2><ul class="cep-sharelist">' + groups.map(function (g) {
       return '<li><label class="sx-chk"><input type="checkbox" data-in="handInc" data-k="' + g[0] + '"' + (hd.include[g[0]] ? " checked" : "") + " /> <strong>" + esc(g[1]) + '</strong></label><span class="sx-mod__d">' + esc(g[2]) + "</span></li>";
     }).join("") + '<li><span class="sx-mod__d">Also shared: the next step you chose (' + esc(s.pub.next || "talk to sales") + ") and your contact details below.</span></li></ul></div>";
-    h += '<div class="sx-form"><div class="sx-grid2">' + field("hname", "Full name", hd.name, "text", hd.err && !hd.name) + field("hemail", "Work email", hd.email, "email", hd.err && !/.+@.+\..+/.test(hd.email)) + "</div><div class=\"sx-grid2\">" + field("hcompany", "Company", hd.company, "text", false) + field("hphone", "Phone", hd.phone, "tel", hd.err && !(hd.phone && /\d/.test(hd.phone))) + "</div>" +
+    h += '<div class="sx-form"><div class="sx-grid2">' + field("hname", "Full name", hd.name, "text", hd.err && !hd.name, true) + field("hemail", "Work email", hd.email, "email", hd.err && !/.+@.+\..+/.test(hd.email), true) + "</div><div class=\"sx-grid2\">" + field("hcompany", "Company", hd.company, "text", false, false) + field("hphone", "Phone", hd.phone, "tel", hd.err && !(hd.phone && /\d/.test(hd.phone)), true) + "</div>" +
       '<label class="sx-chk"><input type="checkbox" id="hconsent" data-in="handConsent"' + (hd.consent ? " checked" : "") + " /> I agree to share the items above with Salesforce so a specialist can contact me (simulated consent).</label>" + (hd.err && !hd.consent ? '<p class="sx-err">Tick the consent box to continue, or choose “Don’t share”.</p>' : "") + "</div>";
     h += '<div class="sx-foot"><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + back + '">← Back</a><span class="sx-foot__n"></span><div class="sx-btnrow"><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="handDecline">Don’t share</button><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="copySummary">Copy summary</button><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="handSend">Review and send (simulated)</button></div></div>';
     return CEP.page(h, { rail: true });
@@ -735,9 +754,10 @@
     if (k === "region" && c.region) return E.region(c.region).name;
     return null;
   }
-  function field(id, label, val, type, bad) {
+  function field(id, label, val, type, bad, req) {
     var err = id === "hemail" ? "Enter a valid work email." : (id === "hphone" ? "Enter a phone number." : "Enter your name.");
-    return '<div><label class="sx-lbl" for="' + id + '">' + esc(label) + '</label><input id="' + id + '" type="' + type + '" value="' + esc(val) + '" data-in="hand" data-live="1" data-k="' + id.slice(1) + '"' + (bad ? ' aria-invalid="true" aria-describedby="' + id + '-e"' : "") + " />" + (bad ? '<p class="sx-err" id="' + id + '-e">' + err + "</p>" : "") + "</div>";
+    var star = req ? ' <abbr class="cep-req" title="Required">*</abbr>' : "";
+    return '<div><label class="sx-lbl" for="' + id + '">' + esc(label) + star + '</label><input id="' + id + '" type="' + type + '" value="' + esc(val) + '" data-in="hand" data-live="1" data-k="' + id.slice(1) + '"' + (req ? ' aria-required="true"' : "") + (bad ? ' aria-invalid="true" aria-describedby="' + id + '-e"' : "") + " />" + (bad ? '<p class="sx-err" id="' + id + '-e">' + err + "</p>" : "") + "</div>";
   }
   I.hand = function (el) { S().hand[el.getAttribute("data-k")] = el.value; CEP.save(); };
   I.handInc = function (el) { S().hand.include[el.getAttribute("data-k")] = el.checked; CEP.save(); };

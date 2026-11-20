@@ -143,7 +143,10 @@ Pricing** card is the only landing difference: it opens the Commercial Entry
 Point SPA at `v3/cep/index.html` (`#/`).
 
 That SPA is copied from `docs/prototype-Romil-11.20.26/prototype-v5/`
-(read-only). Guided flow: **About you → Options → Customize → Next steps.**
+(read-only) and its edition catalog now follows the Portfolio 2.0 Product
+Explorer BOMs (Sales / Service / Sales & Service Core–Advanced–Max).
+The v3 Solution Estimator uses the same BOMs. Guided flow: **About you →
+Options → Customize → Next steps.**
 Logo and the Pricing subnav title on the SPA return to `v3/index.html`.
 Other hashes: `#/explore`, `#/recommend`, `#/estimate`, `#/next`,
 `#/editions`, `#/account`, `#/seller`, and related account/compare/try/handoff

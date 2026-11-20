@@ -483,6 +483,11 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
   visibility: visible;
   opacity: 1;
 }
+.cep-req {
+  color: var(--color-border-error, #EA001E);
+  font-weight: 700;
+  text-decoration: none;
+}
 .sx-mod.is-off {
   opacity: 0.62;
   background: var(--color-neutral-95, #F3F3F3);

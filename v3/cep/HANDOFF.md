@@ -1,5 +1,32 @@
 # Commercial Entry Point Prototype v5 — Handoff
 
+## v5.3: Portfolio 2.0 Product Explorer BOMs (Nov 20, 2026)
+
+Edition catalog and pricing now follow the **Portfolio 2.0 Product Explorer**
+(`docs/Portfolio-2.0-Product-Explorer/`), not legacy Enterprise/Unlimited
+public-page prices.
+
+- **Sales, Service and combined CRM** are the three Portfolio clouds: Core /
+  Advanced / Max at **$195 / $395 / $550** (Sales or Service) and
+  **$250 / $475 / $675** (Sales & Service). Combined is cheaper than buying
+  both one-function SKUs.
+- **Service Core is $195**, not $165. Flex Credits are **500K / 1M / 2.75M**
+  at every Core / Advanced / Max tier, on every cloud.
+- **Tableau Next is included** (Consumer + one Creator per org). It is not a
+  standalone priced edition.
+- Adding the other function to a one-cloud edition costs the **delta to the
+  combined SKU** ($55 / $80 / $125), not a second full edition price.
+- Agentforce for employees is included on **every Max** SKU (Sales, Service,
+  Sales & Service).
+- Industry and Field Service+ BOMs stay in the explorer reference; this
+  prototype prices the core Portfolio clouds.
+- The v3 **Solution Estimator** uses the same list prices. Sales + service
+  goals recommend the combined SKU; stacking Sales and Service is priced at
+  the combined delta, not two full editions. Tableau is extra licenses only.
+
+---
+
+
 ## v5.2: dates follow the real calendar (Nov 19, 2026)
 
 - **"Today" is now the viewer's local date,** detected when the page loads. It used to be fixed at Nov 2, 2026.

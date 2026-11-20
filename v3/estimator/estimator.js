@@ -83,18 +83,19 @@ var AGR=[["Order Form","&#128203;","","","Standard agreement. Best for Pre-Commi
 // (110×110, decorative — aria-hidden, product name provides the label).
 // Icon file per product is a UI choice only; it does not affect pricing.
 var PRODS=[
-  {id:"sc",  ic:"<img class='prod-ico' src='../assets/product-icons/sales.svg' alt='' aria-hidden='true'>",nm:"Sales Cloud",   ds:"CRM, pipeline & forecasting",   tp:"seat",rc:[0,3,9,8],eds:["Starter — $25/u/mo","Pro Suite — $100/u/mo","Enterprise — $165/u/mo","Unlimited — $330/u/mo"],pr:[25,100,165,330]},
-  {id:"svc", ic:"<img class='prod-ico' src='../assets/product-icons/service.svg' alt='' aria-hidden='true'>",nm:"Service Cloud",  ds:"Case management & omnichannel",  tp:"seat",rc:[1,9],eds:["Starter — $25/u/mo","Pro Suite — $100/u/mo","Enterprise — $165/u/mo","Unlimited — $330/u/mo"],pr:[25,100,165,330]},
+  {id:"sc",  ic:"<img class='prod-ico' src='../assets/product-icons/sales.svg' alt='' aria-hidden='true'>",nm:"Sales Cloud",   ds:"CRM, pipeline & forecasting",   tp:"seat",rc:[0,3,9,8],eds:["Starter — $25/u/mo","Pro Suite — $100/u/mo","Core — $195/u/mo","Advanced — $395/u/mo","Max — $550/u/mo"],pr:[25,100,195,395,550]},
+  {id:"svc", ic:"<img class='prod-ico' src='../assets/product-icons/service.svg' alt='' aria-hidden='true'>",nm:"Service Cloud",  ds:"Case management & omnichannel",  tp:"seat",rc:[1,9],eds:["Starter — $25/u/mo","Pro Suite — $100/u/mo","Core — $195/u/mo","Advanced — $395/u/mo","Max — $550/u/mo"],pr:[25,100,195,395,550]},
+  {id:"crm", ic:"<img class='prod-ico' src='../assets/product-icons/sales.svg' alt='' aria-hidden='true'>",nm:"Sales & Service Cloud",ds:"Combined CRM — cheaper than buying both",tp:"seat",rc:[0,1,9],eds:["Core — $250/u/mo","Advanced — $475/u/mo","Max — $675/u/mo"],pr:[250,475,675]},
   {id:"af",  ic:"<img class='prod-ico' src='../assets/product-icons/agentforce.svg' alt='' aria-hidden='true'>",nm:"Agentforce",     ds:"AI agents — Flex Credits",  tp:"flex",rc:[3,0,1,2,5,9]},
   {id:"d360",ic:"<img class='prod-ico' src='../assets/product-icons/data-cloud.svg' alt='' aria-hidden='true'>",nm:"Data 360",       ds:"Unified data — Flex Credits",tp:"flex",rc:[4,3,2,1,9]},
   {id:"mce", ic:"<img class='prod-ico' src='../assets/product-icons/marketing.svg' alt='' aria-hidden='true'>",nm:"Marketing Cloud Engagement",ds:"Email, SMS & journeys (B2C)",tp:"org",rc:[2,5],eds:["Basic — $1,250/org/mo","Pro — $3,750/org/mo","Corporate — $12,000/org/mo","Enterprise — $15,000/org/mo"],pr:[1250,3750,12000,15000]},
   {id:"mcae",ic:"<img class='prod-ico' src='../assets/product-icons/marketing.svg' alt='' aria-hidden='true'>",nm:"Mktg Cloud Account Engagement",ds:"B2B marketing automation (Pardot)",tp:"org",rc:[2],eds:["Growth — $1,250/org/mo","Plus — $2,500/org/mo","Advanced — $4,000/org/mo","Premium — $15,000/org/mo"],pr:[1250,2500,4000,15000]},
   {id:"cc",  ic:"<img class='prod-ico' src='../assets/product-icons/commerce.svg' alt='' aria-hidden='true'>",nm:"Commerce Cloud",ds:"B2C & B2B digital storefronts",  tp:"custom",rc:[5],note:"Revenue share model — contact sales."},
   {id:"ms",  ic:"<img class='prod-ico' src='../assets/product-icons/mulesoft.svg' alt='' aria-hidden='true'>",nm:"MuleSoft Anypoint",ds:"Integration & API management",tp:"org",rc:[6,4],eds:["Gold — $2,000/org/mo","Platinum — custom pricing"],pr:[2000,0]},
-  {id:"tab", ic:"<img class='prod-ico' src='../assets/product-icons/tableau.svg' alt='' aria-hidden='true'>",nm:"Tableau",        ds:"BI & data visualisation",        tp:"seat",rc:[7],eds:["Viewer — $15/u/mo","Explorer — $42/u/mo","Creator — $70/u/mo"],pr:[15,42,70]},
-  {id:"slack",ic:"<img class='prod-ico' src='../assets/product-icons/slack.svg' alt='' aria-hidden='true'>",nm:"Slack",         ds:"Team messaging & workflows",     tp:"seat",rc:[8,0],eds:["Pro — $7.25/u/mo","Business+ — $12.50/u/mo"],pr:[7.25,12.50]},
-  {id:"fsc", ic:"<img class='prod-ico' src='../assets/product-icons/industries.svg' alt='' aria-hidden='true'>",nm:"Financial Services Cloud",ds:"Purpose-built for banking & insurance",tp:"seat",rc:[9],eds:["Enterprise — $225/u/mo","Unlimited — $375/u/mo"],pr:[225,375]},
-  {id:"hc",  ic:"<img class='prod-ico' src='../assets/product-icons/industries.svg' alt='' aria-hidden='true'>",nm:"Health Cloud",   ds:"Patient & member relationship",  tp:"seat",rc:[9],eds:["Enterprise — $300/u/mo","Unlimited — $450/u/mo"],pr:[300,450]}
+  {id:"tab", ic:"<img class='prod-ico' src='../assets/product-icons/tableau.svg' alt='' aria-hidden='true'>",nm:"Tableau",        ds:"Extra licenses (Portfolio editions already include Consumer + one Creator per org)",        tp:"seat",rc:[7],eds:["Extra Viewer — $15/u/mo","Extra Explorer — $42/u/mo","Extra Creator — $70/u/mo"],pr:[15,42,70]},
+  {id:"slack",ic:"<img class='prod-ico' src='../assets/product-icons/slack.svg' alt='' aria-hidden='true'>",nm:"Slack",         ds:"Team messaging (Business+ is included in Portfolio Core/Advanced)",     tp:"seat",rc:[8,0],eds:["Pro — $7.25/u/mo","Business+ — $12.50/u/mo"],pr:[7.25,12.50]},
+  {id:"fsc", ic:"<img class='prod-ico' src='../assets/product-icons/industries.svg' alt='' aria-hidden='true'>",nm:"Financial Services Cloud",ds:"Purpose-built for banking & insurance",tp:"seat",rc:[9],eds:["Core — $325/u/mo","Advanced — $500/u/mo","Max — $700/u/mo"],pr:[325,500,700]},
+  {id:"hc",  ic:"<img class='prod-ico' src='../assets/product-icons/industries.svg' alt='' aria-hidden='true'>",nm:"Health Cloud",   ds:"Patient & member relationship",  tp:"seat",rc:[9],eds:["Core — $325/u/mo","Advanced — $500/u/mo","Max — $700/u/mo"],pr:[325,500,700]}
 ];
 
 // Mock "why recommended" copy, keyed by product id then PROBS index.
@@ -143,6 +144,11 @@ var REC_BENEFITS={
   },
   tab:{
     "7":"Tableau turns the activity in your Salesforce products into dashboards the team can check without waiting on a report."
+  },
+  crm:{
+    "0":"Sales & Service Cloud is one combined CRM edition, so sellers and service work from the same customer record without buying two full clouds.",
+    "1":"Sales & Service Cloud includes service CRM on the same SKU, which is cheaper than stacking a second full Service edition.",
+    "9":"Sales & Service Cloud is the combined CRM the industry solution builds on, covering both selling and support in one edition."
   },
   slack:{
     "8":"Slack is where the team discusses a customer and kicks off the next step without leaving the conversation.",
@@ -627,10 +633,47 @@ function pickSz(i){S.szi=i;render(0);}
 function pickGeo(i){S.geo=i;render(0);}
 
 // ─── STEP 2: Product Selection ────────────────────────────────────
+function defaultEi(pid){
+  return pid==="crm"?0:1;
+}
+function ensureCfg(pid,on){
+  if(!S.cfg[pid])S.cfg[pid]={on:!!on,ei:defaultEi(pid),seats:ds()};
+  return S.cfg[pid];
+}
+function isOn(id){return !!(S.cfg[id]&&S.cfg[id].on);}
+/* Portfolio 2.0: Sales and Service Core/Advanced/Max are one-function SKUs.
+   The matching other function is the delta to the combined Sales & Service
+   SKU ($55 / $80 / $125), not a second full edition. */
+function portfolioTier(pid,ei){
+  if(pid==="sc"||pid==="svc") return ei===2?"core":ei===3?"adv":ei===4?"max":null;
+  if(pid==="crm") return ei===0?"core":ei===1?"adv":ei===2?"max":null;
+  return null;
+}
+function crmDeltaFor(tier){return tier==="max"?125:tier==="adv"?80:55;}
+function crmStack(){
+  if(isOn("crm")) return {mode:"sku"};
+  if(isOn("sc")&&isOn("svc")){
+    var scK=portfolioTier("sc",S.cfg.sc.ei), svcK=portfolioTier("svc",S.cfg.svc.ei);
+    if(scK&&svcK){
+      var scN=S.cfg.sc.seats||ds(), svcN=S.cfg.svc.seats||ds();
+      var base=scN>=svcN?"sc":"svc";
+      return {mode:"delta",base:base,match:base==="sc"?"svc":"sc"};
+    }
+  }
+  return {mode:"list"};
+}
 function tgP(pi){
   var pid=PRODS[pi].id;
-  if(!S.cfg[pid])S.cfg[pid]={on:false,ei:1,seats:ds()};
-  S.cfg[pid].on=!S.cfg[pid].on;
+  var cfg=ensureCfg(pid);
+  cfg.on=!cfg.on;
+  if(cfg.on){
+    if(pid==="crm"){
+      if(S.cfg.sc) S.cfg.sc.on=false;
+      if(S.cfg.svc) S.cfg.svc.on=false;
+    } else if(pid==="sc"||pid==="svc"){
+      if(S.cfg.crm) S.cfg.crm.on=false;
+    }
+  }
   render(2);
 }
 // "All Salesforce products" disclosure toggle (collapsed by default).
@@ -651,12 +694,12 @@ function tgAll(){
 }
 function chE(pi,v){
   var pid=PRODS[pi].id;
-  if(!S.cfg[pid])S.cfg[pid]={on:true,ei:1,seats:ds()};
+  ensureCfg(pid,true).on=true;
   S.cfg[pid].ei=parseInt(v);render(2);
 }
 function chS(pi,v){
   var pid=PRODS[pi].id;
-  if(!S.cfg[pid])S.cfg[pid]={on:true,ei:1,seats:ds()};
+  ensureCfg(pid,true).on=true;
   S.cfg[pid].seats=Math.max(1,parseInt(v)||1);
   liveSum(pi);                       // update the card-header Monthly/Annual live
 }
@@ -688,7 +731,16 @@ function liveSum(pi){
 // calcD3); seat/org use list math. Returns null for "contact sales".
 // Agentforce prefers the Flex Credit modal estimate once a use case is added.
 function prodPrice(p,cfg){
-  if(p.tp==="seat"){var pr=(p.pr||[])[cfg.ei]||0;var mo=pr*(cfg.seats||ds());return{mo:mo,ann:mo*12};}
+  if(p.tp==="seat"){
+    var pr=(p.pr||[])[cfg.ei]||0;
+    var stack=crmStack();
+    if((p.id==="sc"||p.id==="svc")&&stack.mode==="sku") return {mo:0,ann:0,included:true};
+    if((p.id==="sc"||p.id==="svc")&&stack.mode==="delta"&&p.id===stack.match){
+      var tier=portfolioTier(p.id,cfg.ei);
+      if(tier){ pr=crmDeltaFor(tier); return {mo:pr*(cfg.seats||ds()),ann:pr*(cfg.seats||ds())*12,delta:true,unit:pr}; }
+    }
+    var mo=pr*(cfg.seats||ds());return{mo:mo,ann:mo*12};
+  }
   if(p.tp==="org"){var pr2=(p.pr||[])[cfg.ei]||0;return pr2>0?{mo:pr2,ann:pr2*12}:null;}
   if(p.tp==="flex"){
     if(p.id==="af" && afFlexHas()){
@@ -757,6 +809,10 @@ function pcPanel(pi,p,cfg){
     r+=pcRow("Seats","<input class='si' type='number' min='1' value='"+(cfg.seats||ds())+"' oninput='chS("+pi+",this.value)' onchange='chSC("+pi+",this.value)'>");
     var eo="";for(var i=0;i<p.eds.length;i++)eo+=opt(i,p.eds[i],cfg.ei);
     r+=pcRow("Edition","<select class='ss' onchange='chE("+pi+",this.value)'>"+eo+"</select>");
+    var stack=crmStack();
+    if(stack.mode==="delta"&&p.id===stack.match){
+      r+="<div class='pc-flex-note'><p>Priced as the matching function on the combined Sales &amp; Service SKU (the delta, not a second full edition).</p></div>";
+    }
   } else if(p.tp==="org"){
     var oo="";for(var j=0;j<p.eds.length;j++)oo+=opt(j,p.eds[j],cfg.ei);
     r+=pcRow("Plan","<select class='ss' onchange='chE("+pi+",this.value)'>"+oo+"</select>");
@@ -777,7 +833,7 @@ function pcPanel(pi,p,cfg){
 }
 function pCard(pi,isRec){
   var p=PRODS[pi];var pid=p.id;
-  var cfg=S.cfg[pid]||(S.cfg[pid]={on:false,ei:1,seats:ds()});
+  var cfg=ensureCfg(pid);
   var on=cfg.on;
   var h="<div class='pc"+(on?" on":"")+"'>";
   h+="<div class='pc-h' onclick='tgP("+pi+")'>"
@@ -799,9 +855,23 @@ function pCard(pi,isRec){
 // can't disagree about which products make up the hidden set.
 function recProdSet(){
   var recSet={};
+  var hasSales=S.prbs.indexOf(0)>=0, hasService=S.prbs.indexOf(1)>=0;
   S.prbs.forEach(function(pi){
     PRODS.forEach(function(p,idx){if(p.rc&&p.rc.indexOf(pi)>=0)recSet[idx]=true;});
   });
+  var scIdx=-1,svcIdx=-1,crmIdx=-1;
+  PRODS.forEach(function(p,idx){
+    if(p.id==="sc") scIdx=idx;
+    if(p.id==="svc") svcIdx=idx;
+    if(p.id==="crm") crmIdx=idx;
+  });
+  if((hasSales&&hasService) || (scIdx>=0 && svcIdx>=0 && recSet[scIdx] && recSet[svcIdx])){
+    if(crmIdx>=0) recSet[crmIdx]=true;
+    if(scIdx>=0) delete recSet[scIdx];
+    if(svcIdx>=0) delete recSet[svcIdx];
+  } else if(crmIdx>=0){
+    delete recSet[crmIdx];
+  }
   return recSet;
 }
 function rProds(){
@@ -1043,9 +1113,12 @@ function rEstimate(){
   PRODS.forEach(function(p){
     var cfg=S.cfg[p.id];if(!cfg||!cfg.on)return;
     if(p.tp==="seat"){
-      var pr=(p.pr||[])[cfg.ei]||0;var seats=cfg.seats||ds();
-      var mo=pr*seats;var ann=mo*12;sAnn+=ann;sMo+=mo;
-      sl.push({id:p.id,nm:p.nm,ic:p.ic,ed:p.eds[cfg.ei]||"",seats:seats,prps:pr,mo:mo,ann:ann,k:"seat"});
+      var pp=prodPrice(p,cfg);
+      if(!pp||pp.included) return;
+      var seats=cfg.seats||ds();
+      var pr=seats?Math.round(pp.mo/seats*100)/100:0;
+      sAnn+=pp.ann;sMo+=pp.mo;
+      sl.push({id:p.id,nm:p.nm,ic:p.ic,ed:(p.eds[cfg.ei]||"")+(pp.delta?" · combined-SKU add-on":""),seats:seats,prps:pr,mo:pp.mo,ann:pp.ann,k:"seat"});
     } else if(p.tp==="org"){
       var pr2=(p.pr||[])[cfg.ei]||0;var ann2=pr2*12;sAnn+=ann2;sMo+=pr2;
       sl.push({id:p.id,nm:p.nm,ic:p.ic,ed:p.eds[cfg.ei]||"",seats:null,prps:pr2,mo:pr2,ann:ann2,k:pr2>0?"org":"cs"});

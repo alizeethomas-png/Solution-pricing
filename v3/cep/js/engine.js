@@ -43,8 +43,24 @@
     var m = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     var p = s.split("-"); return m[+p[1] - 1] + " " + (+p[2]) + ", " + p[0];
   }
-  var ED_ORDER = ["st", "pro", "core", "svc_core", "adv", "svc_adv", "max"];
+  var ED_ORDER = ["st", "pro", "core", "svc_core", "crm_core", "adv", "svc_adv", "crm_adv", "max", "svc_max", "crm_max"];
   function edRank(id) { return ED_ORDER.indexOf(id); }
+  function isSmb(id) { return id === "st" || id === "pro"; }
+  function isMax(id) { return id === "max" || id === "svc_max" || id === "crm_max"; }
+  /* Extra to go from a one-function Portfolio SKU to the combined
+     Sales & Service SKU at the same tier (explorer: $250 / $475 / $675). */
+  function crmDelta(edId) {
+    if (!edId) return 55;
+    if (edId.indexOf("max") >= 0) return 125;
+    if (edId.indexOf("adv") >= 0) return 80;
+    return 55;
+  }
+  function modUnitPrice(m, e) {
+    if (!m) return null;
+    if (m.price === "edition") return e ? e.price : null;
+    if (m.price === "crmDelta") return e ? crmDelta(e.id) : null;
+    return m.price;
+  }
 
   /* ── goal suggestion (R26: rules, reversible, no AI pricing) ──── */
   function suggestGoals(text) {
@@ -62,9 +78,10 @@
     var fixes = [], needsUpgrade = false;
     g.fix.forEach(function (mid) {
       var m = mod(mid);
+      if (!m) return;
       if (m.includedIn && m.includedIn.indexOf(edId) >= 0) return;
       if (m.reqEd.indexOf(edId) >= 0) fixes.push(mid);
-      else needsUpgrade = true;
+      else if (base === "gap") needsUpgrade = true;
     });
     var status = base;
     var closedBy = null;
@@ -101,13 +118,21 @@
     if (goals.length && opts.length) {
       var best = Math.max.apply(null, opts.map(function (o) { return o.reach; }));
       var cands = opts.filter(function (o) { return o.reach === best; });
-      cands.sort(function (a, b) { return estimate({ ed: a.id, seats: seats, accepted: defaultAccept(a, seats), actions: 0 }).knownAnnual - estimate({ ed: b.id, seats: seats, accepted: defaultAccept(b, seats), actions: 0 }).knownAnnual; });
+      cands.sort(function (a, b) {
+        var ea = estimate({ ed: a.id, seats: seats, accepted: defaultAccept(a, seats), actions: 0 }).knownAnnual;
+        var eb = estimate({ ed: b.id, seats: seats, accepted: defaultAccept(b, seats), actions: 0 }).knownAnnual;
+        if (ea !== eb) return ea - eb;
+        /* Same cost: prefer the packaged SKU (fewer add-ons, more covered on its own)
+           so Sales & Service Core wins over Sales Core + Service delta. */
+        if (a.suggested.length !== b.suggested.length) return a.suggested.length - b.suggested.length;
+        return b.full - a.full;
+      });
       rec = cands[0].id;
     }
     var complex = false, complexWhy = [];
     if (rec && sz && (sz.id === "s1" || sz.id === "s2")) {
       var r = byId(opts, rec);
-      if (edRank(rec) >= 2) { complex = true; complexWhy.push("Your goals need a Sales Cloud edition, which is more than most small teams start with."); }
+      if (edRank(rec) >= 2) { complex = true; complexWhy.push("Your goals need " + r.edition.name + ", which is more than most small teams start with."); }
       if (r.suggested.length >= 2) { complex = true; complexWhy.push("It also needs " + r.suggested.length + " add-ons."); }
     }
     return { options: opts, recommended: rec, personalized: goals.length > 0, seats: seats, complex: complex, complexWhy: complexWhy, salesLed: !!(sz && sz.salesLed) };
@@ -171,7 +196,7 @@
     var incl = [];
     if (e.credits) incl.push(credits(e.credits) + " Flex Credits per org/year");
     incl.push(e.slack);
-    if (e.id === "max") incl.push("Agentforce for employees");
+    if (isMax(e.id)) incl.push("Agentforce for employees");
 
     var acc = sel.accepted || {};
     var productCount = 1;
@@ -187,7 +212,7 @@
         partial = true; return;
       }
       productCount++;
-      var unitPrice = m.price === "edition" ? e.price : m.price;
+      var unitPrice = modUnitPrice(m, e);
       var amt = null, qtyLabel = "", unitLabel = m.unit;
       if (m.status === "unpriced" || unitPrice === null) { amt = null; partial = true; }
       else if (m.unit === "user/mo") { amt = unitPrice * q * 12; qtyLabel = "users (seats)"; unitLabel = "user/mo"; }
@@ -203,7 +228,7 @@
     // consumption
     var cc = null;
     if (sel.actions > 0) {
-      if (edRank(e.id) < 2) {
+      if (isSmb(e.id)) {
         push({ id: "flex", cat: "consumption", label: "Agent actions (Flex Credits)", amount: null, incompatible: true, status: "incompatible", note: "AI agents aren't available on " + e.name + ". Usage is excluded." });
         partial = true;
       } else {
@@ -400,7 +425,7 @@
   }
 
   var API = { money: money, credits: credits, num: num, fmtDate: fmtDate, daysInclusive: daysInclusive, addDays: addDays,
-    ed: ed, mod: mod, goal: goal, size: size, region: region, edRank: edRank,
+    ed: ed, mod: mod, goal: goal, size: size, region: region, edRank: edRank, isSmb: isSmb, isMax: isMax, modUnitPrice: modUnitPrice, crmDelta: crmDelta,
     suggestGoals: suggestGoals, coverGoal: coverGoal, options: options, defaultQty: defaultQty,
     creditCalc: creditCalc, servicesBand: servicesBand, estimate: estimate, buyingModelCheck: buyingModelCheck,
     seatQuote: seatQuote, cartQuote: cartQuote, creditPosition: creditPosition, creditPlan: creditPlan, commitEval: commitEval };

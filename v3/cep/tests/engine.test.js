@@ -44,6 +44,36 @@ t("Add-on unavailable on Pro is excluded from the total", function () {
 t("R11 PayGo blocked with Agentforce add-on; alternative offered", function () { var r = E.buyingModelCheck("payg", "core", { afaddon: 1 }, true); ok(!r.ok); eq(r.alternative, "Pre-purchase"); });
 t("R26 free text maps to controlled goals; unknown text not understood", function () { var r = E.suggestGoals("AI agent for order status and unify customer data"); ok(r.ids.indexOf("g_ai") >= 0 && r.ids.indexOf("g_data") >= 0); eq(E.suggestGoals("blue elephants").understood, false); });
 
+console.log("Portfolio 2.0 Product Explorer BOM");
+t("Service Cloud matches Sales list prices ($195 / $395 / $550)", function () {
+  eq(E.ed("svc_core").price, 195); eq(E.ed("svc_adv").price, 395); eq(E.ed("svc_max").price, 550);
+  eq(E.ed("core").price, 195); eq(E.ed("adv").price, 395); eq(E.ed("max").price, 550);
+});
+t("Sales & Service combined SKUs are $250 / $475 / $675", function () {
+  eq(E.ed("crm_core").price, 250); eq(E.ed("crm_adv").price, 475); eq(E.ed("crm_max").price, 675);
+});
+t("Tableau is not a standalone priced edition", function () { eq(E.ed("tab"), null); ok(E.ed("core").includes.join(" ").indexOf("Tableau Next") >= 0); });
+t("Core Flex Credits are 500K on Sales, Service and combined", function () {
+  eq(E.ed("core").credits, 500000); eq(E.ed("svc_core").credits, 500000); eq(E.ed("crm_core").credits, 500000);
+});
+t("Adding Service to Sales Core costs the combined delta, not a second $195", function () {
+  var e = E.estimate({ ed: "core", seats: 10, accepted: { svc: 10 }, actions: 0 });
+  eq(e.knownAnnual, 250 * 10 * 12);
+});
+t("Sales + service goals recommend Sales & Service Core over stacked add-ons", function () {
+  eq(E.options({ size: "mm", goals: ["g_sales", "g_service"] }).recommended, "crm_core");
+});
+t("Service-only goals recommend Service Cloud Core", function () {
+  eq(E.options({ size: "mm", goals: ["g_service"] }).recommended, "svc_core");
+});
+t("Agentforce add-on is included on every Max SKU", function () {
+  ["max", "svc_max", "crm_max"].forEach(function (id) {
+    var e = E.estimate({ ed: id, seats: 5, accepted: { afaddon: 5 }, actions: 0 });
+    ok(e.lines.filter(function (l) { return l.id === "afaddon"; })[0].included, id);
+    eq(e.knownAnnual, E.ed(id).price * 5 * 12, id);
+  });
+});
+
 console.log("Expansion: add seats (F5)");
 t("FX-D 10 seats prorated for 91 of 365 days at account rate", function () { var q = E.seatQuote({ lic: "sales_adv", qty: 10, role: "buyer", effective: "2026-11-02" }); ok(q.ok); eq(q.remDays, 91); eq(q.prorated, Math.round(10 * 375 * 12 * 91 / 365)); eq(q.lic.listRate, 395); });
 t("FX-E admin-not-buyer is blocked", function () { ok(E.seatQuote({ lic: "sales_adv", qty: 10, role: "admin" }).blocks.some(function (b) { return b.code === "unauthorized"; })); });
@@ -94,10 +124,10 @@ t("Invalid term and insufficient commit flagged", function () { var sc = JSON.pa
 
 console.log("Fuzz: invariants across random selections");
 t("No NaN, totals = sum of priced lines, unknown never counted (1,000 runs)", function () {
-  var eds = ["st", "pro", "core", "adv", "max"], mods = FX.modules.map(function (m) { return m.id; });
+  var eds = ["st", "pro", "core", "svc_core", "crm_core", "adv", "svc_adv", "crm_adv", "max", "svc_max", "crm_max"], mods = FX.modules.map(function (m) { return m.id; });
   for (var i = 0; i < 1000; i++) {
     var acc = {}; mods.forEach(function (m) { if (Math.random() < 0.35) acc[m] = 1 + Math.floor(Math.random() * 50); });
-    var e = E.estimate({ ed: eds[i % 5], seats: 1 + Math.floor(Math.random() * 300), accepted: acc, actions: Math.floor(Math.random() * 20000), region: Math.random() < 0.1 ? "emea" : "na" });
+    var e = E.estimate({ ed: eds[i % eds.length], seats: 1 + Math.floor(Math.random() * 300), accepted: acc, actions: Math.floor(Math.random() * 20000), region: Math.random() < 0.1 ? "emea" : "na" });
     var sum = 0; e.lines.forEach(function (l) { if (l.amount !== null && !l.incompatible) sum += l.amount; ok(l.amount === null || !isNaN(l.amount), "NaN"); });
     eq(e.knownAnnual, sum);
     if (e.lines.some(function (l) { return l.amount === null; })) ok(e.partial, "partial flag");
