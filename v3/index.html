@@ -37,7 +37,6 @@
 <link rel="stylesheet" href="css/icons-local.css" />
 <link rel="stylesheet" href="css/components.css" />
 <link rel="stylesheet" href="css/page.css" />
-<link rel="stylesheet" href="css/dsr-login.css" />
 </head>
 <body>
 <main>
@@ -180,26 +179,6 @@
       </div>
     </section>
 
-    <!-- 4. DIGITAL SALES ROOM ───────────────────────────────────── -->
-    <section class="blade" id="calculator">
-      <div class="blade__content">
-        <div class="calc-promo">
-          <span class="calc-promo__icon"><i class="icon icon--money icon--lg" aria-hidden="true"></i></span>
-          <div class="section-header">
-            <h2 class="section-header__headline">Digital Sales Room</h2>
-            <p class="section-header__body">
-              Two ways in. From Build Your Salesforce Solution, Configure and Estimate
-              Your Solution opens a room with the products and currency you already
-              chose. Or login here and start a room from the beginning.
-            </p>
-          </div>
-          <div class="calc-promo__ctas">
-            <button type="button" class="sf-cta sf-cta--hero sf-cta--primary" onclick="openDsrLogin()">Login to Digital Sales Room</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- 5. BUYING MODELS ─────────────────────────────────────────── -->
     <section class="blade" aria-labelledby="buying-models-heading">
       <div class="blade__content">
@@ -251,7 +230,7 @@
       </div>
     </section>
 
-  </section><!-- /.sf-blade-region region-day (hero → pricing by → calculator → buying models) -->
+  </section><!-- /.sf-blade-region region-day (hero → pricing by → buying models) -->
 
   <!-- ═══════════════════════════════════════════════════════════════════
        6. FAQ — native <details>/<summary> accordion. Works with zero JS;
@@ -439,52 +418,8 @@
 <!-- Progressive-enhancement scripts. Plain <script defer> (not modules) so
      they run when index.html is opened directly from disk (file://).
      The page is fully usable without them. -->
-<div id="dsr-login" class="dsr-login" hidden>
-  <div class="dsr-login__scrim" onclick="closeDsrLogin()"></div>
-  <div class="dsr-login__card" role="dialog" aria-modal="true" aria-labelledby="dsr-login-title">
-    <img class="dsr-login__logo" src="assets/login/salesforce-lockup.svg" alt="Salesforce">
-    <h2 class="dsr-login__title" id="dsr-login-title">Choose an account</h2>
-    <p class="dsr-login__sub">Choose or enter an account you’d like to connect to <strong>jane.smith@acme.com</strong></p>
-    <div class="dsr-login__accounts">
-      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
-        <img src="assets/login/google.png" alt="" width="16" height="16"> Google
-      </button>
-      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
-        <img src="assets/login/salesforce-mark.svg" alt="" width="16" height="16"> Salesforce
-      </button>
-      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
-        <img src="assets/login/mulesoft-mark.svg" alt="" width="16" height="16"> MuleSoft
-      </button>
-      <button type="button" class="dsr-login__account" onclick="chooseDsrAccount()">
-        <img src="assets/login/spiff-mark.svg" alt="" width="16" height="16"> Spiff
-      </button>
-    </div>
-    <button type="button" class="dsr-login__more">View more options</button>
-    <div class="dsr-login__or" aria-hidden="true">Or</div>
-    <form onsubmit="return submitDsrLogin(event)">
-      <label class="dsr-login__field">Business email
-        <input id="dsr-login-email" type="text" name="email" autocomplete="username" oninput="syncDsrLogin()">
-      </label>
-      <button type="submit" id="dsr-login-next" class="sf-cta sf-cta--primary sf-cta--hero dsr-login__next is-disabled" disabled aria-disabled="true">Next</button>
-    </form>
-    <p class="dsr-login__fine">
-      Explore <button type="button">Trailblazer account benefits</button>.<br>
-      Don’t have an account? <button type="button">Sign up for free</button>.
-    </p>
-  </div>
-</div>
-<script>
-  function dsrLoginGo(){
-    var pages="/pages/alizee-thomas/Solution-pricing";
-    var dest=location.pathname.indexOf(pages)===0
-      ? "../sales-room/index.html#/journeys"
-      : "/journeys";
-    window.location.assign(dest);
-  }
-</script>
 <script src="js/pricing-subnav.js" defer></script>
 <script src="js/nav.js" defer></script>
 <script src="js/faq.js" defer></script>
-<script src="js/dsr-login.js" defer></script>
 </body>
 </html>
