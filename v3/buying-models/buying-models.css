@@ -1,0 +1,75 @@
+/* ══════════════════════════════════════════════════════════════════
+   BUYING MODELS — page-specific styles
+   Recreation of salesforce.com/pricing/flexible-buying-models/.
+   Chrome (header/subnav/footer), hero, cards, and FAQ all reuse the
+   shared component library (components.css / page.css); this file only
+   adds the comparison table and a couple of CTA spacing helpers.
+   All values resolve from the vendored DMS tokens (token-first, hex
+   fallback) to stay consistent with the rest of the prototype.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Hero "Contact us" CTA — sits under the left-aligned 1-column hero copy. */
+.bm-hero__cta { margin-top: var(--space-5, 24px); }
+
+/* Centered CTA under a (centered) .section-header — used by the Flex Credits
+   "Rate Card" and "Get started for free" → "Learn more" buttons. */
+.bm-cta-center { text-align: center; margin-top: var(--space-6, 32px); }
+
+/* ── "How each model works" comparison table ─────────────────────────
+   Card-framed table; scrolls horizontally on narrow screens so the three
+   model columns never crush. Column heads use the Avant Garde display face
+   (matching card/section titles); row labels are bold body text. */
+.bm-compare-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-neutral-90, #E5E5E5);
+  border-radius: var(--radius-card, 12px);
+}
+.bm-compare {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+.bm-compare th,
+.bm-compare td {
+  padding: var(--space-content-md, 16px);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-neutral-90, #E5E5E5);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  line-height: 1.5;
+  color: var(--color-on-surface-2, #181818);
+}
+/* Column headers (the three model names). */
+.bm-compare thead th {
+  font-family: var(--font-style-display-8-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-20, 20px);
+  color: #032D60;
+  background: var(--color-fill-info, #EAF5FE);
+}
+/* Top-left cell is a spacer, not a real heading — keep it plain. */
+.bm-compare thead th:first-child { background: transparent; }
+.bm-compare__rowlbl-head {
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-12, 12px);
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--color-on-surface-4, #747474);
+}
+/* Row labels (Best for, Payment timing, …). */
+.bm-compare tbody th {
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-on-surface-1, #001E5B);
+  white-space: nowrap;
+  background: var(--color-surface-1, #FFFFFF);
+}
+.bm-compare tbody tr:last-child th,
+.bm-compare tbody tr:last-child td { border-bottom: none; }
+
+@media (max-width: 767px) {
+  .bm-compare th,
+  .bm-compare td { padding: var(--space-content-sm, 12px); font-size: var(--font-size-14, 14px); }
+  .bm-compare thead th { font-size: var(--font-size-16, 16px); }
+  .bm-compare tbody th { white-space: normal; }
+}

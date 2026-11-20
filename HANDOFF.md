@@ -45,7 +45,7 @@ pricing-landing/                ← deploy root (serve THIS folder)
 ├─ HANDOFF.md                   ← this file
 ├─ v1/                          ← V1 prototype (flow ends at Configure)
 ├─ v2/                          ← V2 prototype (full 5-step flow)
-└─ v3/                          ← V3 prototype (Commercial Entry Point SPA)
+└─ v3/                          ← V3 landing (v2 copy) + cep/ SPA
 
 v1/ and v2/ are each a COMPLETE, self-contained copy of the prototype:
 
@@ -93,7 +93,8 @@ v2/
 | `/` | `index.html` | **Selector.** Three cards → V1 / V2 / V3. Users land here first. |
 | `/v1/` | `v1/index.html` | **V1** landing → nav, Product/Industry, build flow. |
 | `/v2/` | `v2/index.html` | **V2** landing → the full experience. |
-| `/v3/` | `v3/index.html` | **V3** Commercial Entry Point SPA (hash routes from `#/`). |
+| `/v3/` | `v3/index.html` | **V3** Salesforce pricing landing (same tiles as V1/V2). |
+| V3 solution flow | `v3/cep/index.html` | Commercial Entry Point SPA (hash routes from `#/`). |
 | build flow start | `{v1,v2}/solution/index.html` | The "solve" screen that opens the flow. |
 | wizard engine | `{v1,v2}/estimator/estimator.js` | Step order, breadcrumb, CTAs. |
 
@@ -133,20 +134,20 @@ Verify anytime with: `diff -qr v1 v2`.
 
 ---
 
-## V3 — Commercial Entry Point
+## V3 — landing + Commercial Entry Point
 
-V3 is a self-contained hash-router SPA copied from
-`docs/prototype-Romil-11.20.26/prototype-v5/` (read-only reference). It does
-**not** share files with V1 or V2.
+V3 does **not** share files with V1 or V2. Its Salesforce pricing landing
+(`v3/index.html`) is a v2-scoped copy so Product, Industries, Digital Sales
+Room, Buying Models, and nav tools behave like V2. The **Solution-Based
+Pricing** card is the only landing difference: it opens the Commercial Entry
+Point SPA at `v3/cep/index.html` (`#/`).
 
-Guided flow: **About you → Options → Customize → Next steps.** First screen
-is `v3/index.html` (`#/`). Other hashes: `#/explore`, `#/recommend`,
-`#/estimate`, `#/next`, `#/editions`, `#/account`, `#/seller`, and related
-account/compare/try/handoff routes. See `v3/HANDOFF.md`.
-
-On the Salesforce pricing landing (`{v1,v2}/index.html`), the **Solution-Based
-Pricing** card is the only landing-page change: it links to the version
-selector (`../index.html`) so testers can choose V1, V2, or V3.
+That SPA is copied from `docs/prototype-Romil-11.20.26/prototype-v5/`
+(read-only). Guided flow: **About you → Options → Customize → Next steps.**
+Logo and the Pricing subnav title on the SPA return to `v3/index.html`.
+Other hashes: `#/explore`, `#/recommend`, `#/estimate`, `#/next`,
+`#/editions`, `#/account`, `#/seller`, and related account/compare/try/handoff
+routes. See `v3/cep/HANDOFF.md`.
 
 ---
 

@@ -1,0 +1,116 @@
+<!doctype html>
+<!-- ═══════════════════════════════════════════════════════════════════
+     ★ V3 SOLUTION FLOW — Commercial Entry Point Prototype
+     Hash-router SPA. First screen is #/ (Find my plan hub).
+     Reached from the v3 landing Solution-Based Pricing card
+     (../index.html). Logo / Pricing chrome return to that landing.
+     Faithful copy of docs/prototype-Romil-11.20.26/prototype-v5 (read-only).
+     ═══════════════════════════════════════════════════════════════════ -->
+<html lang="en" data-theme="day" data-typography="default" data-spacing="default" data-radii="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Salesforce Pricing — Commercial Entry Point Prototype v5</title>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="assets/dms/fonts.css" />
+<link rel="stylesheet" href="assets/dms/tokens.css" />
+<link rel="stylesheet" href="assets/dms/icons.css" />
+<link rel="stylesheet" href="css/icons-local.css" />
+<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="css/sx.css" />
+<link rel="stylesheet" href="css/cep.css" />
+</head>
+<body>
+<a class="sx-skip" href="#app">Skip to content</a>
+<div class="cep-banner" role="note"><strong>Research prototype</strong> · Illustrative prices and synthetic data · Nothing is purchased, quoted or provisioned</div>
+<main>
+  <header class="sf-nav" data-theme="day" role="banner">
+    <div class="sf-nav__inner">
+      <a href="../index.html" class="sf-nav__logo" aria-label="Salesforce pricing home">
+        <img class="sf-nav__logo-full" src="assets/brand/salesforce-logo.svg" alt="Salesforce" width="68" height="48" />
+        <img class="sf-nav__logo-bug" src="assets/brand/salesforce-logo-bug.svg" alt="Salesforce" width="36" height="25" />
+      </a>
+      <button class="sf-nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="sf-nav-links"><span></span><span></span><span></span></button>
+      <nav class="sf-nav__links" id="sf-nav-links" aria-label="Main navigation">
+        <a href="#/editions">Products</a>
+        <a href="#">Industries</a>
+        <a href="#">Customers</a>
+        <a href="#">Learning</a>
+        <a href="#">Support</a>
+        <a href="#">Company</a>
+      </nav>
+      <div class="sf-nav__utilities">
+        <button class="sf-nav__icon" aria-label="Call us"><i class="icon icon--call" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon" aria-label="Search"><i class="icon icon--search" aria-hidden="true"></i></button>
+        <a href="#/account" class="sf-nav__icon sf-nav__login" aria-label="Login to expand your account">
+          <i class="icon icon--user" aria-hidden="true"></i><span class="sf-nav__login-label">Login</span>
+        </a>
+        <a href="#/start" class="sf-cta sf-cta--primary sf-cta--medium sf-nav__cta">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sf-subnav" aria-label="Pricing sections">
+    <div class="sf-subnav__inner">
+      <a class="sf-subnav__title" href="../index.html">Pricing</a>
+    </div>
+  </nav>
+
+  <div id="app" tabindex="-1"></div>
+
+  <footer class="sf-footer" data-theme="day" role="contentinfo">
+    <div class="sf-footer__links">
+      <div class="sf-footer__brand">
+        <img class="sf-footer__logo" src="assets/brand/salesforce-logo.svg" alt="Salesforce" width="92" height="65" />
+        <p class="sf-footer__phone">Call us at 1-800-664-9073</p>
+        <a href="#/handoff" class="sf-footer__contact-link">Talk to Sales</a>
+      </div>
+      <div class="sf-footer__columns">
+        <div class="sf-footer__column">
+          <h3>Pricing</h3>
+          <ul>
+            <li><a href="#/start">Find my plan</a></li>
+            <li><a href="#/editions">Compare packaged editions</a></li>
+            <li><a href="https://www.salesforce.com/agentforce/pricing/calculator/" target="_blank" rel="noopener noreferrer">Flex Credit Pricing Calculator ↗</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Customers</h3>
+          <ul>
+            <li><a href="#/account">Expand my Salesforce</a></li>
+            <li><a href="#/account/seats">Add seats</a></li>
+            <li><a href="#/account/credits">Top up Flex Credits</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Salesforce employees</h3>
+          <ul>
+            <li><a href="#/seller">Seller workspace</a></li>
+            <li><a href="#" data-act="rsOpen">Research controls</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sf-footer__bottom">
+      <div class="sf-footer__bottom-inner">
+        <div class="sf-footer__legal">
+          <p class="sf-footer__copyright">Commercial Entry Point Prototype v5 · PRD v0.2 · Fixture CEP-FX-0.6. Illustrative research prototype — not approved pricing. List prices read from salesforce.com on Oct 28, 2026; all account, order and Commit data is synthetic.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</main>
+<aside id="cep-rp" class="cep-rp" aria-label="Research controls" hidden></aside>
+<div id="modal-root"></div>
+<div id="sx-toast" class="sx-toast" role="status" aria-live="polite"></div>
+<script src="js/nav.js" defer></script>
+<script src="js/fixtures.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/core.js"></script>
+<script src="js/views-public.js"></script>
+<script src="js/views-expand.js"></script>
+<script src="js/views-seller.js"></script>
+<script src="js/research.js"></script>
+<script>CEP.boot(); CEP.drawResearch();</script>
+</body>
+</html>

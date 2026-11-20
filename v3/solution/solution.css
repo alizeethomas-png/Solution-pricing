@@ -1,0 +1,245 @@
+/* ══════════════════════════════════════════════════════════════════
+   SOLUTION BASED PRICING — page-specific styles
+   Adapted from the POC's "Marketing Pricing" hero pattern.
+   All values resolve from DMS tokens; hardcoded fallbacks only.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Hero layout ─────────────────────────────────────────────────── */
+/* Top padding aligns the title's vertical position with the estimator's
+   Discover step (est-blade 48px + est-wizard__head 24px = 72px from the
+   region top), so the title/description/breadcrumb don't jump when the user
+   moves from step 1 into the estimator. Mobile drops to 64px to match the
+   estimator's mobile head padding (see the responsive block below). */
+.solution-hero {
+  text-align: center;
+  padding-block-start: var(--space-11, 72px);
+}
+
+/* Shared step header — full width + centered (NOT the 680px reading column).
+   Widening it lets the title render on one line and the breadcrumb stay on a
+   single row, matching the estimator's Discover step exactly. */
+.solution-hero__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-content-md, 16px);
+  margin-bottom: var(--space-content-md, 16px);
+}
+
+/* Interactive column — the search input + goal grid keep the narrower reading
+   width. Sits below the full-width breadcrumb (margin-top = crumb → column). */
+.solution-hero__inner {
+  max-width: 680px;
+  margin-inline: auto;
+  margin-top: var(--space-content-md, 16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-content-md, 16px);
+}
+
+/* Eyebrow — badge + label inline */
+.solution-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-interactive-xs, 8px);
+  font-family: var(--font-style-body-copy-4-bold-family, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-12, 12px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-fill-accent, #066AFE);
+  margin: 0;
+}
+
+/* H1 */
+.solution-hero__headline {
+  margin: 0;
+  font-family: var(--font-style-display-3-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-48, 48px);
+  line-height: var(--font-line-height-tight, 1.125);
+  color: var(--color-on-surface-1, #001E5B);
+}
+
+/* Subhead */
+.solution-hero__body {
+  margin: 0;
+  font-family: var(--font-style-body-copy-2-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-18, 18px);
+  line-height: var(--font-line-height-normal, 1.5);
+  color: var(--color-on-surface-2, #181818);
+  max-width: 540px;
+}
+
+/* Step-1 prompt — "What are you trying to solve?" + helper line, shown above
+   the goal input. Mirrors the estimator's per-step .q / .sub treatment (24px
+   bold question + 14px muted subhead) so step 1 reads as the first wizard step.
+   Scoped here because the estimator's .q / .sub are .est-wizard-scoped. */
+.solution-hero__prompt {
+  text-align: center;
+}
+.solution-hero__q {
+  margin: 0 0 var(--space-interactive-2xs, 4px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-24, 24px);
+  line-height: var(--font-line-height-snug, 1.25);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.solution-hero__q-sub {
+  margin: 0;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  line-height: var(--font-line-height-normal, 1.5);
+  color: var(--color-on-surface-3, #444444);
+}
+
+/* ── Goal input ──────────────────────────────────────────────────── */
+.solution-input {
+  width: 100%;
+  max-width: 560px;
+  margin-top: var(--space-content-sm, 12px);
+}
+
+/* Visually hidden label — present for screen readers */
+.solution-input__label {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.solution-input__field {
+  display: flex;
+  align-items: center;
+  background: var(--color-surface-1, #FFFFFF);
+  border: 1.5px solid var(--color-border-neutral, #D6D6D6);
+  border-radius: var(--radius-button, 9999px);
+  padding: var(--space-interactive-xs, 8px) var(--space-interactive-xs, 8px) var(--space-interactive-xs, 8px) var(--space-content-lg, 24px);
+  box-shadow: 0 2px 8px -2px rgba(24,24,24,0.08);
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.solution-input__field:focus-within {
+  border-color: var(--color-border-focus, #066AFE);
+  box-shadow: 0 0 0 3px rgba(6,106,254,0.16);
+}
+
+.solution-input__text {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  line-height: var(--font-line-height-normal, 1.5);
+  color: var(--color-on-surface-2, #181818);
+  /* Remove browser-default search input chrome */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.solution-input__text::placeholder {
+  color: var(--color-on-surface-4, #747474);
+}
+
+.solution-input__text::-webkit-search-cancel-button { display: none; }
+
+/* Submit button — filled blue circle with arrow */
+.solution-input__submit {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+  cursor: pointer;
+  transition: background 150ms ease-out;
+}
+
+.solution-input__submit:hover { background: var(--color-link, #022AC0); }
+.solution-input__submit:focus-visible {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+
+.solution-input__submit .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Solution option cards (multi-select grid) ───────────────────── */
+/* Visual treatment, hover, selected, padding, radius, and 4-col centered
+   flex footprint live on the shared .tile rules in estimator.css so these
+   cards match Your business without duplicating CSS. */
+.solution-options {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  margin-top: var(--space-content-sm, 12px);
+  /* Match .est-wizard__body padding so a 240px tile basis yields 4 columns
+     (the same inner width as Your business), with leftover cards centered. */
+  padding-inline: var(--space-8, 48px);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Inline gate error (shown only on an empty Continue); replaces the old
+   standing "Select one or more" hint, which now lives in the hero body. */
+.solution-options__error {
+  margin: 0 0 var(--space-interactive-xs, 8px);
+  font-family: var(--font-style-body-copy-3-family, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-on-surface-error, #EA001E);
+}
+.solution-options__error:empty { display: none; }
+
+.solution-option:focus-visible {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+
+/* Step-2 footer — Back on the left, matching the estimator .foot. */
+.solution-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-content-md, 16px);
+  padding-top: var(--space-content-md, 16px);
+  padding-inline: var(--space-8, 48px);
+  border-top: 1px solid var(--color-border-2, #E5E5E5);
+  margin-top: var(--space-content-lg, 24px);
+  max-width: 1280px;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 1023.98px) {
+  .solution-options,
+  .solution-foot { padding-inline: var(--space-content-xl, 32px); }
+}
+@media (max-width: 767px) {
+  /* Match the estimator's mobile title-top (est-blade 48px + head 16px = 64px). */
+  .solution-hero {
+    padding-block-start: var(--space-10, 64px);
+  }
+  .solution-hero__headline {
+    font-size: var(--font-size-32, 32px);
+  }
+  .solution-hero__body {
+    font-size: var(--font-size-16, 16px);
+  }
+  .solution-options,
+  .solution-foot { padding-inline: var(--space-content-md, 16px); }
+}

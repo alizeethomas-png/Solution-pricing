@@ -1,0 +1,172 @@
+/* Login overlay — "Choose an account" modal, shown before the Sales Room handoff. */
+body.dsr-login-open { overflow: hidden; }
+.dsr-login[hidden] { display: none !important; }
+.dsr-login {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-content-md, 16px);
+}
+.dsr-login__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 30, 91, 0.36);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.dsr-login__card {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(420px, 100%);
+  max-height: calc(100vh - var(--space-content-xl, 32px));
+  overflow: auto;
+  margin: 0;
+  padding: var(--space-content-2xl, 48px) var(--space-content-2xl, 48px) var(--space-content-xl, 32px);
+  background: var(--color-background-1, #FFFFFF);
+  border-radius: var(--radius-modal, 16px);
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.16);
+  text-align: center;
+}
+.dsr-login__logo {
+  display: block;
+  width: 72px;
+  height: auto;
+  margin: 0 auto var(--space-content-lg, 24px);
+}
+.dsr-login__title {
+  margin: 0 0 var(--space-content-sm, 12px);
+  font-family: var(--font-style-display-7-family, "Avant Garde For Salesforce", "ITC Avant Garde", Arial, sans-serif);
+  font-weight: var(--font-style-display-7-weight, 600);
+  font-size: var(--font-size-32, 32px);
+  line-height: 1.2;
+  color: var(--color-on-surface-1, #001E5B);
+}
+.dsr-login__sub {
+  margin: 0 0 var(--space-content-lg, 24px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  font-weight: var(--font-weight-regular, 400);
+  line-height: 1.45;
+  color: var(--color-on-surface-2, #181818);
+}
+.dsr-login__sub strong { font-weight: var(--font-weight-bold, 700); }
+.dsr-login__accounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-content-sm, 12px);
+  margin: 0 0 var(--space-content-md, 16px);
+}
+.dsr-login__account {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-interactive-xs, 8px);
+  min-height: 36px;
+  padding: var(--space-interactive-xs, 8px) var(--space-content-sm, 12px);
+  border: 1px solid var(--color-border-3, #C9C9C9);
+  border-radius: var(--radius-input, 4px);
+  background: var(--color-background-1, #FFFFFF);
+  color: var(--color-on-surface-2, #181818);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  line-height: 1.2;
+  cursor: pointer;
+}
+.dsr-login__account:hover { background: var(--color-cloud-blue-95, #EAF5FE); }
+.dsr-login__account:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.dsr-login__account img { width: 16px; height: 16px; flex-shrink: 0; }
+.dsr-login__more {
+  display: inline-block;
+  margin: 0 0 var(--space-content-lg, 24px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--color-link, #022AC0);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.dsr-login__more:hover { color: var(--color-link-hover, #002775); }
+.dsr-login__more:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+  border-radius: var(--radius-4, 4px);
+}
+.dsr-login__or {
+  display: flex;
+  align-items: center;
+  gap: var(--space-content-sm, 12px);
+  margin: 0 0 var(--space-content-lg, 24px);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  color: var(--color-on-surface-2, #181818);
+}
+.dsr-login__or::before,
+.dsr-login__or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-2, #E5E5E5);
+}
+.dsr-login__field {
+  display: block;
+  margin: 0 0 var(--space-content-lg, 24px);
+  text-align: left;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-16, 16px);
+  color: var(--color-on-surface-2, #181818);
+}
+.dsr-login__field input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: var(--space-interactive-xs, 8px);
+  padding: var(--space-content-sm, 12px);
+  border: 1px solid var(--color-border-neutral, #747474);
+  border-radius: var(--radius-input, 4px);
+  background: var(--color-background-1, #FFFFFF);
+  color: var(--color-on-surface-2, #181818);
+  font-family: inherit;
+  font-size: var(--font-size-16, 16px);
+}
+.dsr-login__field input:focus {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 1px;
+  border-color: var(--color-fill-accent, #066AFE);
+}
+.dsr-login__next {
+  width: 100%;
+  margin: 0 0 var(--space-content-lg, 24px);
+}
+.dsr-login__next:hover,
+.dsr-login__next:active { transform: none; }
+.dsr-login__fine {
+  margin: 0;
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-size: var(--font-size-14, 14px);
+  line-height: 1.5;
+  color: var(--color-on-surface-2, #181818);
+}
+.dsr-login__fine button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--color-link, #022AC0);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.dsr-login__fine button:hover { color: var(--color-link-hover, #002775); }
+.dsr-login__fine button:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}

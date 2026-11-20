@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en"
+      data-theme="day"
+      data-typography="default"
+      data-spacing="default"
+      data-radii="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Flex Credit Pricing Calculator | Salesforce</title>
+<meta name="description" content="Before you start: choose your industry, company size, and currency to set default values and get pricing recommendations in your currency." />
+
+<link rel="stylesheet" href="../assets/dms/fonts.css" />
+<link rel="stylesheet" href="../assets/dms/tokens.css" />
+<link rel="stylesheet" href="../assets/dms/icons.css" />
+<link rel="stylesheet" href="../css/icons-local.css" />
+<link rel="stylesheet" href="../css/components.css" />
+<link rel="stylesheet" href="../css/page.css" />
+<link rel="stylesheet" href="calculator.css" />
+</head>
+<body>
+<main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       GLOBAL HEADER  (copied verbatim from the sibling pricing pages)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="sf-nav" data-theme="day" role="banner">
+    <div class="sf-nav__inner">
+      <a href="../index.html" class="sf-nav__logo" aria-label="Salesforce home">
+        <img class="sf-nav__logo-full" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="68" height="48" />
+        <img class="sf-nav__logo-bug" src="../assets/brand/salesforce-logo-bug.svg" alt="Salesforce" width="36" height="25" />
+      </a>
+      <button class="sf-nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="sf-nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="sf-nav__links" id="sf-nav-links" aria-label="Main navigation">
+        <a href="#">Products</a>
+        <a href="#">Industries</a>
+        <a href="#">Customers</a>
+        <a href="#">Events</a>
+        <a href="#">Learning</a>
+        <a href="#">Support</a>
+        <a href="#">Company</a>
+      </nav>
+      <div class="sf-nav__utilities">
+        <button class="sf-nav__icon" aria-label="Call us"><i class="icon icon--call" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon" aria-label="Search"><i class="icon icon--search" aria-hidden="true"></i></button>
+        <button class="sf-nav__icon sf-nav__icon--desktop-only" aria-label="Select region"><i class="icon icon--globe" aria-hidden="true"></i></button>
+        <a href="#" class="sf-nav__icon sf-nav__login" aria-label="Login">
+          <i class="icon icon--user" aria-hidden="true"></i>
+          <span class="sf-nav__login-label">Login</span>
+        </a>
+        <a href="#" class="sf-cta sf-cta--primary sf-cta--medium sf-nav__cta">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       CONTEXT / SECONDARY NAV
+       NOTE: this sub-nav is duplicated across index.html, solution/,
+       product/ and calculator/. Keep the four copies in sync — the
+       "Flex Credit Calculator" item points here (this page); on the other
+       three it points to ./calculator/index.html (or ../calculator/…).
+       ═══════════════════════════════════════════════════════════════════ -->
+  <nav class="sf-subnav" aria-label="Pricing sections">
+    <div class="sf-subnav__inner">
+      <a class="sf-subnav__title" href="../index.html">Pricing</a>
+      <a class="sf-subnav__link" href="../index.html">Overview</a>
+      <div class="sf-subnav__links">
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-buy-menu">
+            Pricing By
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu" id="pricing-buy-menu" role="menu">
+            <a class="sf-subnav__menu-item" role="menuitem" href="../product/index.html">Pricing by Product</a>
+            <a class="sf-subnav__menu-item" role="menuitem" href="../industry/index.html">Pricing by Industries</a>
+          </div>
+        </div>
+        <div class="sf-subnav__dropdown">
+          <button type="button" class="sf-subnav__link sf-subnav__dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="pricing-tools-menu">
+            Pricing Tools
+            <i class="icon icon--chevrondown sf-subnav__chevron" aria-hidden="true"></i>
+          </button>
+          <div class="sf-subnav__menu sf-subnav__menu--rich" id="pricing-tools-menu" role="menu">
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="./index.html" aria-current="page">
+              <span class="sf-subnav__menu-item-title">Flex Credit Calculator</span>
+              <span class="sf-subnav__menu-item-desc">Estimate how many Flex Credits you&rsquo;ll need and understand their potential cost.</span>
+            </a>
+            <a class="sf-subnav__menu-item sf-subnav__menu-item--rich" role="menuitem" href="../estimator/index.html">
+              <span class="sf-subnav__menu-item-title">Solution Estimator</span>
+              <span class="sf-subnav__menu-item-desc">Get guidance on which products can support your solution and estimate their cost.</span>
+            </a>
+          </div>
+        </div>
+        <a class="sf-subnav__link" href="../buying-models/index.html">Buying Models</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       CALCULATOR — "Before you start". Header + elevated selection panel
+       share one continuous Day gradient (region paints once; child blades
+       are transparent). data-theme="day" ⇒ on-surface inks resolve navy.
+       Figma's decorative Astro mascot + scattered sparkles are omitted
+       (no local asset); the flanking title sparkles are reproduced with
+       Unicode glyphs.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="sf-blade-region region-day region-calc" data-theme="day">
+
+    <!-- Header -->
+    <section class="blade calc-header-blade">
+      <div class="blade__content">
+        <div class="calc-header">
+          <h1 class="calc-header__title">
+            <span class="calc-header__spark" aria-hidden="true">&#10022;</span>
+            Flex Credit Pricing Calculator
+            <span class="calc-header__spark" aria-hidden="true">&#10022;</span>
+          </h1>
+          <p class="calc-header__subhead">Before you start</p>
+          <p class="calc-header__desc">
+            Select your industry, company size and currency to help set default
+            values and recommendations.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Elevated selection panel -->
+    <section class="blade calc-panel-blade">
+      <div class="blade__content">
+        <div class="calc-panel">
+
+          <!-- ── Group 1: Industry (single-select radio grid) ─────────── -->
+          <div class="calc-group">
+            <h2 class="calc-group__title" id="industry-label">Select your Industry</h2>
+            <div class="calc-grid calc-grid--industry" role="radiogroup" aria-labelledby="industry-label">
+
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="agriculture-mining" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/agriculture-mining.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Agriculture &amp; Mining</span>
+              </label>
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="communications-media" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/communications-media.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Communications &amp; Media</span>
+              </label>
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="education" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/education.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Education</span>
+              </label>
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="engineering-construction-realestate" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/engineering-construction-realestate.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Engineering, Construction &amp; Real Estate</span>
+              </label>
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="financial-services" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/financial-services.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Financial Services</span>
+              </label>
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="healthcare-lifesciences" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/healthcare-lifesciences.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Healthcare &amp; Life Sciences</span>
+              </label>
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="manufacturing-automotive-energy" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/manufacturing-automotive-energy.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Manufacturing, Automotive &amp; Energy</span>
+              </label>
+              <label class="calc-card">
+                <input class="calc-card__input" type="radio" name="industry" value="nonprofit" />
+                <span class="calc-card__icon"><img src="../assets/industry-icons/nonprofit.svg" alt="" aria-hidden="true"></span>
+                <span class="calc-card__label">Nonprofit</span>
+              </label>
+
+              <!-- Extra industries — display:contents so they flow into the
+                   grid. JS collapses this on load; with JS off all remain
+                   visible and selectable. -->
+              <div id="industry-extra" class="calc-grid__extra">
+                <label class="calc-card">
+                  <input class="calc-card__input" type="radio" name="industry" value="public-sector" />
+                  <span class="calc-card__icon"><img src="../assets/industry-icons/public-sector.svg" alt="" aria-hidden="true"></span>
+                  <span class="calc-card__label">Public Sector</span>
+                </label>
+                <label class="calc-card">
+                  <input class="calc-card__input" type="radio" name="industry" value="retail-consumer-goods" />
+                  <span class="calc-card__icon"><img src="../assets/industry-icons/retail-consumer-goods.svg" alt="" aria-hidden="true"></span>
+                  <span class="calc-card__label">Retail &amp; Consumer Goods</span>
+                </label>
+                <label class="calc-card">
+                  <input class="calc-card__input" type="radio" name="industry" value="professional-services" />
+                  <span class="calc-card__icon"><img src="../assets/industry-icons/professional-services.svg" alt="" aria-hidden="true"></span>
+                  <span class="calc-card__label">Professional Services</span>
+                </label>
+                <label class="calc-card">
+                  <input class="calc-card__input" type="radio" name="industry" value="travel-transportation-hospitality" />
+                  <span class="calc-card__icon"><img src="../assets/industry-icons/travel-transportation-hospitality.svg" alt="" aria-hidden="true"></span>
+                  <span class="calc-card__label">Travel, Transportation &amp; Hospitality</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Revealed by JS (hidden for no-JS: all industries already shown) -->
+            <button type="button" class="sf-cta-link calc-showmore" aria-expanded="false" aria-controls="industry-extra" hidden>
+              <span class="sf-cta-link__label calc-showmore__label">Show more</span>
+              <i class="icon icon--chevrondown sf-cta-link__chevron calc-showmore__chevron" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- ── Group 2: Company size (single-select radio grid) ─────── -->
+          <div class="calc-group">
+            <h2 class="calc-group__title" id="size-label">Select your Company Size</h2>
+            <div class="calc-grid calc-grid--size" role="radiogroup" aria-labelledby="size-label">
+
+              <label class="calc-card calc-size-card">
+                <input class="calc-card__input" type="radio" name="company-size" value="emerging" />
+                <span class="calc-size-card__tag">Emerging Small Business</span>
+                <span class="calc-size-card__number">1&ndash;50</span>
+                <span class="calc-size-card__unit">employees</span>
+              </label>
+              <label class="calc-card calc-size-card">
+                <input class="calc-card__input" type="radio" name="company-size" value="smb" />
+                <span class="calc-size-card__tag">Small &amp; Medium Business</span>
+                <span class="calc-size-card__number">50&ndash;300</span>
+                <span class="calc-size-card__unit">employees</span>
+              </label>
+              <label class="calc-card calc-size-card">
+                <input class="calc-card__input" type="radio" name="company-size" value="mid-market" />
+                <span class="calc-size-card__tag">Mid Market</span>
+                <span class="calc-size-card__number">300&ndash;4,500</span>
+                <span class="calc-size-card__unit">employees</span>
+              </label>
+              <label class="calc-card calc-size-card">
+                <input class="calc-card__input" type="radio" name="company-size" value="enterprise" />
+                <span class="calc-size-card__tag">Enterprise</span>
+                <span class="calc-size-card__number">4,500+</span>
+                <span class="calc-size-card__unit">employees</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- ── Group 3: Currency (native select) ────────────────────── -->
+          <div class="calc-group calc-group--currency">
+            <h2 class="calc-group__title" id="currency-label">Select Currency</h2>
+            <div class="calc-select">
+              <select class="calc-select__field" id="currency-select" name="currency" aria-labelledby="currency-label" required>
+                <option value="" selected disabled hidden>Select Currency</option>
+                <option value="USD">USD &ndash; US Dollar</option>
+                <option value="EUR">EUR &ndash; Euro</option>
+                <option value="GBP">GBP &ndash; British Pound</option>
+                <option value="JPY">JPY &ndash; Japanese Yen</option>
+                <option value="AUD">AUD &ndash; Australian Dollar</option>
+                <option value="CAD">CAD &ndash; Canadian Dollar</option>
+                <option value="INR">INR &ndash; Indian Rupee</option>
+                <option value="BRL">BRL &ndash; Brazilian Real</option>
+              </select>
+              <i class="icon icon--chevrondown calc-select__chevron" aria-hidden="true"></i>
+            </div>
+          </div>
+
+          <!-- ── Actions ──────────────────────────────────────────────── -->
+          <div class="calc-actions">
+            <button type="button" class="sf-cta sf-cta--primary sf-cta--hero calc-start is-disabled" aria-disabled="true">
+              Start Estimate
+            </button>
+            <p class="scaffold-note calc-scaffold" role="status" aria-live="polite" hidden>
+              Estimate results are coming soon &mdash; this is a prototype scaffold.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FAQ — native <details>/<summary> accordion (zero-JS; js/faq.js adds
+       single-open convenience). Copy grounded in the calculator flow.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="blade" aria-labelledby="faq-heading">
+    <div class="blade__content">
+      <div class="section-header">
+        <h2 class="section-header__headline" id="faq-heading">Frequently asked questions</h2>
+      </div>
+
+      <div class="faq">
+        <details class="faq__item">
+          <summary class="faq__q">
+            What are Flex Credits?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Flex Credits are a flexible way to pay for what you use across Salesforce.
+              This calculator helps you estimate how many you&rsquo;ll need based on your
+              industry, company size, and the currency you buy in.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Why do you ask for my industry, company size, and currency?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              These three inputs set sensible default values and recommendations, so your
+              estimate starts closer to reality. You can adjust everything later &mdash;
+              they just give the calculator a better starting point.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Will my estimate be shown in my local currency?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              Yes. Choosing a currency up front means your estimate is shown in the
+              currency you actually buy in &mdash; no leaving the page to work out
+              conversions yourself.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Is the estimate a binding quote?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              No. The calculator gives you a fast, transparent estimate to explore
+              pricing. It isn&rsquo;t a contract or a final quote &mdash; final pricing is
+              confirmed when you&rsquo;re ready to move forward.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item">
+          <summary class="faq__q">
+            Do I have to talk to sales to get an estimate?
+            <i class="icon icon--chevrondown faq__chevron" aria-hidden="true"></i>
+          </summary>
+          <div class="faq__a">
+            <p>
+              No &mdash; the whole point is to let you estimate pricing yourself, first.
+              You can talk to sales whenever you&rsquo;re ready, with a clearer picture
+              already in hand.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FOOTER  (copied verbatim from the sibling pricing pages)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="sf-footer" data-theme="day" role="contentinfo">
+    <div class="sf-footer__links">
+      <div class="sf-footer__brand">
+        <img class="sf-footer__logo" src="../assets/brand/salesforce-logo.svg" alt="Salesforce" width="92" height="65" />
+        <div class="sf-footer__social">
+          <a href="#" aria-label="Facebook"><img src="../assets/brand/social/facebook.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="X (Twitter)"><img src="../assets/brand/social/twitter.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="LinkedIn"><img src="../assets/brand/social/linkedin.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="Instagram"><img src="../assets/brand/social/instagram.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="YouTube"><img src="../assets/brand/social/youtube.svg" alt="" width="32" height="32" /></a>
+          <a href="#" aria-label="TikTok"><img src="../assets/brand/social/tik-tok.svg" alt="" width="32" height="32" /></a>
+        </div>
+        <p class="sf-footer__phone">Call us at 1-800-664-9073</p>
+        <a href="#" class="sf-footer__contact-link">See all ways to contact us</a>
+      </div>
+      <div class="sf-footer__columns">
+        <div class="sf-footer__column">
+          <h3>New to Salesforce?</h3>
+          <ul>
+            <li><a href="#">What is CRM?</a></li>
+            <li><a href="#">Digital Marketing</a></li>
+            <li><a href="#">Customer Service Software</a></li>
+            <li><a href="#">Email Marketing</a></li>
+            <li><a href="#">Ecommerce</a></li>
+            <li><a href="#">Artificial Intelligence</a></li>
+            <li><a href="#">Revenue Management Solutions</a></li>
+            <li><a href="#">AI Agents</a></li>
+            <li><a href="#">SaaS</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>About Salesforce</h3>
+          <ul>
+            <li><a href="#">What is Salesforce?</a></li>
+            <li><a href="#">Newsroom</a></li>
+            <li><a href="#">Customer Success</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Trust</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Investors</a></li>
+            <li><a href="#">Give us your Feedback</a></li>
+          </ul>
+        </div>
+        <div class="sf-footer__column">
+          <h3>Popular Links</h3>
+          <ul>
+            <li><a href="#">Salesforce Login</a></li>
+            <li><a href="#">New Release Features</a></li>
+            <li><a href="#">Find or Become a Partner</a></li>
+            <li><a href="#">Dreamforce</a></li>
+            <li><a href="../index.html">Pricing</a></li>
+            <li><a href="#">CRM Software</a></li>
+            <li><a href="#">All Cloud Products</a></li>
+            <li><a href="../index.html">Solution Based Pricing</a></li>
+            <li><a href="#">Newsletter Sign-up</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sf-footer__bottom">
+      <div class="sf-footer__bottom-inner">
+        <button class="sf-footer__region">
+          <i class="icon icon--globe" aria-hidden="true"></i>
+          Worldwide <span aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="sf-footer__legal">
+          <div class="sf-footer__legal-links">
+            <a href="#">Legal</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Information</a>
+            <a href="#">Responsible Disclosure</a>
+            <a href="#">Trust</a>
+            <a href="#">Contact</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Your Privacy Choices</a>
+          </div>
+          <p class="sf-footer__copyright">
+            &copy; Copyright 2026 Salesforce, Inc. <a href="#">All rights reserved</a>.
+            Various trademarks held by their respective owners. Salesforce, Inc.
+            Salesforce Tower, 415 Mission Street, 3rd Floor, San Francisco, CA 94105,
+            United States
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="../js/nav.js" defer></script>
+<script src="../js/faq.js" defer></script>
+<script src="calculator.js" defer></script>
+</body>
+</html>
