@@ -253,7 +253,7 @@
     q.warns.forEach(function (w) { h += CEP.note("w", esc(w)); });
     h += '<p class="sx-fine">Added to your existing invoice (simulated). No card details are collected. Your calculator estimate is not an order; only the amounts above would be bought.</p>';
     if (c.error) h += CEP.note("e", "<strong>The order didn’t go through.</strong> Nothing was placed and you weren’t charged. Your order is kept. <button class=\"sx-link\" data-act=\"place\">Try again</button> · <button class=\"sx-link\" data-act=\"acctTeam\" data-k=\"all\" data-code=\"fail\">Get help</button>");
-    h += '<div class="sx-foot"><a class="sf-cta sf-cta--secondary sf-cta--medium" href="#/account">← Back</a><span class="sx-foot__n"></span><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="place"' + (changed || c.submitting ? ' aria-disabled="true"' : "") + ">" + (c.submitting ? "Placing order…" : "Place order (simulated)") + "</button></div>";
+    h += '<div class="sx-foot"><a class="sf-cta-back" href="#/account">Back</a><span class="sx-foot__n"></span><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="place"' + (changed || c.submitting ? ' aria-disabled="true"' : "") + ">" + (c.submitting ? "Placing order…" : "Place order (simulated)") + "</button></div>";
     return CEP.page(h, {});
   };
   A.ackRate = function () { cart().ackRate = AC.licenses[0].rate + 10; CEP.track("price_assumptions_changed", { kind: "seats", rateChanged: true }); CEP.save(); CEP.render(); };

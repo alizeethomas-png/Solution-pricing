@@ -180,11 +180,12 @@
     return '<span class="sx-amt">' + (l.status === "from" ? "from " : "") + CEP.p(l.amount) + "</span>";
   };
   CEP.crumbs = function (steps, cur) {
-    return '<nav class="est-crumbs" aria-label="Progress"><ol class="est-crumbs__list">' + steps.map(function (s, i) {
+    return '<nav class="est-crumbs" aria-label="Estimator steps"><ol class="est-crumbs__list">' + steps.map(function (s, i) {
       var cls = i < cur ? "crumb--done" : (i === cur ? "crumb--current" : "crumb--future");
       var inner = '<span class="crumb-n">' + (i + 1) + '</span><span class="crumb-l">' + esc(s[0]) + "</span>";
       var el = i < cur && s[1] ? '<a class="crumb ' + cls + '" href="' + s[1] + '">' + inner + "</a>" : '<span class="crumb ' + cls + '"' + (i === cur ? ' aria-current="step"' : "") + ">" + inner + "</span>";
-      return '<li class="crumb-item">' + (i ? '<span class="crumb-sep" aria-hidden="true">›</span>' : "") + el + "</li>";
+      var sep = i < steps.length - 1 ? '<i class="icon icon--chevronright crumb-sep" aria-hidden="true"></i>' : "";
+      return '<li class="crumb-item">' + el + sep + "</li>";
     }).join("") + "</ol></nav>";
   };
   CEP.note = function (kind, html) { return '<div class="sx-note' + (kind === "w" ? " sx-note--w" : kind === "e" ? " cep-note--e" : kind === "ok" ? " cep-note--ok" : "") + '" role="' + (kind === "e" ? "alert" : "note") + '">' + html + "</div>"; };
@@ -311,11 +312,20 @@
   CEP.page = function (inner, opts) {
     opts = opts || {};
     var region = opts.plain ? "" : " region-cloudblue";
+    var noChrome = opts.noChrome || opts.narrow || opts.plain;
+    var chrome = noChrome ? "" :
+      '<div class="est-wizard"><div class="est-wizard__head"><p class="est-wizard__title">Salesforce Pricing</p><p class="est-wizard__sub">' + esc(FX.copy.hubTitle) + "</p></div>";
+    var close = noChrome ? "" : "</div>";
+    var crumbs = opts.crumbs || "";
     if (opts.rail) {
-      return '<div class="sf-blade-region' + region + '"><section class="blade sx-blade"><div class="blade__content">' + (opts.top || "") +
-        '<div class="sx-grid"><div class="sx-main">' + inner + '</div><div class="sx-side">' + CEP.rail() + "</div></div></div></section></div>" + CEP.mobileBar();
+      return '<div class="sf-blade-region' + region + '"><section class="blade sx-blade"><div class="blade__content">' +
+        chrome + crumbs + (opts.top || "") +
+        '<div class="sx-grid"><div class="sx-main">' + inner + '</div><div class="sx-side">' + CEP.rail() + "</div></div>" +
+        close + "</div></section></div>" + CEP.mobileBar();
     }
-    return '<div class="sf-blade-region' + region + '"><section class="blade sx-blade"><div class="blade__content">' + (opts.top || "") + '<div class="cep-wrap' + (opts.narrow ? " cep-wrap--narrow" : "") + '">' + inner + "</div></div></section></div>";
+    return '<div class="sf-blade-region' + region + '"><section class="blade sx-blade"><div class="blade__content">' +
+      chrome + crumbs + (opts.top || "") + '<div class="cep-wrap' + (opts.narrow ? " cep-wrap--narrow" : "") + '">' + inner + "</div>" + close +
+      "</div></section></div>";
   };
 
   /* ── router ───────────────────────────────────────────────────── */

@@ -98,7 +98,7 @@
   };
   R["/"] = function () {
     var s = S(), guided = s.variant === "guided", cur = (s.view && s.view.audience) || "new", d = HOW[cur];
-    var h = '<div class="sf-blade-region region-day"><section class="blade cep-home"><div class="blade__content"><div class="cep-home__in">' +
+    var h = '<div class="sf-blade-region region-cloudblue"><section class="blade cep-home"><div class="blade__content"><div class="cep-home__in">' +
       '<h1 class="sx-h1 cep-home__h">Salesforce Pricing</h1><h2 class="sx-h3 cep-home__h2">' + esc(FX.copy.hubTitle) + '</h2><p class="sx-lead cep-home__lead">' + esc(FX.copy.hubLead) + "</p>" +
       '<p class="cep-expect">' + CEP.ic.info + " <span>" + esc(FX.copy.expect) + "</span></p>" +
       '<div class="cep-aud cep-aud--home" role="tablist" aria-label="Choose your situation">' + ["new", "existing"].map(function (k) {
@@ -151,19 +151,19 @@
   /* ═════════ STEP 1 · ABOUT YOU ═════════ */
   function stepNav(back, backLbl, next, nextLbl, opts) {
     opts = opts || {};
-    return '<div class="cep-stepnav"><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + back + '">← ' + esc(backLbl || "Back") + "</a>" +
+    return '<div class="cep-stepnav"><a class="sf-cta-back" href="' + back + '">' + esc(backLbl || "Back") + "</a>" +
       (opts.hint ? '<span class="cep-stepnav__hint" role="status">' + opts.hint + "</span>" : '<span class="cep-stepnav__hint"></span>') +
-      (next ? (opts.act ? '<button class="sf-cta sf-cta--primary sf-cta--medium" data-act="' + opts.act + '"' + (opts.disabled ? ' aria-disabled="true"' : "") + ">" + esc(nextLbl) + " →</button>" : '<a class="sf-cta sf-cta--primary sf-cta--medium" href="' + next + '">' + esc(nextLbl) + " →</a>") : "") + "</div>";
+      (next ? (opts.act ? '<button class="sf-cta sf-cta--primary sf-cta--medium" data-act="' + opts.act + '"' + (opts.disabled ? ' aria-disabled="true"' : "") + ">" + esc(nextLbl) + "</button>" : '<a class="sf-cta sf-cta--primary sf-cta--medium" href="' + next + '">' + esc(nextLbl) + "</a>") : "") + "</div>";
   }
   CEP.stepNav = stepNav;
   R["/explore"] = function () {
     var s = S(), c = s.ctx;
     s.pub.lastRoute = "#/explore";
     var ind = c.industry && FX.industries.filter(function (i) { return i.id === c.industry; })[0];
-    var h = CEP.crumbs(STEPS, 0) + '<h1 class="sx-h2">Tell us about your business</h1><p class="sx-sub">A few quick questions on one page. We use your answers to suggest options, and you can change them any time.</p>';
-    h += q("Region", "region", FX.regions.map(function (r) { return { id: r.id, n: r.name, s: r.priced ? "USD list prices" : "Prices by Sales in this prototype" }; }), c.region, "cep-opts--sm");
-    h += q("Company size", "size", FX.sizes.map(function (z) { return { id: z.id, n: z.range, s: z.who }; }), c.size, "cep-opts--sm");
-    h += q("Industry", "industry", FX.industries.map(function (i) { return { id: i.id, n: i.name, icon: "assets/industry-icons/" + i.icon + ".svg" }; }), c.industry, "cep-opts--sm cep-opts--ind4");
+    var h = '<h1 class="sx-h2">Tell us about your business</h1><p class="sx-sub">A few quick questions on one page. We use your answers to suggest options, and you can change them any time.</p>';
+    h += q("Region", "region", FX.regions.map(function (r) { return { id: r.id, n: r.name, s: r.priced ? "USD list prices" : "Prices by Sales in this prototype" }; }), c.region, "cep-tiles");
+    h += q("Company size", "size", FX.sizes.map(function (z) { return { id: z.id, n: z.range, s: z.who }; }), c.size, "cep-tiles");
+    h += q("Industry", "industry", FX.industries.map(function (i) { return { id: i.id, n: i.name, icon: "assets/industry-icons/" + i.icon + ".svg" }; }), c.industry, "cep-tiles");
     var common = ind && ind.common && ind.common.length ? ind.common : [];
     var gcard = function (g) {
       var on = c.goals.indexOf(g.id) >= 0;
@@ -171,19 +171,20 @@
     };
     h += '<fieldset class="sx-q"><legend class="sx-q__l">What do you want to achieve?</legend><p class="sx-why">' + CEP.ic.info + "<span>" + (common.length ? "Suggested based on your industry. " : "") + "Pick 1–3 goals (up to 4). Goals help us suggest options; they don’t add products or prices on their own.</span></p>";
     if (common.length) {
-      h += '<h3 class="cep-gh">Suggested for ' + esc(ind.name) + '</h3><div class="sx-opts sx-opts--goal cep-opts--sm">' + FX.goals.filter(function (g) { return common.indexOf(g.id) >= 0; }).map(gcard).join("") + "</div>";
-      h += '<h3 class="cep-gh">Other goals</h3><div class="sx-opts sx-opts--goal cep-opts--sm">' + FX.goals.filter(function (g) { return common.indexOf(g.id) < 0; }).map(gcard).join("") + "</div>";
-    } else h += '<div class="sx-opts sx-opts--goal cep-opts--sm">' + FX.goals.map(gcard).join("") + "</div>";
+      h += '<h3 class="cep-gh">Suggested for ' + esc(ind.name) + '</h3><div class="cep-tiles">' + FX.goals.filter(function (g) { return common.indexOf(g.id) >= 0; }).map(gcard).join("") + "</div>";
+      h += '<h3 class="cep-gh">Other goals</h3><div class="cep-tiles">' + FX.goals.filter(function (g) { return common.indexOf(g.id) < 0; }).map(gcard).join("") + "</div>";
+    } else h += '<div class="cep-tiles">' + FX.goals.map(gcard).join("") + "</div>";
     if (c.goals.length >= 4) h += '<p class="sx-fine">You’ve picked 4 goals, the most this prototype supports. Remove one to pick another.</p>';
     h += "</fieldset>";
     var n = c.goals.length;
     h += stepNav("#/", "Back", "#/recommend", "See options", { act: "toOptions", disabled: !n, hint: n ? n + " goal" + (n > 1 ? "s" : "") + " selected" : "Pick at least one goal to see options" });
-    return CEP.page(h, {});
+    return CEP.page('<div class="cep-explore">' + h + "</div>", { crumbs: CEP.crumbs(STEPS, 0) });
   };
   function q(label, key, opts, cur, cls) {
-    return '<fieldset class="sx-q"><legend class="sx-q__l">' + esc(label) + ' <span class="cep-opt">(optional)</span></legend><div class="sx-opts ' + cls + '">' + opts.map(function (o) {
+    return '<fieldset class="sx-q"><legend class="sx-q__l">' + esc(label) + ' <span class="cep-opt">(optional)</span></legend><div class="' + cls + '">' + opts.map(function (o) {
       var on = cur === o.id;
-      return '<button type="button" class="sx-opt' + (on ? " is-on" : "") + '" aria-pressed="' + on + '" data-act="ctx" data-k="' + key + '" data-id="' + o.id + '">' + (o.icon ? '<img class="sx-ind" src="' + o.icon + '" alt="" />' : "") + '<span class="sx-opt__n">' + esc(o.n) + "</span>" + (o.s ? '<span class="sx-opt__s">' + esc(o.s) + "</span>" : "") + "</button>";
+      var ico = o.icon ? '<img class="sx-ind ind-ico" src="' + o.icon + '" alt="" />' : "";
+      return '<button type="button" class="sx-opt' + (on ? " is-on" : "") + '" aria-pressed="' + on + '" data-act="ctx" data-k="' + key + '" data-id="' + o.id + '">' + ico + '<span class="sx-opt__n">' + esc(o.n) + "</span>" + (o.s ? '<span class="sx-opt__s">' + esc(o.s) + "</span>" : "") + "</button>";
     }).join("") + "</div></fieldset>";
   }
   A.ctx = function (el) {
@@ -222,7 +223,7 @@
     var rec = show.filter(function (x) { return x.id === o.recommended; })[0] || show[0];
     if (!s.pub.edPicked || !s.pub.ed || !show.some(function (x) { return x.id === s.pub.ed; })) { s.pub.edPicked = false; s.pub.ed = rec.id; if (!s.pub.seats) s.pub.seats = o.seats; if (E.ed(rec.id).billing.indexOf(s.pub.billing) < 0) s.pub.billing = "annual"; CEP.save(); }
     var chosen = s.pub.ed;
-    var h = CEP.crumbs(STEPS, 1) + '<h1 class="sx-h2">Your recommended option</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare it with the alternatives below. Prices are illustrative list prices.") + "</p>";
+    var h = '<h1 class="sx-h2">Your recommended option</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare it with the alternatives below. Prices are illustrative list prices.") + "</p>";
     if (rg && !rg.priced) h += CEP.note("w", "<strong>Prices for " + esc(rg.name) + " aren’t in this prototype.</strong> We show options and coverage, but not converted prices." + (rg.ineligible ? " Starter Suite isn’t offered in this region (synthetic rule)." : ""));
     if (o.complex) h += CEP.note("w", "<strong>This may need specialist help.</strong> " + esc(o.complexWhy.join(" ")) + " We won’t add those products for you.");
     if (o.options.every(function (x) { return x.reach === 0; })) h += CEP.note("w", "None of these options covers your goals on its own. <a href=\"#/explore\">Change your goals</a> or talk to Sales on the last step.");
@@ -267,7 +268,7 @@
     h += '<p class="sx-fine">' + (ent ? "Enterprise pricing is tailored by Sales. Public list prices are on the packaged editions page." : "Source: " + esc(FX.meta.priceSource) + ". Illustrative list prices for research; not a quote. Excludes taxes.") + "</p>";
     h += stepNav("#/explore", "Back", "#/estimate", "Customize", { act: "toCustomize" });
     CEP.track("recommendation_viewed", { rec: rec.id });
-    return CEP.page(h, { rail: true, top: top });
+    return CEP.page(h, { rail: true, top: top, crumbs: CEP.crumbs(STEPS, 1) });
   };
   function short(e) {
     var map = {
@@ -334,7 +335,7 @@
     h += '<div class="cep-edgrid">' + CATALOG.map(edCard).join("") + "</div>";
     h += '<section class="cep-edsec" aria-labelledby="ed-ai"><h2 class="sx-h3" id="ed-ai">AI agents (Agentforce)</h2><p class="sx-mod__d">If you want AI agents, this is how: pay per user, or by usage with Flex Credits.</p><div class="cep-edgrid cep-edgrid--2">' +
       '<article class="cep-edc"><h3 class="sx-h4">Agentforce add-on</h3><p class="cep-edc__p"><strong>' + CEP.pu(125, "user (seat)/mo") + '</strong><small>Included in every Max edition</small></p><p class="sx-mod__d">Unmetered AI agents for your own employees, added to a Core or Advanced edition. Already in Sales Max, Service Max and Sales & Service Max.</p><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="aiPlan">Find a plan with AI agents</button></article>' +
-      '<article class="cep-edc"><h3 class="sx-h4">Flex Credits</h3><p class="cep-edc__p"><strong>$500 per 100K credits</strong><small>$0.005 per credit · 20 credits (about $0.10) per agent action</small></p><p class="sx-mod__d">Pay for agent actions and Data 360 usage. Every Core includes 500K, Advanced 1M, Max 2.75M — the same on Sales, Service and Sales & Service.</p><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + FX.links.flexCalculator + '" target="_blank" rel="noopener noreferrer">Estimate credits in the calculator ' + CEP.ic.ext + "</a></article></div></section>";
+      '<article class="cep-edc"><h3 class="sx-h4">Flex Credits</h3><p class="cep-edc__p"><strong>$500 per 100K credits</strong><small>$0.005 per credit · 20 credits (about $0.10) per agent action</small></p><p class="sx-mod__d">Pay for agent actions and Data 360 usage. Every Core includes 500K, Advanced 1M, Max 2.75M — the same on Sales, Service and Sales & Service.</p><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + FX.links.flexCalculator + '" target="_blank" rel="noopener noreferrer">Estimate credits in the calculator</a></article></div></section>';
     h += '<p class="sx-fine">Tableau Next (Consumer + one Creator per org) is included in Portfolio 2.0 editions, not sold here as a standalone edition. Extra Viewers or Creators are outside this estimate.</p>';
     h += stepNav("#/", "Back", null, null);
     return CEP.page(h, {});
@@ -391,19 +392,19 @@
     if (CEP.isEnt()) {
       s.pub.lastRoute = "#/estimate";
       var ed = s.pub.ed ? E.ed(s.pub.ed) : null;
-      var hh = CEP.crumbs(STEPS, 2) + '<h1 class="sx-h2">Let’s build your pricing together</h1><p class="sx-sub">For companies with 1,000+ employees we don’t show a generic estimate. Pricing depends on volume, term, commitment options and your product mix, so a specialist prepares it with you.</p>';
+      var hh = '<h1 class="sx-h2">Let’s build your pricing together</h1><p class="sx-sub">For companies with 1,000+ employees we don’t show a generic estimate. Pricing depends on volume, term, commitment options and your product mix, so a specialist prepares it with you.</p>';
       hh += '<div class="cep-ent"><h2 class="sx-h4" style="margin-top:0">What we’ll share with your specialist</h2><ul class="cep-kv"><li><span>Goals</span>' + (s.ctx.goals.map(function (g) { return esc(E.goal(g).name); }).join(", ") || "None yet") + "</li><li><span>Option</span>" + (ed ? esc(ed.name) : "Not chosen yet") + "</li><li><span>Company</span>" + [labelOf("industry"), labelOf("size"), labelOf("region")].filter(Boolean).map(esc).join(" · ") + "</li></ul>" +
         '<h2 class="sx-h4">What happens next</h2><ol><li>You share your goals and contact details. You choose exactly what’s shared.</li><li>A specialist reviews your goals and current systems with you.</li><li>You get tailored pricing, including volume and commitment options, plus a trial or proof of concept if you want one.</li></ol>' +
         '<div class="sx-btnrow sx-mt"><a class="sf-cta sf-cta--primary sf-cta--hero" href="#/handoff" data-act="next" data-v="sales" data-allow-disabled>Talk to Sales</a></div></div>';
       hh += '<p class="sx-fine">Not 1,000+ employees? <a href="#/explore">Change company size</a> to see an estimate.</p>';
       hh += stepNav(bk[0], bk[1], "#/next", "Next steps");
       CEP.track("estimate_rendered", { enterprise: true, tailored: true });
-      return CEP.page(hh, { rail: true });
+      return CEP.page(hh, { rail: true, crumbs: CEP.crumbs(STEPS, 2) });
     }
-    if (!s.pub.ed) return CEP.page(CEP.crumbs(STEPS, 2) + '<h1 class="sx-h2">Choose an option first</h1><p class="sx-sub">Your answers are saved.</p>' + stepNav("#/recommend", "Back to options", null, null), { rail: true });
+    if (!s.pub.ed) return CEP.page('<h1 class="sx-h2">Choose an option first</h1><p class="sx-sub">Your answers are saved.</p>' + stepNav("#/recommend", "Back to options", null, null), { rail: true, crumbs: CEP.crumbs(STEPS, 2) });
     s.pub.lastRoute = "#/estimate";
     var est = CEP.est(), e = est.edition, sel = CEP.sel();
-    var h = CEP.crumbs(STEPS, 2) + '<h1 class="sx-h2">Customize your estimate</h1><p class="sx-sub">Your main number comes first. Adjust the edition and users (seats), then include add-ons if you need them.</p>';
+    var h = '<h1 class="sx-h2">Customize your estimate</h1><p class="sx-sub">Your main number comes first. Adjust the edition and users (seats), then include add-ons if you need them.</p>';
     // 1 configuration
     var sz = E.size(s.ctx.size), eds = sz ? sz.eds : ["st", "pro", "core", "adv", "max"];
     if (eds.indexOf(e.id) < 0) eds = eds.concat([e.id]);
@@ -471,7 +472,7 @@
     }
     h += '<details class="sx-det sx-det--box"><summary>Assumptions and price details</summary><ul>' + est.assumptions.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "<li>Price source: " + esc(FX.meta.priceSource) + ". Status: illustrative list price, not approved for customer use.</li></ul></details>";
     h += stepNav(bk[0], bk[1], "#/next", "Next steps");
-    return CEP.page(h, { rail: true });
+    return CEP.page(h, { rail: true, crumbs: CEP.crumbs(STEPS, 2) });
   };
 
   /* ═════════ STEP 4 · NEXT STEPS (final page) ═════════ */
@@ -480,7 +481,7 @@
     if (!s.pub.ed && !ent) return R["/estimate"]();
     s.pub.lastRoute = "#/next";
     var est = CEP.est(), e = s.pub.ed ? E.ed(s.pub.ed) : null, tr = e ? FX.trials[e.id] : null;
-    var h = CEP.crumbs(STEPS, 3) + '<h1 class="sx-h2">Choose your next step</h1>';
+    var h = '<h1 class="sx-h2">Choose your next step</h1>';
     if (e) h += '<div class="cep-sumstrip"><span><strong>' + esc(e.name) + "</strong> · " + E.num(CEP.sel().seats) + " users (seats)</span><span>" + (ent ? "Tailored pricing with Sales" : est && est.priceable ? "<strong>" + CEP.pt(est.knownAnnual) + "</strong> " + (est.partial ? "known subtotal" : "estimated") + " · illustrative list price" : "Not priced for your region") + "</span></div>";
     if (s.me.signedIn) h += '<p class="sx-fine">Signed in as ' + esc(s.me.email) + ' (simulated) · <button class="sx-link" data-act="meOut">Sign out</button></p>';
     var trialCard = '<article class="cep-nextc' + (ent ? "" : " is-primary") + '"><h2 class="sx-h4">Start a free trial</h2><p class="sx-mod__d">' + (tr ? esc(tr.name) + ": " + esc(tr.duration) + ", " + esc(tr.card.toLowerCase()) + ". Pick a use case for your industry and we’ll guide your first steps." : "30-day trial on salesforce.com.") + '</p><p class="sx-fine">Sign in or create an account to start.</p><button class="sf-cta sf-cta--' + (ent ? "secondary" : "primary") + ' sf-cta--medium" data-act="gate" data-g="trial">Start free trial</button></article>';
@@ -490,7 +491,7 @@
     if (e && E.isSmb(e.id) && !ent) h += '<p class="sx-fine">Ready to buy ' + esc(e.name) + '? <button class="sx-link" data-act="buyOnline">Buy online</button></p>';
     else if (e && !ent) h += '<p class="sx-fine">' + esc(e.name) + " is bought with a Salesforce account team, so there’s no online checkout.</p>";
     h += stepNav("#/estimate", "Back", null, null);
-    return CEP.page(h, { rail: true });
+    return CEP.page(h, { rail: true, crumbs: CEP.crumbs(STEPS, 3) });
   };
 
   /* ── account gate: Save, Compare, Download and Start free trial ── */
@@ -650,8 +651,8 @@
   function useCasesFor(indId) { return FX.useCases[indId] || FX.useCases.other; }
   R["/try"] = function () {
     var s = S(), e = s.pub.ed ? E.ed(s.pub.ed) : null, f = s.rs.failures, t = s.trial;
-    var h = CEP.crumbs(STEPS, 3) + '<h1 class="sx-h2">Try before you decide</h1>';
-    if (!e) return CEP.page(h + '<p class="sx-sub">Choose an option first so we can show the right trial.</p><a class="sf-cta sf-cta--primary sf-cta--medium" href="#/recommend">See options</a>', { rail: true });
+    var h = '<h1 class="sx-h2">Try before you decide</h1>';
+    if (!e) return CEP.page(h + '<p class="sx-sub">Choose an option first so we can show the right trial.</p><a class="sf-cta sf-cta--primary sf-cta--medium" href="#/recommend">See options</a>', { rail: true, crumbs: CEP.crumbs(STEPS, 3) });
     var tr = trialFor(e.id), ind = FX.industries.filter(function (i) { return i.id === s.ctx.industry; })[0] || null;
     var ucs = useCasesFor(ind ? ind.id : "other");
     var uc = t.useCase ? ucs.filter(function (u) { return u.id === t.useCase; })[0] : null;
@@ -668,7 +669,7 @@
         h += '<p class="sx-fine">Use-case starters are a prototype concept: the trial is real, the guided steps run on this page.</p></div>';
       }
       h += '<p class="sx-fine"><button class="sx-link" data-act="trialEnd">Pick a different use case</button></p>' + stepNav("#/next", "Back to next steps", null, null);
-      return CEP.page(h, { rail: true });
+      return CEP.page(h, { rail: true, crumbs: CEP.crumbs(STEPS, 3) });
     }
 
     h += '<p class="sx-sub">Start a real 30-day trial of ' + esc(tr.product) + " on salesforce.com. Pick a use case for your industry and we’ll guide your first steps.</p>";
@@ -694,12 +695,12 @@
       var score = function (x) { return x.goals.filter(function (g) { return s.ctx.goals.indexOf(g) >= 0; }).length; };
       var match = score(u) > 0, best = match && ucs.filter(function (x) { return score(x) > score(u); }).length === 0 && ucs.filter(function (x) { return score(x) === score(u); })[0] === u;
       return '<article class="cep-tryc' + (best ? " is-primary" : "") + '">' + (best ? '<span class="cep-common">Best match for your goals</span>' : match ? '<span class="cep-common">Matches your goals</span>' : "") + '<h3 class="sx-h4">' + esc(u.name) + '</h3><p class="sx-mod__d">' + esc(u.outcome) + '</p><details class="sx-det"><summary>First steps</summary><ol class="cep-steps">' + u.steps.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ol></details>" +
-        '<button class="sf-cta sf-cta--' + (best ? "primary" : "secondary") + ' sf-cta--medium" data-act="startTrial" data-uc="' + u.id + '"' + (blocked ? ' aria-disabled="true"' : "") + ">Start this trial " + CEP.ic.ext + "</button></article>";
+        '<button class="sf-cta sf-cta--' + (best ? "primary" : "secondary") + ' sf-cta--medium" data-act="startTrial" data-uc="' + u.id + '"' + (blocked ? ' aria-disabled="true"' : "") + ">Start this trial</button></article>";
     }).join("") + "</div>";
     h += '<div class="cep-custom"><div><h3 class="sx-h4" style="margin:0">Have your own use case?</h3><p class="sx-mod__d">A specialist can set up a trial around your process and data needs.</p></div><a class="sf-cta sf-cta--secondary sf-cta--medium" href="#/handoff" data-act="next" data-v="sales" data-allow-disabled>Talk to Sales</a></div>';
     h += '<p class="sx-fine">Trials are real salesforce.com trials. Use-case starters are a prototype concept for research.</p>';
     h += stepNav("#/next", "Back to next steps", null, null);
-    return CEP.page(h, { rail: true });
+    return CEP.page(h, { rail: true, crumbs: CEP.crumbs(STEPS, 3) });
   };
   A.startTrial = function (el) {
     var s = S(), uc = el.getAttribute("data-uc"), tr = trialFor(s.pub.ed);
@@ -744,7 +745,7 @@
     }).join("") + '<li><span class="sx-mod__d">Also shared: the next step you chose (' + esc(s.pub.next || "talk to sales") + ") and your contact details below.</span></li></ul></div>";
     h += '<div class="sx-form"><div class="sx-grid2">' + field("hname", "Full name", hd.name, "text", hd.err && !hd.name, true) + field("hemail", "Work email", hd.email, "email", hd.err && !/.+@.+\..+/.test(hd.email), true) + "</div><div class=\"sx-grid2\">" + field("hcompany", "Company", hd.company, "text", false, false) + field("hphone", "Phone", hd.phone, "tel", hd.err && !(hd.phone && /\d/.test(hd.phone)), true) + "</div>" +
       '<label class="sx-chk"><input type="checkbox" id="hconsent" data-in="handConsent"' + (hd.consent ? " checked" : "") + " /> I agree to share the items above with Salesforce so a specialist can contact me (simulated consent).</label>" + (hd.err && !hd.consent ? '<p class="sx-err">Tick the consent box to continue, or choose “Don’t share”.</p>' : "") + "</div>";
-    h += '<div class="sx-foot"><a class="sf-cta sf-cta--secondary sf-cta--medium" href="' + back + '">← Back</a><span class="sx-foot__n"></span><div class="sx-btnrow"><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="handDecline">Don’t share</button><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="copySummary">Copy summary</button><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="handSend">Review and send (simulated)</button></div></div>';
+    h += '<div class="sx-foot"><a class="sf-cta-back" href="' + back + '">Back</a><span class="sx-foot__n"></span><div class="sx-btnrow"><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="handDecline">Don’t share</button><button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="copySummary">Copy summary</button><button class="sf-cta sf-cta--primary sf-cta--medium" data-act="handSend">Review and send (simulated)</button></div></div>';
     return CEP.page(h, { rail: true });
   };
   function labelOf(k) {
