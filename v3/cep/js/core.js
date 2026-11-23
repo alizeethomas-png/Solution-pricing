@@ -413,5 +413,11 @@
     return CEP.page('<h1 class="sx-h2">We couldn’t find that page</h1><p class="sx-sub">Your selections are saved.</p><a class="sf-cta sf-cta--primary sf-cta--medium" href="#/">Go to pricing</a>', { narrow: true });
   };
 
-  CEP.boot = function () { CEP.render(); };
+  CEP.boot = function () {
+    var h = location.hash;
+    if (!h || h === "#" || h === "#/") {
+      history.replaceState(null, "", (location.pathname || "") + (location.search || "") + "#/explore");
+    }
+    CEP.render();
+  };
 })();
