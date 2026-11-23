@@ -346,6 +346,96 @@
 .cep-cmp thead th small { display: block; font: 700 12px var(--sx-body); color: var(--color-teal-40, #056764); margin-top: 2px; }
 .cep-cmp .cep-badge { display: table; margin-bottom: 4px; }
 .cep-cmp-act td { vertical-align: middle; }
+.cep-cmp-act .sf-cta,
+.cep-cmp-sel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 9.5em;
+  min-height: 40px;
+  box-sizing: border-box;
+}
+.cep-cmp-sel {
+  padding: var(--space-interactive-xs, 8px) var(--space-interactive-lg, 24px);
+  font: 700 16px/1.5 var(--sx-body);
+  color: var(--color-on-surface-1, #001E5B);
+  white-space: nowrap;
+}
+.cep-cmp-sel svg { flex-shrink: 0; }
+.cep-inc-lab {
+  font: 700 14px var(--sx-body);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.cep-fst__n {
+  min-width: 0;
+  font: 400 13px/1.4 var(--sx-body);
+  color: var(--color-on-surface-3, #444444);
+}
+.cep-cmp:not(.is-feat-all) .cep-feat-row--more { display: none; }
+.cep-feat-toggle {
+  min-height: 44px;
+  padding: 8px 0;
+  font: 700 14px var(--sx-body);
+  color: var(--color-link, #022AC0);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.cep-feat-toggle:focus-visible {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Page-sticky suite header. Desktop offset matches .sx-side (88px).
+   At ≤1023px the global nav is 56px and the rail is hidden, so sit flush
+   under the nav. overflow: visible so sticky is relative to the viewport. */
+.sx-tblw.cep-cmpw { overflow: visible; }
+.cep-cmp {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.cep-cmp thead { position: relative; z-index: 20; }
+.cep-cmp tbody { position: relative; z-index: 0; }
+.cep-cmp thead th {
+  position: sticky;
+  top: 88px;
+  z-index: 20;
+  background: var(--color-fill-info, #EAF5FE);
+}
+.cep-cmp thead th:first-child { border-top-left-radius: 12px; }
+.cep-cmp thead th:last-child { border-top-right-radius: 12px; }
+.cep-cmp thead th.is-rec {
+  background: var(--color-cloud-blue-90, #CFE9FE);
+}
+.cep-cmp thead th.is-miss {
+  background: var(--color-neutral-95, #F3F3F3);
+}
+/* Fill the 16px gap between the 72px nav and the 88px rail offset so
+   scrolling rows cannot show between them. */
+.cep-cmp thead th::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -16px;
+  height: 16px;
+  background: inherit;
+  pointer-events: none;
+}
+.cep-cmp tbody th,
+.cep-cmp tbody td { position: relative; z-index: 0; }
+.cep-cmp .sf-cta,
+.cep-cmp .sf-cta:hover,
+.cep-cmp .sf-cta:active {
+  transform: none;
+  will-change: auto;
+}
+@media (max-width: 1023px) {
+  .cep-cmp thead th { top: 56px; }
+  .cep-cmp thead th::before { content: none; height: 0; }
+}
 .cep-feat-legend {
   display: flex;
   flex-wrap: wrap;

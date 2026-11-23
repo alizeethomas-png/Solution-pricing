@@ -12,6 +12,39 @@
 
   var TIERS = ["core", "advanced", "max"];
   var SKIP = /^Slack\b/i;
+  var FEATURE_PREVIEW = 7;
+  /* Lower number = shown first. Industry CRM, then Tableau Next, Foundations,
+     Data Cloud, Premier Success, Sales Emails; everything else follows BOM order. */
+  var PRIORITY_RULES = [
+    { re: / Cloud$|^Public Sector$|^Sales & Service$/, n: 10 },
+    { re: /^Tableau Next Consumer/, n: 20 },
+    { re: /^Tableau Next Creator/, n: 21 },
+    { re: /^Salesforce Foundations/, n: 30 },
+    { re: /^Data Cloud Provisioning/, n: 31 },
+    { re: /^Premier Success/, n: 40 },
+    { re: /^Sales Emails/, n: 41 },
+    { re: /^Enablement/, n: 50 },
+    { re: /^Sales Insights/, n: 51 },
+    { re: /^Account Research/, n: 52 },
+    { re: /^Help Agent Access/, n: 53 },
+    { re: /^Customer Signals/, n: 54 },
+    { re: /^Security Center/, n: 60 },
+    { re: /^Data Detect/, n: 61 },
+    { re: /^Salesforce Back Up/, n: 70 },
+    { re: /^Salesforce Archive/, n: 71 },
+    { re: /^Agentforce/, n: 80 },
+    { re: /^Salesforce Maps/, n: 81 },
+    { re: /^Salesforce Contracts/, n: 82 },
+    { re: /^Advanced Momentum/, n: 83 }
+  ];
+
+  function priorityOf(name, orderIndex) {
+    var i;
+    for (i = 0; i < PRIORITY_RULES.length; i++) {
+      if (PRIORITY_RULES[i].re.test(name)) return PRIORITY_RULES[i].n;
+    }
+    return 200 + orderIndex;
+  }
 
   /**
    * @typedef {"included"|"partial"|"none"} FeatureStatus
@@ -87,7 +120,7 @@
     function add(fam, tier, raw, rank, variant) {
       if (!fam) return;
       if (!byFam[fam]) {
-        byFam[fam] = { id: fam, name: fam, cells: { core: null, advanced: null, max: null } };
+        byFam[fam] = { id: fam, name: fam, priority: 200, cells: { core: null, advanced: null, max: null } };
         order.push(fam);
       }
       var prev = byFam[fam].cells[tier];
@@ -124,12 +157,21 @@
       });
     });
 
-    return order.map(function (fam) { return byFam[fam]; });
+    return order.map(function (fam, i) {
+      var row = byFam[fam];
+      row.priority = priorityOf(row.name, i);
+      return row;
+    }).sort(function (a, b) {
+      if (a.priority !== b.priority) return a.priority - b.priority;
+      return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+    });
   }
 
+  SU.FEATURE_PREVIEW = FEATURE_PREVIEW;
   SU.featureMatrix = featureMatrix;
   SU.featureFamily = familyKey;
   SU.featureRank = rankOf;
+  SU.featurePriority = priorityOf;
 
   if (typeof module !== "undefined" && module.exports) module.exports = SU;
 })(typeof window !== "undefined" ? window : globalThis);

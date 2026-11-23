@@ -15,7 +15,7 @@
     return {
       v: 1, session: newSession(), participant: "", variant: "guided",
       ctx: { industry: null, size: null, region: "na", cloud: "crm", goals: [], freeText: "", suggested: [], skipped: false },
-      view: { period: "mo", audience: "new" },
+      view: { period: "mo", audience: "new", featAll: false },
       me: { signedIn: false, email: "", name: "" }, pendingGate: null,
       pub: { ed: null, seats: null, billing: "annual", accepted: {}, declined: {}, actions: 0, currency: "USD", model: "prepurchase", saved: [], compare: [], next: null, lastRoute: "#/explore", browseProduct: "all" },
       trial: { state: null, tasks: [], kind: null },
@@ -146,11 +146,12 @@
   };
   document.addEventListener("submit", function (e) { var f = e.target.closest(".cep-tb__form"); if (f) { e.preventDefault(); CEP.act.tbSubmit(f); } });
   CEP.act.period = function () { CEP.S.view = CEP.S.view || {}; CEP.S.view.period = CEP.isMo() ? "yr" : "mo"; CEP.track("price_assumptions_changed", { display: CEP.S.view.period }); CEP.save(); CEP.render(); };
+  var icCross = '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="var(--color-red-40, #BA0517)"/><path d="M6.6 6.6l6.8 6.8M13.4 6.6l-6.8 6.8" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>';
   CEP.ic = {
     check: '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2E844A"/><path d="M5.8 10.3l2.7 2.7 5.6-5.9" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     part: '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" fill="#fff" stroke="#DD7A01" stroke-width="2"/><path d="M10 1.5a8.5 8.5 0 0 1 0 17z" fill="#DD7A01"/></svg>',
-    gap: '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" fill="#fff" stroke="#BA0517" stroke-width="2"/><path d="M6.5 10h7" stroke="#BA0517" stroke-width="2.2" stroke-linecap="round"/></svg>',
-    cross: '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#BA0517"/><path d="M6.6 6.6l6.8 6.8M13.4 6.6l-6.8 6.8" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    gap: icCross,
+    cross: icCross,
     info: '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 9v5M10 6.2v.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     lock: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
     ext: '<svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 3h6v6M17 3l-8 8M15 12v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',

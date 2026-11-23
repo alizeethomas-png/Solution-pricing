@@ -144,6 +144,25 @@ t("Missing tiers are null cells, not 'not included'", function () {
   eq(base.cells.advanced, null);
   eq(base.cells.max.status, "included");
 });
+t("Feature rows carry a data-module priority and preview 7", function () {
+  eq(SU.FEATURE_PREVIEW, 7);
+  var rows = SU.featureMatrix("health", "crm");
+  ok(rows.length > 7);
+  rows.forEach(function (r, i) {
+    ok(typeof r.priority === "number", r.name);
+    if (i) ok(r.priority >= rows[i - 1].priority, r.name + " order");
+  });
+  eq(rows[0].name, "Health Cloud");
+  eq(rows[1].name, "Tableau Next Consumer");
+  eq(rows[2].name, "Tableau Next Creator");
+});
+t("Not-included and not-covered share one red X (gap === cross)", function () {
+  /* Icon markup lives in core.js; matrix statuses still distinguish none vs included. */
+  var rows = SU.featureMatrix("fsc", "crm");
+  var premier = rows.filter(function (r) { return r.name.indexOf("Premier Success") === 0; })[0];
+  eq(premier.cells.advanced.status, "none");
+  eq(premier.cells.core.status, "included");
+});
 t("Every industry and cloud produces a matrix with consistent row keys", function () {
   SU.industries.forEach(function (ind) {
     ["sales", "service", "crm"].forEach(function (cloud) {

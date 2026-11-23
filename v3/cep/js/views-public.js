@@ -303,16 +303,20 @@
     function colCls(x) {
       return (rec && x.id === rec.id ? " is-rec" : "") + (x.missing ? " is-miss" : "") + (!x.missing && x.id === chosen ? " is-sel" : "");
     }
+    var feats = (window.CEP_SUITES && window.CEP_SUITES.featureMatrix) ? window.CEP_SUITES.featureMatrix(c.industry, c.cloud) : [];
+    var featLimit = (window.CEP_SUITES && window.CEP_SUITES.FEATURE_PREVIEW) || 7;
+    var featAll = !!(s.view && s.view.featAll);
     h += '<p class="cep-feat-legend">' +
       "<span>" + CEP.ic.check + "<span>Included</span></span>" +
       "<span>" + CEP.ic.part + "<span>Partially included</span></span>" +
       "<span>" + CEP.ic.cross + "<span>Not included</span></span>" +
       "</p>";
-    h += '<div class="sx-tblw"><table class="sx-tbl cep-cmp"><caption class="sx-vh">Option comparison. The recommended option is marked. Feature status is included, partially included, or not included.</caption><thead><tr><th scope="col">Compare</th>' + show.map(function (x) {
+    h += '<div class="sx-tblw cep-cmpw"><table class="sx-tbl cep-cmp' + (featAll ? " is-feat-all" : "") + '" id="cep-cmp-tbl"><caption class="sx-vh">Option comparison. The recommended option is marked. Feature status is included, partially included, or not included.</caption><thead><tr><th scope="col">Compare</th>' + show.map(function (x) {
       var isRec = rec && x.id === rec.id;
       var tk = (window.CEP_SUITES && window.CEP_SUITES.tierKey(x.id)) || "core";
       var name = x.missing ? (tk === "max" ? "Max" : tk === "advanced" ? "Advanced" : "Core") : x.edition.name;
-      return '<th scope="col" class="' + colCls(x).trim() + '">' + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(name) + (!x.missing && x.edition && x.edition.suiteVariant ? "<small>" + esc(x.edition.suiteVariant) + "</small>" : "") + (s.pub.edPicked && x.id === chosen && rec && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
+      var selAttr = (!x.missing && x.id === chosen) ? ' aria-current="true"' : "";
+      return '<th scope="col" class="' + colCls(x).trim() + '"' + selAttr + ">" + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(name) + (!x.missing && x.edition && x.edition.suiteVariant ? "<small>" + esc(x.edition.suiteVariant) + "</small>" : "") + (s.pub.edPicked && x.id === chosen && rec && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
     }).join("") + "</tr></thead><tbody>";
     function trow(label, f, tip) {
       return '<tr><th scope="row"><span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span></th>" + show.map(function (x) { return '<td class="' + colCls(x).trim() + '">' + (x.missing ? missingWhy(c.industry, c.cloud, x.id) : f(x)) + "</td>"; }).join("") + "</tr>";
@@ -333,24 +337,28 @@
       var g = E.goal(gid);
       h += trow(g.name, function (x) {
         var r = x.rows.filter(function (rr) { return rr.goal.id === gid; })[0];
-        return '<span class="sx-lv">' + (r.base === "full" ? CEP.ic.check + " Covered" : r.base === "partial" ? CEP.ic.part + " Partly" : CEP.ic.gap + " Not covered") + "</span>" + (r.fixes.length ? "<small>Needs " + r.fixes.map(function (f) { return esc(E.mod(f).name); }).join(", ") + "</small>" : (r.needsUpgrade ? "<small>Needs a higher edition</small>" : ""));
+        return '<span class="sx-lv">' + (r.base === "full" ? CEP.ic.check + " Covered" : r.base === "partial" ? CEP.ic.part + " Partly" : CEP.ic.cross + " Not covered") + "</span>" + (r.fixes.length ? "<small>Needs " + r.fixes.map(function (f) { return esc(E.mod(f).name); }).join(", ") + "</small>" : (r.needsUpgrade ? "<small>Needs a higher edition</small>" : ""));
       }, g.desc);
     });
-    var feats = (window.CEP_SUITES && window.CEP_SUITES.featureMatrix) ? window.CEP_SUITES.featureMatrix(c.industry, c.cloud) : [];
     if (feats.length) {
       h += '<tr class="cep-cmp-sec"><th scope="row"><span class="cep-th-lab">Included' + CEP.infoTip("Included", ROW_TIPS.Included) + '</span></th>' +
-        show.map(function (x) { return '<td class="' + colCls(x).trim() + '"></td>'; }).join("") + "</tr>";
-      feats.forEach(function (feat) {
-        h += '<tr class="cep-feat-row"><th scope="row">' + esc(feat.name) + "</th>" + show.map(function (x) {
+        show.map(function (x) { return '<td class="' + colCls(x).trim() + '"><span class="cep-inc-lab">Included</span></td>'; }).join("") + "</tr>";
+      feats.forEach(function (feat, i) {
+        h += '<tr class="cep-feat-row' + (i >= featLimit ? " cep-feat-row--more" : "") + '"><th scope="row"><span class="sx-vh">' + esc(feat.name) + "</span></th>" + show.map(function (x) {
           var tk = (window.CEP_SUITES && window.CEP_SUITES.tierKey(x.id)) || "core";
           var cell = feat.cells[tk];
           if (x.missing || !cell) return '<td class="' + colCls(x).trim() + '"></td>';
           var ic = cell.status === "included" ? CEP.ic.check : (cell.status === "partial" ? CEP.ic.part : CEP.ic.cross);
           var lab = cell.status === "included" ? "Included" : (cell.status === "partial" ? "Partially included" : "Not included");
+          var item = cell.name || feat.name;
           return '<td class="' + colCls(x).trim() + '"><span class="cep-fst">' + ic + '<span class="sx-vh">' + lab + "</span>" +
-            (cell.variant ? "<span class=\"cep-fst__n\">" + esc(cell.variant) + "</span>" : "") + "</span></td>";
+            "<span class=\"cep-fst__n\">" + esc(item) + "</span></span></td>";
         }).join("") + "</tr>";
       });
+      if (feats.length > featLimit) {
+        h += '<tr class="cep-feat-more"><th scope="row"><button type="button" class="sx-link cep-feat-toggle" id="cep-feat-toggle" data-act="toggleFeats" aria-expanded="' + featAll + '" aria-controls="cep-cmp-tbl">Show ' + (featAll ? "less" : "all") + "</button></th>" +
+          show.map(function (x) { return '<td class="' + colCls(x).trim() + '"></td>'; }).join("") + "</tr>";
+      }
     }
     h += trow("Flex Credits included", function (x) { return x.edition.credits ? E.credits(x.edition.credits) + " per org/year" : '<span class="sx-na">None</span>'; }, ROW_TIPS["Flex Credits included"]);
     h += trow("Data storage", function (x) { return x.edition.storage ? esc(x.edition.storage) : "—"; }, ROW_TIPS["Data storage"]);
@@ -361,7 +369,11 @@
     h += '<tr class="cep-cmp-act"><th scope="row"></th>' + show.map(function (x) {
       if (x.missing) return '<td class="is-miss"></td>';
       var on = x.id === chosen;
-      return '<td class="' + colCls(x).trim() + '"><button type="button" class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + x.id + '" aria-pressed="' + on + '">Select</button></td>';
+      var nm = x.edition && x.edition.name ? x.edition.name : "This suite";
+      if (on) {
+        return '<td class="' + colCls(x).trim() + '"><span class="cep-cmp-sel" role="status" aria-current="true" aria-label="' + esc(nm) + ' selected">' + CEP.ic.check + " Selected</span></td>";
+      }
+      return '<td class="' + colCls(x).trim() + '"><button type="button" class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + x.id + '">Select</button></td>';
     }).join("") + "</tr>";
     h += "</tbody></table></div>";
     h += '<p class="sx-fine">' + (ent ? "Enterprise pricing is tailored by Sales. Public list prices are on the packaged editions page." : "Source: Portfolio 2.0 Product Explorer industry BOMs. Illustrative list prices for research; not a quote. Excludes taxes.") + "</p>";
@@ -381,6 +393,18 @@
   function row(label, cells, tip) {
     return '<tr><th scope="row">' + (label ? '<span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span>" : "") + "</th>" + cells.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>";
   }
+  A.toggleFeats = function (el) {
+    CEP.S.view = CEP.S.view || {};
+    CEP.S.view.featAll = !CEP.S.view.featAll;
+    CEP.save();
+    var on = !!CEP.S.view.featAll;
+    var tbl = document.getElementById("cep-cmp-tbl");
+    if (tbl) tbl.classList.toggle("is-feat-all", on);
+    if (el) {
+      el.setAttribute("aria-expanded", on ? "true" : "false");
+      el.textContent = on ? "Show less" : "Show all";
+    }
+  };
   A.pickEd = function (el) {
     var id = el.getAttribute("data-id"), s = S(), prev = s.pub.ed;
     s.pub.ed = id; s.pub.edPicked = true; if (!s.pub.seats) { var sz = E.size(s.ctx.size); s.pub.seats = sz ? sz.seats : 10; }
