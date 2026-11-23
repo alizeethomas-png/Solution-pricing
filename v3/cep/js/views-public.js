@@ -274,9 +274,10 @@
     if (!rec) { s.pub.ed = null; }
     var chosen = s.pub.ed;
     var ind = c.industry && FX.industries.filter(function (i) { return i.id === c.industry; })[0];
-    var suiteTitle = (ind ? ind.name + " · " : "") + CEP.cloudLabel(c.cloud);
+    var suInd = window.CEP_SUITES && window.CEP_SUITES.industry(c.industry);
+    var indName = (suInd && suInd.name) || (ind && ind.name) || "";
+    var suiteTitle = (indName ? indName + " · " : "") + CEP.cloudLabel(c.cloud);
     var h = '<h1 class="sx-h2">Your recommended option</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare Core, Advanced and Max below. Prices are illustrative list prices.") + "</p>";
-    h += cloudToggle();
     h += '<p class="cep-suite-kicker">' + esc(suiteTitle) + " suite</p>";
     if (ind && window.CEP_SUITES && window.CEP_SUITES.meta.notes[ind.id]) h += CEP.note("", esc(window.CEP_SUITES.meta.notes[ind.id]));
     if (rg && !rg.priced) h += CEP.note("w", "<strong>Prices for " + esc(rg.name) + " aren’t in this prototype.</strong> We show options and coverage, but not converted prices." + (rg.ineligible ? " Starter Suite isn’t offered in this region (synthetic rule)." : ""));
@@ -289,7 +290,7 @@
     if (rec) {
       var e = rec.edition;
       h += '<section class="cep-why-blade" aria-labelledby="why-h"><div class="cep-why-blade__top"><div><span class="cep-badge">★ Recommended for you</span><h2 class="sx-h3" id="why-h">Why we recommend ' + esc(e.name) + '</h2><p class="sx-mod__d">' + esc(e.blurb) + (e.suiteVariant ? " (" + esc(e.suiteVariant) + ")" : "") + "</p></div>" +
-        (priced ? '<div class="cep-why-blade__p"><strong>' + E.money(CEP.uv(e.price)) + "</strong><span>" + CEP.perUnitLbl("user (seat)") + "</span><small>" + CEP.pt(rec.baseAnnual) + " for " + E.num(rec.seats) + " users (seats) · " + CEP.billNote(e.billing.indexOf("monthly") >= 0 && s.pub.billing === "monthly") + "</small></div>" :
+        (priced ? '<div class="cep-why-blade__p"><strong>' + E.money(CEP.uv(e.price)) + "</strong><span>" + CEP.perUnitLbl("user seat") + "</span><small>" + CEP.pt(rec.baseAnnual) + " for " + E.num(rec.seats) + " users seats · " + CEP.billNote(e.billing.indexOf("monthly") >= 0 && s.pub.billing === "monthly") + "</small></div>" :
           '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing<small>A specialist prepares your price</small>" : "Priced by Sales<small>Not available for your region</small>") + "</span></div>") + "</div>";
       h += '<p class="cep-why-blade__sum"><strong>' + (rec.reach === rec.rows.length ? "It can cover all " + rec.rows.length + " of your goals" : "It covers the most of your goals (" + rec.reach + " of " + rec.rows.length + ")") + (rec.suggested.length ? " with " + rec.suggested.length + " add-on" + (rec.suggested.length > 1 ? "s" : "") : " on its own") + (ent ? ", with the fewest extra products." : ", at the lowest estimated cost among options that do.") + "</strong></p>";
       h += '<ul class="cep-why-blade__g">' + rec.rows.map(function (r) { return "<li>" + (r.base === "full" ? CEP.ic.check : r.base === "partial" ? CEP.ic.part : CEP.ic.gap) + "<span><strong>" + esc(r.goal.name) + "</strong> " + esc(r.reason) + "</span></li>"; }).join("") + "</ul>";
@@ -299,24 +300,31 @@
     }
 
     var top = '<div class="cep-top">' + h + "</div>"; h = "";
-    h += '<div class="cep-row-between cep-cmp-head"><h2 class="sx-h3" id="cmp" style="margin:0">Compare options</h2>' + (priced ? '<div class="sx-row cep-cmp-ctl"><div class="cep-inline"><label class="sx-lbl" for="seats">Users (seats)</label>' + stepper("seats", o.seats, "users (seats)") + "</div>" + CEP.periodToggle("pt-opt") + "</div>" : "") + "</div>";
+    var cmpTitle = "Compare " + (indName ? indName + " " : "") + CEP.cloudLabel(c.cloud) + " Suite Options";
+    h += '<div class="cep-cmp-head"><h2 class="sx-h3" id="cmp">' + esc(cmpTitle) + "</h2>" + cloudToggle() +
+      (priced ? '<div class="sx-row cep-cmp-ctl"><div class="cep-inline"><label class="sx-lbl" for="seats">Users seats</label>' + stepper("seats", o.seats, "users seats", { hideUnit: true }) + "</div>" + CEP.segPeriodToggle("pt-opt") + "</div>" : "") + "</div>";
     function colCls(x) {
       return (rec && x.id === rec.id ? " is-rec" : "") + (x.missing ? " is-miss" : "") + (!x.missing && x.id === chosen ? " is-sel" : "");
     }
     var feats = (window.CEP_SUITES && window.CEP_SUITES.featureMatrix) ? window.CEP_SUITES.featureMatrix(c.industry, c.cloud) : [];
     var featLimit = (window.CEP_SUITES && window.CEP_SUITES.FEATURE_PREVIEW) || 7;
     var featAll = !!(s.view && s.view.featAll);
-    h += '<p class="cep-feat-legend">' +
-      "<span>" + CEP.ic.check + "<span>Included</span></span>" +
-      "<span>" + CEP.ic.part + "<span>Partially included</span></span>" +
-      "<span>" + CEP.ic.cross + "<span>Not included</span></span>" +
-      "</p>";
-    h += '<div class="sx-tblw cep-cmpw"><table class="sx-tbl cep-cmp' + (featAll ? " is-feat-all" : "") + '" id="cep-cmp-tbl"><caption class="sx-vh">Option comparison. The recommended option is marked. Feature status is included, partially included, or not included.</caption><thead><tr><th scope="col">Compare</th>' + show.map(function (x) {
-      var isRec = rec && x.id === rec.id;
+    function suiteColName(x) {
+      if (!x.missing && x.edition && x.edition.name) return x.edition.name;
       var tk = (window.CEP_SUITES && window.CEP_SUITES.tierKey(x.id)) || "core";
-      var name = x.missing ? (tk === "max" ? "Max" : tk === "advanced" ? "Advanced" : "Core") : x.edition.name;
-      var selAttr = (!x.missing && x.id === chosen) ? ' aria-current="true"' : "";
-      return '<th scope="col" class="' + colCls(x).trim() + '"' + selAttr + ">" + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(name) + (!x.missing && x.edition && x.edition.suiteVariant ? "<small>" + esc(x.edition.suiteVariant) + "</small>" : "") + (s.pub.edPicked && x.id === chosen && rec && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
+      var tier = tk === "max" ? "Max" : tk === "advanced" ? "Advanced" : "Core";
+      return indName ? (indName + " " + tier) : tier;
+    }
+    h += '<div class="sx-tblw cep-cmpw"><table class="sx-tbl cep-cmp' + (featAll ? " is-feat-all" : "") + '" id="cep-cmp-tbl"><caption class="sx-vh">' + esc(cmpTitle) + '. Feature status is included, partially included, or not included.</caption><thead><tr><th scope="col" aria-label="Suite"></th>' + show.map(function (x) {
+      var isRec = rec && x.id === rec.id;
+      var name = suiteColName(x);
+      var on = !x.missing && x.id === chosen;
+      var selAttr = on ? ' aria-current="true"' : "";
+      return '<th scope="col" class="' + colCls(x).trim() + '"' + selAttr + '><span class="cep-cmp-ed">' + esc(name) + "</span>" +
+        (!x.missing && x.edition && x.edition.suiteVariant ? "<small>" + esc(x.edition.suiteVariant) + "</small>" : "") +
+        (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") +
+        (on ? '<span class="cep-cmp-hsel">' + CEP.ic.check + " Selected</span>" : "") +
+        "</th>";
     }).join("") + "</tr></thead><tbody>";
     function trow(label, f, tip) {
       return '<tr><th scope="row"><span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span></th>" + show.map(function (x) { return '<td class="' + colCls(x).trim() + '">' + (x.missing ? missingWhy(c.industry, c.cloud, x.id) : f(x)) + "</td>"; }).join("") + "</tr>";
@@ -327,9 +335,9 @@
       if (tiers && tiers.length > 1) {
         return tiers.map(function (p) {
           return '<strong class="cep-cmp-p">' + E.money(CEP.uv(p.price)) + "</strong><small>" + esc(p.label) + "</small>";
-        }).join("") + "<small>" + CEP.perUnitLbl("user (seat)") + "</small>";
+        }).join("") + "<small>" + CEP.perUnitLbl("user seat") + "</small>";
       }
-      return '<strong class="cep-cmp-p">' + E.money(CEP.uv(x.perUser)) + "</strong><small>" + CEP.perUnitLbl("user (seat)") + "</small><small>" + CEP.pt(x.baseAnnual) + " for " + E.num(x.seats) + " users (seats)</small>";
+      return '<strong class="cep-cmp-p">' + E.money(CEP.uv(x.perUser)) + "</strong><small>" + CEP.perUnitLbl("user seat") + "</small><small>" + CEP.pt(x.baseAnnual) + " for " + E.num(x.seats) + " users seats</small>";
     }
     h += trow("Price", priceCell, ROW_TIPS.Price);
     h += trow("Goals covered", function (x) { return "<strong>" + x.full + " of " + x.rows.length + "</strong> on its own" + (x.reach > x.full ? "<small>" + x.reach + " with add-ons</small>" : ""); }, ROW_TIPS["Goals covered"]);
@@ -344,7 +352,8 @@
       h += '<tr class="cep-cmp-sec"><th scope="row"><span class="cep-th-lab">Included' + CEP.infoTip("Included", ROW_TIPS.Included) + '</span></th>' +
         show.map(function (x) { return '<td class="' + colCls(x).trim() + '"><span class="cep-inc-lab">Included</span></td>'; }).join("") + "</tr>";
       feats.forEach(function (feat, i) {
-        h += '<tr class="cep-feat-row' + (i >= featLimit ? " cep-feat-row--more" : "") + '"><th scope="row"><span class="sx-vh">' + esc(feat.name) + "</span></th>" + show.map(function (x) {
+        var end = (feats.length <= featLimit && i === feats.length - 1) ? " cep-feat-block-end" : "";
+        h += '<tr class="cep-feat-row' + (i >= featLimit ? " cep-feat-row--more" : "") + end + '"><th scope="row"><span class="sx-vh">' + esc(feat.name) + "</span></th>" + show.map(function (x) {
           var tk = (window.CEP_SUITES && window.CEP_SUITES.tierKey(x.id)) || "core";
           var cell = feat.cells[tk];
           if (x.missing || !cell) return '<td class="' + colCls(x).trim() + '"></td>';
@@ -356,8 +365,10 @@
         }).join("") + "</tr>";
       });
       if (feats.length > featLimit) {
-        h += '<tr class="cep-feat-more"><th scope="row"><button type="button" class="sx-link cep-feat-toggle" id="cep-feat-toggle" data-act="toggleFeats" aria-expanded="' + featAll + '" aria-controls="cep-cmp-tbl">Show ' + (featAll ? "less" : "all") + "</button></th>" +
-          show.map(function (x) { return '<td class="' + colCls(x).trim() + '"></td>'; }).join("") + "</tr>";
+        var togLab = featAll ? "Show less" : "Show all";
+        var togBtn = '<button type="button" class="sx-link cep-feat-toggle" id="cep-feat-toggle" data-act="toggleFeats" aria-expanded="' + featAll + '" aria-controls="cep-cmp-tbl">' + togLab + ' <i class="icon icon--chevrondown" aria-hidden="true"></i></button>';
+        h += '<tr class="cep-feat-more cep-feat-block-end"><th scope="row"></th>' +
+          show.map(function (x, i) { return '<td class="' + colCls(x).trim() + '">' + (i === 0 ? togBtn : "") + "</td>"; }).join("") + "</tr>";
       }
     }
     h += trow("Flex Credits included", function (x) { return x.edition.credits ? E.credits(x.edition.credits) + " per org/year" : '<span class="sx-na">None</span>'; }, ROW_TIPS["Flex Credits included"]);
@@ -376,6 +387,11 @@
       return '<td class="' + colCls(x).trim() + '"><button type="button" class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + x.id + '">Select</button></td>';
     }).join("") + "</tr>";
     h += "</tbody></table></div>";
+    h += '<p class="cep-feat-legend">' +
+      "<span>" + CEP.ic.check + "<span>Included</span></span>" +
+      "<span>" + CEP.ic.part + "<span>Partially included</span></span>" +
+      "<span>" + CEP.ic.cross + "<span>Not included</span></span>" +
+      "</p>";
     h += '<p class="sx-fine">' + (ent ? "Enterprise pricing is tailored by Sales. Public list prices are on the packaged editions page." : "Source: Portfolio 2.0 Product Explorer industry BOMs. Illustrative list prices for research; not a quote. Excludes taxes.") + "</p>";
     h += stepNav("#/explore", "Back", rec ? "#/estimate" : null, "Customize", rec ? { act: "toCustomize" } : {});
     CEP.track("recommendation_viewed", { rec: rec ? rec.id : null, cloud: c.cloud, industry: c.industry });
@@ -402,7 +418,7 @@
     if (tbl) tbl.classList.toggle("is-feat-all", on);
     if (el) {
       el.setAttribute("aria-expanded", on ? "true" : "false");
-      el.textContent = on ? "Show less" : "Show all";
+      el.innerHTML = (on ? "Show less" : "Show all") + ' <i class="icon icon--chevrondown" aria-hidden="true"></i>';
     }
   };
   A.pickEd = function (el) {
@@ -427,8 +443,10 @@
     CEP.track("sku_selected", { edition: id, from: prev });
     CEP.save(); if (CEP.route() === "/estimate") CEP.render(); else CEP.go("#/estimate");
   };
-  function stepper(id, val, unit) {
-    return '<div class="sx-stepper"><button type="button" aria-label="Decrease ' + esc(unit) + '" data-act="step" data-k="' + id + '" data-d="-1">−</button><input id="' + id + '" type="number" min="1" inputmode="numeric" value="' + val + '" data-in="' + id + '" aria-label="Number of ' + esc(unit) + '" /><button type="button" aria-label="Increase ' + esc(unit) + '" data-act="step" data-k="' + id + '" data-d="1">+</button><span class="cep-unit">' + esc(unit) + "</span></div>";
+  function stepper(id, val, unit, opts) {
+    opts = opts || {};
+    var lab = opts.aria || unit;
+    return '<div class="sx-stepper"><button type="button" aria-label="Decrease ' + esc(lab) + '" data-act="step" data-k="' + id + '" data-d="-1">−</button><input id="' + id + '" type="number" min="1" inputmode="numeric" value="' + val + '" data-in="' + id + '" aria-label="Number of ' + esc(lab) + '" /><button type="button" aria-label="Increase ' + esc(lab) + '" data-act="step" data-k="' + id + '" data-d="1">+</button>' + (opts.hideUnit ? "" : '<span class="cep-unit">' + esc(unit) + "</span>") + "</div>";
   }
   CEP.stepper = stepper;
   A.step = function (el) {

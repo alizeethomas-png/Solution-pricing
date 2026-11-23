@@ -19,7 +19,17 @@
 .cep-ok-inline { color: var(--color-teal-40, #056764); font-weight: 700; font-size: 14px; margin-top: 6px; }
 .cep-warn-t { color: var(--color-orange-30, #5F3E02) !important; font-weight: 700; }
 .cep-row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.cep-rail-foot { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--color-neutral-90, #E5E5E5); }
+.cep-rail-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-content-sm, 12px);
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-neutral-90, #E5E5E5);
+}
+.cep-rail-foot .sf-cta { flex: 0 0 auto; }
 .cep-why { font-size: 13px; line-height: 1.45; background: var(--color-fill-info, #EAF5FE); border-radius: 10px; padding: 8px 10px; }
 .cep-comp { font-size: 13px; }
 .cep-comp ul { margin: 4px 0 0 18px; display: grid; gap: 2px; }
@@ -337,14 +347,41 @@
 .cep-why-blade__need { margin-top: 10px; font-size: 14px; color: var(--sx-ink); }
 .cep-why-blade .sx-btnrow { margin-top: 12px; }
 @media (max-width: 767px) { .cep-why-blade__g { grid-template-columns: 1fr; } .cep-why-blade__p { align-items: flex-start; text-align: left; } .cep-why-blade { padding: 18px 16px; } }
-.cep-cmp-head { margin: 8px 0 10px; }
-.cep-cmp-ctl { align-items: center; gap: 16px; }
+.cep-cmp-head {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-content-sm, 12px);
+  margin: 8px 0 16px;
+}
+.cep-cmp-head .sx-h3 {
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: var(--font-line-height-snug, 1.25);
+}
+.cep-cmp-head .cep-cloud-toggle { margin: 0; }
+.cep-cmp-ctl { align-items: center; gap: 16px; width: 100%; justify-content: space-between; }
 .cep-inline { display: flex; align-items: center; gap: 10px; }
 .cep-inline .sx-lbl { margin: 0; }
 .cep-cmp th.is-rec, .cep-cmp td.is-rec { background: rgba(234, 245, 254, .65); }
-.cep-cmp thead th.is-rec { box-shadow: inset 0 3px 0 var(--sx-accent); }
 .cep-cmp thead th small { display: block; font: 700 12px var(--sx-body); color: var(--color-teal-40, #056764); margin-top: 2px; }
-.cep-cmp .cep-badge { display: table; margin-bottom: 4px; }
+.cep-cmp-ed {
+  display: block;
+  font: 700 20px var(--sx-display);
+  color: var(--color-on-surface-1, #001E5B);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.cep-cmp-hsel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font: 700 12px var(--sx-body);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.cep-cmp-hsel svg { flex-shrink: 0; width: 14px; height: 14px; }
 .cep-cmp-act td { vertical-align: middle; }
 .cep-cmp-act .sf-cta,
 .cep-cmp-sel {
@@ -374,6 +411,9 @@
 }
 .cep-cmp:not(.is-feat-all) .cep-feat-row--more { display: none; }
 .cep-feat-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 44px;
   padding: 8px 0;
   font: 700 14px var(--sx-body);
@@ -383,6 +423,12 @@
   cursor: pointer;
   text-decoration: underline;
 }
+.cep-feat-toggle .icon {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+}
+.cep-feat-toggle[aria-expanded="true"] .icon { transform: rotate(180deg); }
 .cep-feat-toggle:focus-visible {
   outline: 3px solid var(--color-border-focus, #066AFE);
   outline-offset: 2px;
@@ -391,7 +437,11 @@
 /* Page-sticky suite header. Desktop offset matches .sx-side (88px).
    At ≤1023px the global nav is 56px and the rail is hidden, so sit flush
    under the nav. overflow: visible so sticky is relative to the viewport. */
-.sx-tblw.cep-cmpw { overflow: visible; }
+.sx-tblw.cep-cmpw {
+  overflow: visible;
+  background: transparent;
+  border-color: transparent;
+}
 .cep-cmp {
   border-collapse: separate;
   border-spacing: 0;
@@ -402,16 +452,20 @@
   position: sticky;
   top: 88px;
   z-index: 20;
-  background: var(--color-fill-info, #EAF5FE);
+  background: var(--color-background-1, #FFFFFF);
 }
 .cep-cmp thead th:first-child { border-top-left-radius: 12px; }
 .cep-cmp thead th:last-child { border-top-right-radius: 12px; }
-.cep-cmp thead th.is-rec {
-  background: var(--color-cloud-blue-90, #CFE9FE);
+.cep-cmp thead th.is-rec { background: rgba(234, 245, 254, .65); }
+.cep-cmp thead th.is-miss { background: var(--color-neutral-95, #F3F3F3); }
+.cep-cmp tbody th,
+.cep-cmp tbody td {
+  background: var(--color-background-1, #FFFFFF);
 }
-.cep-cmp thead th.is-miss {
-  background: var(--color-neutral-95, #F3F3F3);
-}
+.cep-cmp tbody th.is-rec,
+.cep-cmp tbody td.is-rec { background: rgba(234, 245, 254, .65); }
+.cep-cmp tbody th.is-miss,
+.cep-cmp tbody td.is-miss { background: var(--color-neutral-95, #F3F3F3); }
 /* Fill the 16px gap between the 72px nav and the 88px rail offset so
    scrolling rows cannot show between them. */
 .cep-cmp thead th::before {
@@ -421,7 +475,7 @@
   right: 0;
   top: -16px;
   height: 16px;
-  background: inherit;
+  background: var(--color-cloud-blue-90, #CFE9FE);
   pointer-events: none;
 }
 .cep-cmp tbody th,
@@ -440,7 +494,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 18px;
-  margin: 0 0 12px;
+  margin: 12px 0 8px;
   padding: 8px 0;
   font: 400 13px var(--sx-body);
   color: var(--color-on-surface-3, #444444);
@@ -462,6 +516,18 @@
 .cep-cmp .cep-fst small { display: block; margin-top: 2px; }
 .cep-cmp-sec th { white-space: nowrap; }
 .cep-feat-row th { font-weight: 400; color: var(--color-on-surface-3, #444444); }
+.cep-cmp .cep-cmp-sec th,
+.cep-cmp .cep-cmp-sec td,
+.cep-cmp .cep-feat-row th,
+.cep-cmp .cep-feat-row td,
+.cep-cmp .cep-feat-more th,
+.cep-cmp .cep-feat-more td {
+  border-bottom: 0;
+}
+.cep-cmp tr.cep-feat-block-end th,
+.cep-cmp tr.cep-feat-block-end td {
+  border-bottom: 1px solid var(--color-neutral-90, #E5E5E5);
+}
 .cep-cmp th.is-sel,
 .cep-cmp td.is-sel { background-clip: padding-box; }
 .cep-cmp thead th.is-sel {
@@ -469,12 +535,11 @@
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
 }
-.cep-cmp thead th.is-rec.is-sel {
-  box-shadow: inset 0 3px 0 var(--sx-accent), inset 2px 0 0 0 var(--color-fill-accent, #066AFE), inset -2px 0 0 0 var(--color-fill-accent, #066AFE);
-}
 .cep-cmp tbody td.is-sel {
   box-shadow: inset 2px 0 0 0 var(--color-fill-accent, #066AFE), inset -2px 0 0 0 var(--color-fill-accent, #066AFE);
 }
+.cep-cmp tbody tr:last-child th:first-child { border-bottom-left-radius: 12px; }
+.cep-cmp tbody tr:last-child td:last-child { border-bottom-right-radius: 12px; }
 .cep-cmp tbody tr:last-child td.is-sel {
   box-shadow: inset 2px -2px 0 0 var(--color-fill-accent, #066AFE), inset -2px -2px 0 0 var(--color-fill-accent, #066AFE), inset 2px 0 0 0 var(--color-fill-accent, #066AFE), inset -2px 0 0 0 var(--color-fill-accent, #066AFE);
   border-bottom-left-radius: 12px;
@@ -533,7 +598,7 @@ input[type="password"] { font: 400 16px var(--sx-body); color: var(--sx-text); b
 input[type="password"]:focus { border-color: var(--sx-accent); }
 .cep-opts--sm.cep-opts--ind4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 767px) { .cep-opts--sm.cep-opts--ind4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.cep-cmp thead .cep-badge { display: block; width: fit-content; font: 700 12px/1.4 var(--sx-body); padding: 1px 8px; margin: 0 0 4px; }
+.cep-cmp thead .cep-badge { display: block; width: fit-content; font: 700 12px/1.4 var(--sx-body); padding: 1px 8px; margin: 6px 0 0; }
 /* v4.2: subtitle in the theme's link blue (Electric Blue 30), distinct from the navy title; 5.6:1 on the hero gradient */
 .cep-home__h2 { color: var(--color-link, #022AC0); font-weight: 600; }
 
@@ -685,7 +750,44 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
   .est-wizard__title { font-size: var(--font-size-32, 32px); }
 }
 
+.est-wizard .period-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0;
+}
+.est-wizard .period-toggle-row--center { justify-content: flex-end; }
+.est-wizard .period-toggle {
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: var(--radius-button, 9999px);
+  box-shadow: inset 0 0 0 2px var(--color-border-accent, #022AC0);
+  background: var(--color-background-1, #FFFFFF);
+}
+.est-wizard .period-toggle__btn {
+  margin: 0;
+  padding: var(--space-interactive-xs, 8px) var(--space-interactive-lg, 24px);
+  border: 0;
+  background: transparent;
+  color: var(--color-on-fill-neutral-accent, #022AC0);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-14, 14px);
+  line-height: var(--font-line-height-normal, 1.5);
+  cursor: pointer;
+}
+.est-wizard .period-toggle__btn.is-on {
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+}
+.est-wizard .period-toggle__btn:focus-visible {
+  outline: 3px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+  z-index: 1;
+}
+.cep-cmp-head .period-toggle-row { margin: 0 0 0 auto; }
+
 .cep-stepnav .sf-cta-back,
+.cep-rail-foot .sf-cta-back,
 .sx-foot .sf-cta-back {
   display: inline-flex;
   align-items: center;
@@ -704,12 +806,14 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
   transform: none;
 }
 .cep-stepnav .sf-cta-back:hover,
+.cep-rail-foot .sf-cta-back:hover,
 .sx-foot .sf-cta-back:hover {
   text-decoration: underline;
   background: none;
   transform: none;
 }
 .cep-stepnav .sf-cta-back:focus-visible,
+.cep-rail-foot .sf-cta-back:focus-visible,
 .sx-foot .sf-cta-back:focus-visible {
   outline: 2px solid var(--color-fill-accent, #066AFE);
   outline-offset: 2px;

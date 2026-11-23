@@ -114,6 +114,25 @@
       '<span class="cep-period__o' + (yr ? " is-on" : "") + '" aria-hidden="true">Annual</span></div>' +
       '<p class="cep-period__note" id="' + id + '-d"><span class="sx-vh">' + (yr ? "Showing annual prices. " : "Showing monthly prices. ") + "</span>Only changes how prices are shown. Billing is set by your contract or plan.</p></div>";
   };
+  /* v1/v2 segmented Monthly/Annual control (v3-scoped copy for Options). */
+  CEP.segPeriodToggle = function (id) {
+    id = id || "pt-opt";
+    var yr = !CEP.isMo();
+    return '<div class="period-toggle-row"><div class="period-toggle" role="radiogroup" aria-label="Price period">' +
+      '<button type="button" class="period-toggle__btn' + (yr ? "" : " is-on") + '" id="' + id + '-mo" role="radio" aria-checked="' + String(!yr) + '" data-act="periodSet" data-v="mo">Monthly</button>' +
+      '<button type="button" class="period-toggle__btn' + (yr ? " is-on" : "") + '" id="' + id + '-yr" role="radio" aria-checked="' + String(yr) + '" data-act="periodSet" data-v="yr">Annual</button>' +
+      "</div></div>";
+  };
+  CEP.act.periodSet = function (el) {
+    var v = el.getAttribute("data-v");
+    CEP.S.view = CEP.S.view || {};
+    if (v !== "mo" && v !== "yr") return;
+    if (CEP.S.view.period === v) return;
+    CEP.S.view.period = v;
+    CEP.track("price_assumptions_changed", { display: v });
+    CEP.save();
+    CEP.render();
+  };
   /* ── Trailblazer ID-style sign-in (simulated), shared by the customer
      sign-in page and the prospect Save / Compare / Download / Trial gate.
      o: { ctx: "customer"|"prospect", mode: "signin"|"create", email, err, purpose } */
@@ -285,7 +304,7 @@
     if (ind) ctx.push(ind.name);
     ctx.push(CEP.cloudLabel(S.ctx.cloud));
     if (sz) ctx.push(sz.range); if (rg) ctx.push(rg.name);
-    var h = '<aside class="sx-cv" aria-label="Your plan summary"><div class="sx-cv__head"><h2 class="sx-cv__title">Running estimate</h2>' + (est && !ent ? CEP.status(est.status) : "") + "</div>" + (est && est.priceable && !ent ? CEP.periodToggle("pt-rail") : "");
+    var h = '<aside class="sx-cv" aria-label="Your plan summary"><div class="sx-cv__head"><h2 class="sx-cv__title">Running estimate</h2>' + (est && !ent ? CEP.status(est.status) : "") + "</div>";
     if (ctx.length) h += '<div class="sx-ctxrow">' + ctx.map(function (c) { return '<a class="sx-ctx" href="#/explore">' + esc(c) + "</a>"; }).join("") + "</div>";
     if (S.ctx.goals.length) {
       h += '<div class="sx-cv__h">Goals <a class="sx-link" href="#/explore">Edit</a></div><ul class="sx-goals">';
@@ -302,13 +321,21 @@
       h += '<div class="sx-cost"><p class="cep-tailored">Tailored pricing<small>For 1,000+ employees, a Salesforce specialist builds your pricing with you, including volume and commitment options.</small></p></div>';
     } else if (est) {
       h += '<div class="sx-cv__h">Your estimate</div><ul class="sx-lines">';
-      est.lines.forEach(function (l) { h += '<li class="sx-ln"><span class="sx-ln__t"><span class="sx-ln__n">' + esc(l.label) + "</span>" + (l.qty ? '<span class="sx-ln__s">' + E.num(l.qty) + " " + esc(l.unitLabel || "") + "</span>" : "") + "</span>" + CEP.amt(l) + "</li>"; });
+      est.lines.forEach(function (l) {
+        var qtyLab = l.unitLabel || "";
+        if (CEP.route() === "/recommend") qtyLab = qtyLab.replace(/\s*\((seats|seat)\)/gi, " $1").replace(/\s+/g, " ").trim();
+        h += '<li class="sx-ln"><span class="sx-ln__t"><span class="sx-ln__n">' + esc(l.label) + "</span>" + (l.qty ? '<span class="sx-ln__s">' + E.num(l.qty) + " " + esc(qtyLab) + "</span>" : "") + "</span>" + CEP.amt(l) + "</li>";
+      });
       h += "</ul>";
       h += '<div class="sx-cost"><div class="sx-cost__r"><span>' + (est.partial ? "Known subtotal" : "Estimated total") + '</span><strong>' + (est.priceable ? CEP.p(est.knownAnnual) : "—") + '</strong></div><div class="sx-cost__n">' + (est.priceable ? CEP.billNote(est.edition.billing.indexOf("monthly") >= 0 && CEP.S.pub.billing === "monthly") + (CEP.isMo() ? " · " + E.money(est.knownAnnual) + "/yr" : " · about " + E.money(est.monthly) + "/mo") + ". " : "") + CEP.partialWhy(est) + "Services shown separately.</div></div>";
     } else {
       h += '<p class="sx-cv__empty">Your estimate builds here as you go. Nothing is added until you choose it.</p>';
     }
-    h += '<div class="cep-rail-foot"><button class="sx-link" data-act="resetPublic">Start over</button></div></aside>';
+    h += '<div class="cep-rail-foot"><button type="button" class="sf-cta-back" data-act="resetPublic">Start over</button>';
+    if (CEP.route() === "/recommend") {
+      h += '<button type="button" class="sf-cta sf-cta--primary sf-cta--medium" data-act="toCustomize">Customize</button>';
+    }
+    h += "</div></aside>";
     return h;
   };
   CEP.mobileBar = function () {
@@ -397,6 +424,14 @@
     if (CEP.act[name]) { e.preventDefault(); if (el.getAttribute("aria-disabled") === "true" && !el.hasAttribute("data-allow-disabled")) return; CEP.act[name](el, e); }
   });
   document.addEventListener("keydown", function (e) {
+    var pbtn = e.target.closest && e.target.closest(".period-toggle__btn");
+    if (pbtn && (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowUp")) {
+      e.preventDefault();
+      var goYr = (e.key === "ArrowRight" || e.key === "ArrowDown");
+      var next = document.getElementById(goYr ? "pt-opt-yr" : "pt-opt-mo");
+      if (next && CEP.act.periodSet) CEP.act.periodSet(next);
+      return;
+    }
     if (e.key !== "Escape") return;
     var tips = document.querySelectorAll(".cep-tip.is-open");
     for (var i = 0; i < tips.length; i++) tips[i].classList.remove("is-open");
