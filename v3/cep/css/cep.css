@@ -346,6 +346,55 @@
 .cep-cmp thead th small { display: block; font: 700 12px var(--sx-body); color: var(--color-teal-40, #056764); margin-top: 2px; }
 .cep-cmp .cep-badge { display: table; margin-bottom: 4px; }
 .cep-cmp-act td { vertical-align: middle; }
+.cep-feat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0 0 12px;
+  padding: 8px 0;
+  font: 400 13px var(--sx-body);
+  color: var(--color-on-surface-3, #444444);
+}
+.cep-feat-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cep-feat-legend svg { flex-shrink: 0; }
+.cep-fst {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: 100%;
+}
+.cep-fst svg { flex-shrink: 0; margin-top: 2px; }
+.cep-fst__n { min-width: 0; }
+.cep-cmp .cep-fst small { display: block; margin-top: 2px; }
+.cep-cmp-sec th { white-space: nowrap; }
+.cep-feat-row th { font-weight: 400; color: var(--color-on-surface-3, #444444); }
+.cep-cmp th.is-sel,
+.cep-cmp td.is-sel { background-clip: padding-box; }
+.cep-cmp thead th.is-sel {
+  box-shadow: inset 2px 2px 0 0 var(--color-fill-accent, #066AFE), inset -2px 2px 0 0 var(--color-fill-accent, #066AFE);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+.cep-cmp thead th.is-rec.is-sel {
+  box-shadow: inset 0 3px 0 var(--sx-accent), inset 2px 0 0 0 var(--color-fill-accent, #066AFE), inset -2px 0 0 0 var(--color-fill-accent, #066AFE);
+}
+.cep-cmp tbody td.is-sel {
+  box-shadow: inset 2px 0 0 0 var(--color-fill-accent, #066AFE), inset -2px 0 0 0 var(--color-fill-accent, #066AFE);
+}
+.cep-cmp tbody tr:last-child td.is-sel {
+  box-shadow: inset 2px -2px 0 0 var(--color-fill-accent, #066AFE), inset -2px -2px 0 0 var(--color-fill-accent, #066AFE), inset 2px 0 0 0 var(--color-fill-accent, #066AFE), inset -2px 0 0 0 var(--color-fill-accent, #066AFE);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.cep-cmp .sf-cta--secondary[aria-pressed="true"] {
+  background: var(--color-cloud-blue-95, #EAF5FE);
+  color: var(--color-on-fill-neutral-accent, #022AC0);
+  box-shadow: inset 0 0 0 2px var(--color-fill-accent, #066AFE);
+}
 
 /* next steps */
 .cep-sumstrip { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; margin: 8px 0 10px; padding: 12px 16px; background: rgba(255, 255, 255, 0.5); border: 2px solid rgba(6, 106, 254, 0.15); border-radius: var(--radius-hero-card, 16px); box-shadow: 0 10px 10px 0 rgba(6, 106, 254, 0.20); font-size: 15px; color: var(--sx-ink); }

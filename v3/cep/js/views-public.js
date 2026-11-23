@@ -300,14 +300,22 @@
 
     var top = '<div class="cep-top">' + h + "</div>"; h = "";
     h += '<div class="cep-row-between cep-cmp-head"><h2 class="sx-h3" id="cmp" style="margin:0">Compare options</h2>' + (priced ? '<div class="sx-row cep-cmp-ctl"><div class="cep-inline"><label class="sx-lbl" for="seats">Users (seats)</label>' + stepper("seats", o.seats, "users (seats)") + "</div>" + CEP.periodToggle("pt-opt") + "</div>" : "") + "</div>";
-    h += '<div class="sx-tblw"><table class="sx-tbl cep-cmp"><caption class="sx-vh">Option comparison. The recommended option is marked.</caption><thead><tr><th scope="col">Compare</th>' + show.map(function (x) {
+    function colCls(x) {
+      return (rec && x.id === rec.id ? " is-rec" : "") + (x.missing ? " is-miss" : "") + (!x.missing && x.id === chosen ? " is-sel" : "");
+    }
+    h += '<p class="cep-feat-legend">' +
+      "<span>" + CEP.ic.check + "<span>Included</span></span>" +
+      "<span>" + CEP.ic.part + "<span>Partially included</span></span>" +
+      "<span>" + CEP.ic.cross + "<span>Not included</span></span>" +
+      "</p>";
+    h += '<div class="sx-tblw"><table class="sx-tbl cep-cmp"><caption class="sx-vh">Option comparison. The recommended option is marked. Feature status is included, partially included, or not included.</caption><thead><tr><th scope="col">Compare</th>' + show.map(function (x) {
       var isRec = rec && x.id === rec.id;
       var tk = (window.CEP_SUITES && window.CEP_SUITES.tierKey(x.id)) || "core";
       var name = x.missing ? (tk === "max" ? "Max" : tk === "advanced" ? "Advanced" : "Core") : x.edition.name;
-      return '<th scope="col" class="' + (isRec ? "is-rec" : "") + (x.missing ? " is-miss" : "") + '">' + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(name) + (!x.missing && x.edition && x.edition.suiteVariant ? "<small>" + esc(x.edition.suiteVariant) + "</small>" : "") + (s.pub.edPicked && x.id === chosen && rec && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
+      return '<th scope="col" class="' + colCls(x).trim() + '">' + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(name) + (!x.missing && x.edition && x.edition.suiteVariant ? "<small>" + esc(x.edition.suiteVariant) + "</small>" : "") + (s.pub.edPicked && x.id === chosen && rec && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
     }).join("") + "</tr></thead><tbody>";
     function trow(label, f, tip) {
-      return '<tr><th scope="row"><span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span></th>" + show.map(function (x) { return '<td class="' + (rec && x.id === rec.id ? "is-rec" : "") + (x.missing ? " is-miss" : "") + '">' + (x.missing ? missingWhy(c.industry, c.cloud, x.id) : f(x)) + "</td>"; }).join("") + "</tr>";
+      return '<tr><th scope="row"><span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span></th>" + show.map(function (x) { return '<td class="' + colCls(x).trim() + '">' + (x.missing ? missingWhy(c.industry, c.cloud, x.id) : f(x)) + "</td>"; }).join("") + "</tr>";
     }
     function priceCell(x) {
       if (!priced) return '<span class="cep-tailored">' + (ent ? "Tailored" : "Priced by Sales") + "</span>";
@@ -328,7 +336,22 @@
         return '<span class="sx-lv">' + (r.base === "full" ? CEP.ic.check + " Covered" : r.base === "partial" ? CEP.ic.part + " Partly" : CEP.ic.gap + " Not covered") + "</span>" + (r.fixes.length ? "<small>Needs " + r.fixes.map(function (f) { return esc(E.mod(f).name); }).join(", ") + "</small>" : (r.needsUpgrade ? "<small>Needs a higher edition</small>" : ""));
       }, g.desc);
     });
-    h += trow("Included", function (x) { return "<small>" + x.edition.includes.map(featLine).join("<br>") + "</small>"; }, ROW_TIPS.Included);
+    var feats = (window.CEP_SUITES && window.CEP_SUITES.featureMatrix) ? window.CEP_SUITES.featureMatrix(c.industry, c.cloud) : [];
+    if (feats.length) {
+      h += '<tr class="cep-cmp-sec"><th scope="row"><span class="cep-th-lab">Included' + CEP.infoTip("Included", ROW_TIPS.Included) + '</span></th>' +
+        show.map(function (x) { return '<td class="' + colCls(x).trim() + '"></td>'; }).join("") + "</tr>";
+      feats.forEach(function (feat) {
+        h += '<tr class="cep-feat-row"><th scope="row">' + esc(feat.name) + "</th>" + show.map(function (x) {
+          var tk = (window.CEP_SUITES && window.CEP_SUITES.tierKey(x.id)) || "core";
+          var cell = feat.cells[tk];
+          if (x.missing || !cell) return '<td class="' + colCls(x).trim() + '"></td>';
+          var ic = cell.status === "included" ? CEP.ic.check : (cell.status === "partial" ? CEP.ic.part : CEP.ic.cross);
+          var lab = cell.status === "included" ? "Included" : (cell.status === "partial" ? "Partially included" : "Not included");
+          return '<td class="' + colCls(x).trim() + '"><span class="cep-fst">' + ic + '<span class="sx-vh">' + lab + "</span>" +
+            (cell.variant ? "<span class=\"cep-fst__n\">" + esc(cell.variant) + "</span>" : "") + "</span></td>";
+        }).join("") + "</tr>";
+      });
+    }
     h += trow("Flex Credits included", function (x) { return x.edition.credits ? E.credits(x.edition.credits) + " per org/year" : '<span class="sx-na">None</span>'; }, ROW_TIPS["Flex Credits included"]);
     h += trow("Data storage", function (x) { return x.edition.storage ? esc(x.edition.storage) : "—"; }, ROW_TIPS["Data storage"]);
     h += trow("Slack", function (x) { return esc(x.edition.slack); }, ROW_TIPS.Slack);
@@ -337,7 +360,8 @@
     h += trow("Limitations", function (x) { return "<small>" + x.edition.limits.map(featLine).join("<br>") + "</small>"; }, ROW_TIPS.Limitations);
     h += '<tr class="cep-cmp-act"><th scope="row"></th>' + show.map(function (x) {
       if (x.missing) return '<td class="is-miss"></td>';
-      return '<td class="' + (rec && x.id === rec.id ? "is-rec" : "") + '">' + (x.id === chosen ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sx-link" data-act="pickEd" data-id="' + x.id + '">Choose ' + esc(short(x.edition)) + " instead</button>") + "</td>";
+      var on = x.id === chosen;
+      return '<td class="' + colCls(x).trim() + '"><button type="button" class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + x.id + '" aria-pressed="' + on + '">Select</button></td>';
     }).join("") + "</tr>";
     h += "</tbody></table></div>";
     h += '<p class="sx-fine">' + (ent ? "Enterprise pricing is tailored by Sales. Public list prices are on the packaged editions page." : "Source: Portfolio 2.0 Product Explorer industry BOMs. Illustrative list prices for research; not a quote. Excludes taxes.") + "</p>";

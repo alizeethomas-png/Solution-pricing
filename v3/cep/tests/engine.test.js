@@ -76,6 +76,7 @@ t("Agentforce add-on is included on every Max SKU", function () {
 
 console.log("Industry suites (Portfolio 2.0 overlay)");
 var SU = require("../js/industry-suites.js");
+require("../js/suite-features.js");
 t("About you industries match explorer names and order", function () {
   eq(FX.industries.map(function (i) { return i.name; }).join("|"),
     "Financial Services|Health|Life Sciences|Automotive|Manufacturing|Consumer Goods|Communications|Media|Energy & Utilities|Education|Public Sector|Nonprofit");
@@ -123,6 +124,41 @@ t("remapEd keeps the tier when switching clouds", function () {
 });
 t("Generic estimates stay on catalog prices when no industry is set", function () {
   eq(E.estimate({ ed: "core", seats: 10, accepted: {} }).knownAnnual, 195 * 10 * 12);
+});
+t("Feature matrix aligns the same families across Core, Advanced and Max", function () {
+  var rows = SU.featureMatrix("fsc", "crm");
+  ok(rows.length > 5);
+  var base = rows.filter(function (r) { return r.name === "Financial Services Cloud"; })[0];
+  eq(base.cells.core.status, "partial");
+  eq(base.cells.advanced.status, "partial");
+  eq(base.cells.max.status, "included");
+  var premier = rows.filter(function (r) { return r.name.indexOf("Premier Success") === 0; })[0];
+  eq(premier.cells.core.status, "included");
+  eq(premier.cells.advanced.status, "none");
+  eq(premier.cells.max.status, "none");
+});
+t("Missing tiers are null cells, not 'not included'", function () {
+  var rows = SU.featureMatrix("ls", "sales");
+  var base = rows.filter(function (r) { return r.name === "Life Sciences Cloud"; })[0];
+  eq(base.cells.core, null);
+  eq(base.cells.advanced, null);
+  eq(base.cells.max.status, "included");
+});
+t("Every industry and cloud produces a matrix with consistent row keys", function () {
+  SU.industries.forEach(function (ind) {
+    ["sales", "service", "crm"].forEach(function (cloud) {
+      var rows = SU.featureMatrix(ind.id, cloud);
+      var names = {};
+      rows.forEach(function (r) {
+        ok(!names[r.id], ind.id + " " + cloud + " duplicate " + r.id);
+        names[r.id] = 1;
+        ["core", "advanced", "max"].forEach(function (tier) {
+          var cell = r.cells[tier];
+          if (cell) ok(cell.status === "included" || cell.status === "partial" || cell.status === "none", r.id + " " + tier);
+        });
+      });
+    });
+  });
 });
 
 console.log("Expansion: add seats (F5)");
