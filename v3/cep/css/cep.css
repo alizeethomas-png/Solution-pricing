@@ -364,7 +364,7 @@
 .cep-cmp-ctl { align-items: center; gap: 16px; width: 100%; justify-content: space-between; }
 .cep-inline { display: flex; align-items: center; gap: 10px; }
 .cep-inline .sx-lbl { margin: 0; }
-.cep-cmp th.is-rec, .cep-cmp td.is-rec { background: rgba(234, 245, 254, .65); }
+.cep-cmp th.is-rec, .cep-cmp td.is-rec { background: var(--color-cloud-blue-95, #EAF5FE); }
 .cep-cmp thead th small { display: block; font: 700 12px var(--sx-body); color: var(--color-teal-40, #056764); margin-top: 2px; }
 .cep-cmp-ed {
   display: block;
@@ -383,13 +383,18 @@
 }
 .cep-cmp-hsel svg { flex-shrink: 0; width: 14px; height: 14px; }
 .cep-cmp-act td { vertical-align: middle; }
+.cep-cmp-act td:not(:first-child) {
+  padding-left: 0;
+  padding-right: 0;
+}
 .cep-cmp-act .sf-cta,
 .cep-cmp-sel {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-width: 9.5em;
+  width: 100%;
+  min-width: 0;
   min-height: 40px;
   box-sizing: border-box;
 }
@@ -453,19 +458,24 @@
   top: 88px;
   z-index: 20;
   background: var(--color-background-1, #FFFFFF);
+  background-clip: padding-box;
 }
 .cep-cmp thead th:first-child { border-top-left-radius: 12px; }
 .cep-cmp thead th:last-child { border-top-right-radius: 12px; }
-.cep-cmp thead th.is-rec { background: rgba(234, 245, 254, .65); }
+.cep-cmp thead th.is-rec { background: var(--color-cloud-blue-95, #EAF5FE); }
 .cep-cmp thead th.is-miss { background: var(--color-neutral-95, #F3F3F3); }
 .cep-cmp tbody th,
 .cep-cmp tbody td {
   background: var(--color-background-1, #FFFFFF);
 }
 .cep-cmp tbody th.is-rec,
-.cep-cmp tbody td.is-rec { background: rgba(234, 245, 254, .65); }
+.cep-cmp tbody td.is-rec { background: var(--color-cloud-blue-95, #EAF5FE); }
 .cep-cmp tbody th.is-miss,
 .cep-cmp tbody td.is-miss { background: var(--color-neutral-95, #F3F3F3); }
+.cep-cmp thead th.is-sel,
+.cep-cmp tbody td.is-sel {
+  background: var(--color-cloud-blue-90, #CFE9FE);
+}
 /* Fill the 16px gap between the 72px nav and the 88px rail offset so
    scrolling rows cannot show between them. */
 .cep-cmp thead th::before {
@@ -479,7 +489,7 @@
   pointer-events: none;
 }
 .cep-cmp tbody th,
-.cep-cmp tbody td { position: relative; z-index: 0; }
+.cep-cmp tbody td { position: relative; z-index: auto; }
 .cep-cmp .sf-cta,
 .cep-cmp .sf-cta:hover,
 .cep-cmp .sf-cta:active {
@@ -670,31 +680,24 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
   outline-offset: 2px;
 }
 .cep-tip svg { display: block; pointer-events: none; }
-.cep-tip__pop {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 6px);
-  z-index: 40;
+.cep-tip-live {
+  position: fixed;
+  z-index: 400;
   width: max-content;
-  max-width: min(260px, 70vw);
+  max-width: min(280px, calc(100vw - 16px));
   padding: 8px 10px;
   border-radius: 8px;
   background: var(--color-on-surface-1, #001E5B);
   color: var(--color-background-1, #FFFFFF);
   font: 400 13px/1.4 var(--sx-body);
   box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.28);
-  visibility: hidden;
-  opacity: 0;
   pointer-events: none;
   text-align: left;
   white-space: normal;
 }
-.cep-tip:hover .cep-tip__pop,
-.cep-tip:focus .cep-tip__pop,
-.cep-tip:focus-visible .cep-tip__pop,
-.cep-tip.is-open .cep-tip__pop {
-  visibility: visible;
-  opacity: 1;
+.cep-tip-live[hidden] { display: none; }
+.sx-side {
+  z-index: 30;
 }
 .cep-req {
   color: var(--color-border-error, #EA001E);
@@ -905,6 +908,115 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
   display: block;
   margin-top: var(--space-interactive-2xs, 4px);
 }
+.cep-eyebrow {
+  margin: 0 0 4px;
+  font: 700 14px var(--sx-body);
+  color: var(--color-on-surface-4, #747474);
+}
+.cep-top > .sx-h2 {
+  margin-top: 0;
+  overflow-wrap: anywhere;
+}
+.cep-cloud-toggle .sx-seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cep-cloud-ico {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.sx-stepper.cep-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--color-background-1, #FFFFFF);
+  border: 2px solid var(--color-border-neutral, #747474);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.sx-stepper.cep-stepper input {
+  width: 4.5em;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  font: 700 16px var(--sx-body);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.sx-stepper.cep-stepper input:focus {
+  outline: none;
+}
+.sx-stepper.cep-stepper:focus-within {
+  border-color: var(--color-border-focus, #066AFE);
+  box-shadow: 0 0 0 1px var(--color-border-focus, #066AFE);
+}
+.sx-stepper.cep-stepper button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-fill-accent, #066AFE);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.sx-stepper.cep-stepper button:hover { background: var(--color-cloud-blue-95, #EAF5FE); }
+.sx-stepper.cep-stepper button:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: -2px;
+}
+.sx-stepper.cep-stepper button[aria-disabled="true"] {
+  color: var(--color-on-surface-disabled, #939393);
+  cursor: not-allowed;
+}
+.cep-rail-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 16px 0 6px;
+  font: 700 14px var(--sx-body);
+  color: var(--color-on-surface-1, #001E5B);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.cep-rail-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -6px -8px -6px 0;
+  color: var(--color-link, #022AC0);
+  border-radius: 4px;
+  text-decoration: none;
+}
+.cep-rail-edit .icon {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+}
+.cep-rail-edit:hover { background: var(--color-cloud-blue-95, #EAF5FE); }
+.cep-rail-edit:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.sx-cv .sx-ctxrow .sx-ctx {
+  cursor: default;
+  text-decoration: none;
+}
+.sx-cv .sx-ctxrow span.sx-ctx:hover { border-color: var(--sx-border-hover); }
 @media (max-width: 767px) {
   .cep-tiles .sx-opt { flex-basis: min(240px, 100%); }
   .cep-cloud-toggle .sx-seg { width: 100%; }

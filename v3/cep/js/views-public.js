@@ -230,9 +230,11 @@
     var clouds = (window.CEP_SUITES && window.CEP_SUITES.clouds) || [
       { id: "sales", label: "Sales" }, { id: "service", label: "Service" }, { id: "crm", label: "Sales & Service" }
     ];
+    var cloudIco = { sales: "assets/product-icons/sales.svg", service: "assets/product-icons/service.svg", crm: "assets/product-icons/customer-360.svg" };
     return '<div class="cep-cloud-toggle"><span class="sx-lbl" id="cloud-l">Cloud</span><div class="sx-seg" role="group" aria-labelledby="cloud-l">' +
       clouds.map(function (c) {
-        return '<button type="button" aria-pressed="' + (cur === c.id) + '" data-act="setCloud" data-id="' + c.id + '">' + esc(c.label) + "</button>";
+        var src = cloudIco[c.id] || cloudIco.crm;
+        return '<button type="button" aria-pressed="' + (cur === c.id) + '" data-act="setCloud" data-id="' + c.id + '"><img class="cep-cloud-ico" src="' + src + '" alt="" aria-hidden="true" />' + esc(c.label) + "</button>";
       }).join("") + "</div></div>";
   }
   A.setCloud = function (el) {
@@ -276,9 +278,8 @@
     var ind = c.industry && FX.industries.filter(function (i) { return i.id === c.industry; })[0];
     var suInd = window.CEP_SUITES && window.CEP_SUITES.industry(c.industry);
     var indName = (suInd && suInd.name) || (ind && ind.name) || "";
-    var suiteTitle = (indName ? indName + " · " : "") + CEP.cloudLabel(c.cloud);
-    var h = '<h1 class="sx-h2">Your recommended option</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare Core, Advanced and Max below. Prices are illustrative list prices.") + "</p>";
-    h += '<p class="cep-suite-kicker">' + esc(suiteTitle) + " suite</p>";
+    var suiteTitle = (indName ? indName + " " : "") + CEP.cloudLabel(c.cloud) + " Suite";
+    var h = '<p class="cep-eyebrow">Your recommended option</p><h1 class="sx-h2">' + esc(suiteTitle) + '</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare Core, Advanced and Max below. Prices are illustrative list prices.") + "</p>";
     if (ind && window.CEP_SUITES && window.CEP_SUITES.meta.notes[ind.id]) h += CEP.note("", esc(window.CEP_SUITES.meta.notes[ind.id]));
     if (rg && !rg.priced) h += CEP.note("w", "<strong>Prices for " + esc(rg.name) + " aren’t in this prototype.</strong> We show options and coverage, but not converted prices." + (rg.ineligible ? " Starter Suite isn’t offered in this region (synthetic rule)." : ""));
     if (!available.length) {
@@ -446,10 +447,11 @@
   function stepper(id, val, unit, opts) {
     opts = opts || {};
     var lab = opts.aria || unit;
-    return '<div class="sx-stepper"><button type="button" aria-label="Decrease ' + esc(lab) + '" data-act="step" data-k="' + id + '" data-d="-1">−</button><input id="' + id + '" type="number" min="1" inputmode="numeric" value="' + val + '" data-in="' + id + '" aria-label="Number of ' + esc(lab) + '" /><button type="button" aria-label="Increase ' + esc(lab) + '" data-act="step" data-k="' + id + '" data-d="1">+</button>' + (opts.hideUnit ? "" : '<span class="cep-unit">' + esc(unit) + "</span>") + "</div>";
+    return '<div class="sx-stepper' + (opts.hideUnit ? " cep-stepper" : "") + '"><button type="button" aria-label="Decrease ' + esc(lab) + '" data-act="step" data-k="' + id + '" data-d="-1"' + (val <= 1 ? ' aria-disabled="true"' : "") + '">−</button><input id="' + id + '" type="number" min="1" inputmode="numeric" value="' + val + '" data-in="' + id + '" aria-label="Number of ' + esc(lab) + '" /><button type="button" aria-label="Increase ' + esc(lab) + '" data-act="step" data-k="' + id + '" data-d="1">+</button>' + (opts.hideUnit ? "" : '<span class="cep-unit">' + esc(unit) + "</span>") + "</div>";
   }
   CEP.stepper = stepper;
   A.step = function (el) {
+    if (el.getAttribute("aria-disabled") === "true") return;
     var k = el.getAttribute("data-k"), d = +el.getAttribute("data-d");
     if (k === "seats") { var v = Math.max(1, (CEP.sel().seats || 1) + d * (CEP.sel().seats >= 50 ? 5 : 1)); S().pub.seats = v; CEP.track("price_assumptions_changed", { seats: v }); }
     else if (k === "actions") { S().pub.actions = Math.max(0, (S().pub.actions || 0) + d * 1000); CEP.track("price_assumptions_changed", { actions: S().pub.actions }); }

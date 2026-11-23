@@ -177,13 +177,46 @@
     warn: '<svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l8 14.5H2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 8v4M10 14.5v.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
   };
   var tipN = 0;
-  CEP.resetTips = function () { tipN = 0; };
+  function tipLiveEl() { return document.getElementById("cep-tip-live"); }
+  function tipHide() {
+    var pop = tipLiveEl();
+    if (!pop) return;
+    pop.hidden = true;
+    pop.textContent = "";
+    pop.removeAttribute("style");
+    var described = document.querySelectorAll('[aria-describedby="cep-tip-live"]');
+    for (var i = 0; i < described.length; i++) described[i].removeAttribute("aria-describedby");
+  }
+  function tipPlace(btn, pop) {
+    var r = btn.getBoundingClientRect();
+    pop.style.position = "fixed";
+    pop.style.zIndex = "400";
+    pop.style.left = "0px";
+    pop.style.top = "0px";
+    pop.hidden = false;
+    var pr = pop.getBoundingClientRect();
+    var left = r.left;
+    var top = r.bottom + 8;
+    if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - pr.width - 8;
+    if (left < 8) left = 8;
+    if (top + pr.height > window.innerHeight - 8) top = r.top - pr.height - 8;
+    if (top < 8) top = 8;
+    pop.style.left = Math.round(left) + "px";
+    pop.style.top = Math.round(top) + "px";
+  }
+  function tipShow(btn) {
+    if (!btn) return;
+    var pop = tipLiveEl();
+    if (!pop) return;
+    pop.textContent = btn.getAttribute("data-tip") || "";
+    btn.setAttribute("aria-describedby", "cep-tip-live");
+    tipPlace(btn, pop);
+  }
+  CEP.resetTips = function () { tipN = 0; tipHide(); };
   CEP.infoTip = function (label, text) {
     tipN += 1;
-    var id = "cep-tip-" + tipN;
-    return '<button type="button" class="cep-tip" aria-label="' + esc("More about " + label) + '" aria-describedby="' + id + '">' +
-      CEP.ic.info +
-      '<span id="' + id + '" class="cep-tip__pop" role="tooltip">' + esc(text) + "</span></button>";
+    return '<button type="button" class="cep-tip" aria-label="' + esc("More about " + label) + '" data-tip="' + esc(text) + '">' +
+      CEP.ic.info + "</button>";
   };
   CEP.status = function (st) {
     var map = {
@@ -304,10 +337,22 @@
     if (ind) ctx.push(ind.name);
     ctx.push(CEP.cloudLabel(S.ctx.cloud));
     if (sz) ctx.push(sz.range); if (rg) ctx.push(rg.name);
-    var h = '<aside class="sx-cv" aria-label="Your plan summary"><div class="sx-cv__head"><h2 class="sx-cv__title">Running estimate</h2>' + (est && !ent ? CEP.status(est.status) : "") + "</div>";
-    if (ctx.length) h += '<div class="sx-ctxrow">' + ctx.map(function (c) { return '<a class="sx-ctx" href="#/explore">' + esc(c) + "</a>"; }).join("") + "</div>";
+    var onOptions = CEP.route() === "/recommend";
+    var stChip = "";
+    if (est && !ent && !(onOptions && est.status === "illustrative")) stChip = CEP.status(est.status);
+    var h = '<aside class="sx-cv" aria-label="Your plan summary"><div class="sx-cv__head"><h2 class="sx-cv__title">Running estimate</h2>' + stChip + "</div>";
+    if (onOptions && ctx.length) {
+      h += '<div class="cep-rail-sec"><div class="cep-rail-h"><span>About you</span><a class="cep-rail-edit" href="#/explore" aria-label="Edit About you"><i class="icon icon--edit" aria-hidden="true"></i></a></div>';
+      h += '<div class="sx-ctxrow">' + ctx.map(function (c) { return '<span class="sx-ctx">' + esc(c) + "</span>"; }).join("") + "</div></div>";
+    } else if (ctx.length) {
+      h += '<div class="sx-ctxrow">' + ctx.map(function (c) { return '<a class="sx-ctx" href="#/explore">' + esc(c) + "</a>"; }).join("") + "</div>";
+    }
     if (S.ctx.goals.length) {
-      h += '<div class="sx-cv__h">Goals <a class="sx-link" href="#/explore">Edit</a></div><ul class="sx-goals">';
+      if (onOptions) {
+        h += '<div class="cep-rail-h"><span>Goals</span><a class="cep-rail-edit" href="#/explore" aria-label="Edit goals"><i class="icon icon--edit" aria-hidden="true"></i></a></div><ul class="sx-goals">';
+      } else {
+        h += '<div class="sx-cv__h">Goals <a class="sx-link" href="#/explore">Edit</a></div><ul class="sx-goals">';
+      }
       S.ctx.goals.forEach(function (gid) {
         var g = E.goal(gid); if (!g) return;
         var cv = S.pub.ed ? E.coverGoal(gid, S.pub.ed, S.pub.accepted) : null;
@@ -416,8 +461,11 @@
     if (tip) {
       e.preventDefault();
       tip.classList.toggle("is-open");
+      if (tip.classList.contains("is-open")) tipShow(tip);
+      else tipHide();
       return;
     }
+    tipHide();
     var el = e.target.closest("[data-act]");
     if (!el) return;
     var name = el.getAttribute("data-act");
@@ -432,9 +480,46 @@
       if (next && CEP.act.periodSet) CEP.act.periodSet(next);
       return;
     }
+    var stepWrap = e.target.closest && e.target.closest(".cep-stepper");
+    if (stepWrap && (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+      e.preventDefault();
+      var up = (e.key === "ArrowUp" || e.key === "ArrowRight");
+      var sbtn = stepWrap.querySelector(up ? '[data-d="1"]' : '[data-d="-1"]');
+      if (sbtn && CEP.act.step) CEP.act.step(sbtn);
+      return;
+    }
     if (e.key !== "Escape") return;
     var tips = document.querySelectorAll(".cep-tip.is-open");
     for (var i = 0; i < tips.length; i++) tips[i].classList.remove("is-open");
+    tipHide();
+  });
+  document.addEventListener("mouseover", function (e) {
+    var tip = e.target.closest && e.target.closest(".cep-tip");
+    if (tip) tipShow(tip);
+  });
+  document.addEventListener("mouseout", function (e) {
+    var from = e.target.closest && e.target.closest(".cep-tip");
+    var to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".cep-tip");
+    if (from && !to && !from.classList.contains("is-open")) tipHide();
+  });
+  document.addEventListener("focusin", function (e) {
+    var tip = e.target.closest && e.target.closest(".cep-tip");
+    if (tip) tipShow(tip);
+  });
+  document.addEventListener("focusout", function (e) {
+    var from = e.target.closest && e.target.closest(".cep-tip");
+    var to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".cep-tip");
+    if (from && !to && !from.classList.contains("is-open")) tipHide();
+  });
+  window.addEventListener("scroll", function () {
+    var live = tipLiveEl();
+    var open = document.querySelector(".cep-tip.is-open, .cep-tip:hover, .cep-tip:focus");
+    if (open && live && !live.hidden) tipPlace(open, live);
+    else if (!document.querySelector(".cep-tip.is-open")) tipHide();
+  }, true);
+  window.addEventListener("resize", function () {
+    var open = document.querySelector(".cep-tip.is-open, .cep-tip:focus");
+    if (open && tipLiveEl() && !tipLiveEl().hidden) tipPlace(open, tipLiveEl());
   });
   function onInput(e) {
     var el = e.target.closest("[data-in]"); if (!el) return;
