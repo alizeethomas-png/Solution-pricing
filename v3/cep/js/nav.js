@@ -112,18 +112,124 @@
 })();
 
 /* ══════════════════════════════════════════════════════════════════
-   Ask Piper — same floating CTA as v1/v2 landing pages. Mounted once
-   so CEP screens match the rest of the v3 pricing flow.
+   Ask Piper — floating CTA plus open / collapsed panels. State is
+   kept in sessionStorage so it survives CEP hash navigation and
+   other v3 page loads.
    ══════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
-  if (document.getElementById("ask-piper")) return;
-  var a = document.createElement("a");
-  a.id = "ask-piper";
-  a.className = "sf-cta sf-cta--primary sf-cta--medium ask-piper";
-  a.href = "#";
-  a.setAttribute("aria-label", "Ask Piper");
-  a.innerHTML = "<i class='icon icon--sparkles' aria-hidden='true'></i> Ask Piper";
-  document.body.appendChild(a);
+  var KEY = "cep.piper.state";
+  var MIC = '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><rect x="7.2" y="2.2" width="5.6" height="9.2" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.8 10.2a5.2 5.2 0 0 0 10.4 0M10 15.4V18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  var SEND = '<svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10M11 6l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var EXT = '<svg class="piper-panel__ext" width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 3h6v6M17 3l-8 8M15 12v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var MSG = "Salesforce offers flexible contract options and seamless integrations to fit your business needs. What would you like to explore about our pricing or integrations?";
+  function salesHref() {
+    return /\/cep(\/|$)/.test(location.pathname || "") ? "#/handoff" : "https://www.salesforce.com/company/contact-us/";
+  }
+  function loadState() {
+    try {
+      var s = sessionStorage.getItem(KEY);
+      if (s === "open" || s === "collapsed" || s === "button") return s;
+    } catch (e) { /* */ }
+    return "button";
+  }
+  function saveState(s) {
+    try { sessionStorage.setItem(KEY, s); } catch (e) { /* */ }
+  }
+
+  var btn = document.getElementById("ask-piper");
+  if (!btn) {
+    btn = document.createElement("a");
+    btn.id = "ask-piper";
+    btn.className = "sf-cta sf-cta--primary sf-cta--medium ask-piper";
+    btn.href = "#";
+    btn.innerHTML = "<i class='icon icon--sparkles' aria-hidden='true'></i> Ask Piper";
+    document.body.appendChild(btn);
+  }
+  btn.setAttribute("aria-label", "Ask Piper");
+  btn.setAttribute("aria-haspopup", "dialog");
+  btn.setAttribute("aria-controls", "piper-panel");
+
+  var panel = document.getElementById("piper-panel");
+  if (!panel) {
+    panel = document.createElement("section");
+    panel.id = "piper-panel";
+    panel.className = "piper-panel";
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "false");
+    panel.setAttribute("aria-labelledby", "piper-title");
+    panel.hidden = true;
+    panel.innerHTML =
+      '<div class="piper-panel__head">' +
+        '<div><h2 class="piper-panel__title" id="piper-title">Piper</h2><p class="piper-panel__role">AI SDR Agent</p></div>' +
+        '<button type="button" class="piper-panel__close" aria-label="Collapse Piper"><i class="icon icon--close" aria-hidden="true"></i></button>' +
+      "</div>" +
+      '<div class="piper-panel__photo">' +
+        '<button type="button" class="piper-panel__speak">' + MIC + '<span class="piper-panel__speak-lab">Speak with Piper</span></button>' +
+      "</div>" +
+      '<p class="piper-panel__msg">' + MSG + "</p>" +
+      '<div class="piper-panel__grow"></div>' +
+      '<a class="sf-cta sf-cta--secondary sf-cta--medium piper-panel__sales" href="' + salesHref() + '">Connect me with a sales rep</a>' +
+      '<form class="piper-panel__ask" action="#">' +
+        '<label class="sx-vh" for="piper-q">Ask Piper a question</label>' +
+        '<input id="piper-q" name="piper-q" type="text" placeholder="Ask Piper a question" autocomplete="off" />' +
+        '<button type="button" class="piper-panel__iconbtn" aria-label="Use voice">' + MIC + "</button>" +
+        '<button type="submit" class="piper-panel__send" aria-label="Send question">' + SEND + "</button>" +
+      "</form>" +
+      '<p class="piper-panel__legal">Piper is an AI and can make mistakes. Please note, by continuing, you agree to the terms of our <a href="https://www.salesforce.com/company/privacy/" target="_blank" rel="noopener">privacy policy ' + EXT + "</a>. This conversation will be recorded.</p>";
+    document.body.appendChild(panel);
+  }
+
+  var closeBtn = panel.querySelector(".piper-panel__close");
+  var speakBtn = panel.querySelector(".piper-panel__speak");
+  var speakLab = panel.querySelector(".piper-panel__speak-lab");
+  var salesBtn = panel.querySelector(".piper-panel__sales");
+  var form = panel.querySelector(".piper-panel__ask");
+  var state = loadState();
+
+  function focusables() {
+    return panel.querySelectorAll('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])');
+  }
+  function apply(next, focus) {
+    state = next;
+    saveState(state);
+    btn.hidden = state !== "button";
+    panel.hidden = state === "button";
+    panel.classList.toggle("is-collapsed", state === "collapsed");
+    closeBtn.setAttribute("aria-label", state === "collapsed" ? "Close Piper" : "Collapse Piper");
+    speakLab.textContent = state === "collapsed" ? "Speak now" : "Speak with Piper";
+    speakBtn.setAttribute("aria-label", speakLab.textContent);
+    salesBtn.className = "sf-cta sf-cta--medium piper-panel__sales " + (state === "collapsed" ? "sf-cta--primary" : "sf-cta--secondary");
+    btn.setAttribute("aria-expanded", state === "button" ? "false" : "true");
+    if (focus === "close") closeBtn.focus();
+    else if (focus === "button") btn.focus();
+  }
+  apply(state, null);
+
+  btn.addEventListener("click", function (e) {
+    e.preventDefault();
+    apply("open", "close");
+  });
+  closeBtn.addEventListener("click", function () {
+    if (state === "open") apply("collapsed", "close");
+    else apply("button", "button");
+  });
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+  panel.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab" || panel.hidden) return;
+    var f = focusables();
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape" || state === "button") return;
+    var modal = document.getElementById("modal-root");
+    if (modal && modal.innerHTML) return;
+    e.preventDefault();
+    if (state === "open") apply("collapsed", "close");
+    else apply("button", "button");
+  });
 })();
 

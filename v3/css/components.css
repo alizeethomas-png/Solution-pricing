@@ -866,3 +866,197 @@ main { display: flex; flex-direction: column; width: 100%; }
     bottom: var(--space-content-2xl, 48px);
   }
 }
+.ask-piper[hidden] { display: none !important; }
+.piper-panel {
+  position: fixed;
+  right: var(--space-content-lg, 24px);
+  bottom: var(--space-content-lg, 24px);
+  z-index: 210;
+  display: flex;
+  flex-direction: column;
+  width: min(380px, calc(100vw - 32px));
+  height: min(640px, calc(100vh - 48px));
+  padding: 16px 16px 12px;
+  box-sizing: border-box;
+  background: var(--color-background-1, #FFFFFF);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px -6px rgba(24, 24, 24, 0.28);
+  color: var(--color-on-surface-1, #001E5B);
+  font-family: var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+}
+.piper-panel[hidden] { display: none !important; }
+.piper-panel.is-collapsed {
+  height: auto;
+  max-height: calc(100vh - 48px);
+  width: min(320px, calc(100vw - 32px));
+  overflow: auto;
+}
+.piper-panel.is-collapsed .piper-panel__grow { display: none; }
+.piper-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.piper-panel__title {
+  margin: 0;
+  font: 700 20px/1.2 var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.piper-panel__role {
+  margin: 2px 0 0;
+  font: 400 14px/1.3 var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  color: var(--color-on-surface-4, #747474);
+}
+.piper-panel__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: -6px -6px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-on-surface-1, #001E5B);
+  cursor: pointer;
+}
+.piper-panel__close .icon { width: 16px; height: 16px; background-color: currentColor; }
+.piper-panel__close:hover { background: var(--color-cloud-blue-95, #EAF5FE); }
+.piper-panel__close:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.piper-panel__photo {
+  position: relative;
+  flex: 0 0 auto;
+  height: 168px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--color-cloud-blue-95, #EAF5FE);
+  background-image: url("../assets/piper-avatar.png");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+}
+.piper-panel.is-collapsed .piper-panel__photo { height: 148px; }
+.piper-panel__speak {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--color-fill-accent, #066AFE);
+  color: var(--color-on-fill-accent, #FFFFFF);
+  font: 700 14px var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.piper-panel__speak svg { flex-shrink: 0; }
+.piper-panel__speak:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.piper-panel__msg {
+  margin: 0 0 12px;
+  font: 400 16px/1.45 var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.piper-panel__grow { flex: 1 1 auto; min-height: 12px; }
+.piper-panel__sales {
+  align-self: flex-start;
+  margin-bottom: 10px;
+}
+.piper-panel.is-collapsed .piper-panel__sales {
+  align-self: stretch;
+  width: 100%;
+  justify-content: center;
+}
+.piper-panel__ask {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid var(--color-border-neutral, #747474);
+  border-radius: 12px;
+  background: var(--color-background-1, #FFFFFF);
+}
+.piper-panel__ask:focus-within {
+  border-color: var(--color-border-focus, #066AFE);
+  box-shadow: 0 0 0 1px var(--color-border-focus, #066AFE);
+}
+.piper-panel__ask input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: 400 16px var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  color: var(--color-on-surface-1, #001E5B);
+}
+.piper-panel__ask input:focus { outline: none; }
+.piper-panel__ask input::placeholder { color: var(--color-on-surface-4, #747474); }
+.piper-panel__iconbtn,
+.piper-panel__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-on-surface-3, #444444);
+  cursor: pointer;
+}
+.piper-panel__send {
+  background: var(--color-neutral-95, #F3F3F3);
+  color: var(--color-on-surface-4, #747474);
+}
+.piper-panel__iconbtn:focus-visible,
+.piper-panel__send:focus-visible {
+  outline: 2px solid var(--color-border-focus, #066AFE);
+  outline-offset: 2px;
+}
+.piper-panel__legal {
+  margin: 0;
+  font: 400 12px/1.4 var(--font-family-body, "Salesforce Sans", Arial, sans-serif);
+  color: var(--color-on-surface-4, #747474);
+  text-align: center;
+}
+.piper-panel__legal a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+.piper-panel__ext { display: inline-block; vertical-align: -1px; margin-left: 2px; }
+.piper-panel__vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+@media (max-width: 767px) {
+  .piper-panel {
+    right: var(--space-content-md, 16px);
+    bottom: var(--space-content-2xl, 48px);
+    width: min(380px, calc(100vw - 32px));
+    height: min(560px, calc(100vh - 72px));
+  }
+  .piper-panel.is-collapsed {
+    width: min(320px, calc(100vw - 32px));
+    height: auto;
+  }
+}

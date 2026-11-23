@@ -343,7 +343,7 @@
     var h = '<aside class="sx-cv" aria-label="Your plan summary"><div class="sx-cv__head"><h2 class="sx-cv__title">Running estimate</h2>' + stChip + "</div>";
     if (onOptions && ctx.length) {
       h += '<div class="cep-rail-sec"><div class="cep-rail-h"><span>About you</span><a class="cep-rail-edit" href="#/explore" aria-label="Edit About you"><i class="icon icon--edit" aria-hidden="true"></i></a></div>';
-      h += '<div class="sx-ctxrow">' + ctx.map(function (c) { return '<span class="sx-ctx">' + esc(c) + "</span>"; }).join("") + "</div></div>";
+      h += '<ul class="cep-rail-facts">' + ctx.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul></div>";
     } else if (ctx.length) {
       h += '<div class="sx-ctxrow">' + ctx.map(function (c) { return '<a class="sx-ctx" href="#/explore">' + esc(c) + "</a>"; }).join("") + "</div>";
     }
@@ -365,7 +365,7 @@
       h += (S.pub.ed ? '<div class="sx-cv__h">Option you’re considering</div><p class="sx-gl__n">' + esc(CEP.viewEd(S.pub.ed).name) + "</p>" : "");
       h += '<div class="sx-cost"><p class="cep-tailored">Tailored pricing<small>For 1,000+ employees, a Salesforce specialist builds your pricing with you, including volume and commitment options.</small></p></div>';
     } else if (est) {
-      h += '<div class="sx-cv__h">Your estimate</div><ul class="sx-lines">';
+      h += (onOptions ? '<div class="cep-rail-h cep-rail-h--est"><span>Your estimate</span></div>' : '<div class="sx-cv__h">Your estimate</div>') + '<ul class="sx-lines">';
       est.lines.forEach(function (l) {
         var qtyLab = l.unitLabel || "";
         if (CEP.route() === "/recommend") qtyLab = qtyLab.replace(/\s*\((seats|seat)\)/gi, " $1").replace(/\s+/g, " ").trim();
@@ -376,8 +376,9 @@
     } else {
       h += '<p class="sx-cv__empty">Your estimate builds here as you go. Nothing is added until you choose it.</p>';
     }
-    h += '<div class="cep-rail-foot"><button type="button" class="sf-cta-back" data-act="resetPublic">Start over</button>';
-    if (CEP.route() === "/recommend") {
+    h += '<div class="cep-rail-foot' + (onOptions ? " cep-rail-foot--end" : "") + '">';
+    if (!onOptions) h += '<button type="button" class="sf-cta-back" data-act="resetPublic">Start over</button>';
+    if (onOptions) {
       h += '<button type="button" class="sf-cta sf-cta--primary sf-cta--medium" data-act="toCustomize">Customize</button>';
     }
     h += "</div></aside>";

@@ -332,7 +332,7 @@
 
 /* options: why blade + table */
 .cep-badge { display: inline-block; padding: 2px 10px; border-radius: 9999px; background: var(--sx-accent); color: #fff; font: 700 12px var(--sx-body); margin-bottom: 6px; }
-.cep-why-blade { margin: 16px 0 24px; padding: 22px 24px; background: rgba(255, 255, 255, 0.5); border: 2px solid var(--color-fill-accent, #066AFE); border-radius: var(--radius-hero-card, 16px); box-shadow: 0 0 0 2px var(--color-fill-accent, #066AFE), 0 10px 10px 0 rgba(6, 106, 254, 0.20); }
+.cep-why-blade { margin: 16px 0 24px; padding: 22px 24px; background: var(--color-background-1, #FFFFFF); border: 0; border-radius: var(--radius-hero-card, 16px); box-shadow: none; }
 .cep-why-blade__top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
 .cep-why-blade__top > div:first-child { flex: 1 1 320px; min-width: 0; }
 .cep-why-blade__top .sx-h3 { margin: 2px 0 4px; }
@@ -364,7 +364,7 @@
 .cep-cmp-ctl { align-items: center; gap: 16px; width: 100%; justify-content: space-between; }
 .cep-inline { display: flex; align-items: center; gap: 10px; }
 .cep-inline .sx-lbl { margin: 0; }
-.cep-cmp th.is-rec, .cep-cmp td.is-rec { background: var(--color-cloud-blue-95, #EAF5FE); }
+.cep-cmp tbody td.is-rec { background: var(--color-cloud-blue-95, #EAF5FE); }
 .cep-cmp thead th small { display: block; font: 700 12px var(--sx-body); color: var(--color-teal-40, #056764); margin-top: 2px; }
 .cep-cmp-ed {
   display: block;
@@ -383,18 +383,15 @@
 }
 .cep-cmp-hsel svg { flex-shrink: 0; width: 14px; height: 14px; }
 .cep-cmp-act td { vertical-align: middle; }
-.cep-cmp-act td:not(:first-child) {
-  padding-left: 0;
-  padding-right: 0;
-}
+.cep-cmp-act td:not(:first-child) { text-align: center; }
 .cep-cmp-act .sf-cta,
 .cep-cmp-sel {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 100%;
-  min-width: 0;
+  width: auto;
+  min-width: 9.5em;
   min-height: 40px;
   box-sizing: border-box;
 }
@@ -457,24 +454,29 @@
   position: sticky;
   top: 88px;
   z-index: 20;
-  background: var(--color-background-1, #FFFFFF);
+  background: var(--color-cloud-blue-80, #90D0FE);
   background-clip: padding-box;
 }
 .cep-cmp thead th:first-child { border-top-left-radius: 12px; }
 .cep-cmp thead th:last-child { border-top-right-radius: 12px; }
-.cep-cmp thead th.is-rec { background: var(--color-cloud-blue-95, #EAF5FE); }
-.cep-cmp thead th.is-miss { background: var(--color-neutral-95, #F3F3F3); }
+.cep-cmp thead th.is-rec,
+.cep-cmp thead th.is-sel,
+.cep-cmp thead th.is-miss {
+  background: var(--color-cloud-blue-80, #90D0FE);
+}
 .cep-cmp tbody th,
 .cep-cmp tbody td {
   background: var(--color-background-1, #FFFFFF);
+}
+.cep-cmp tbody th {
+  background: var(--color-neutral-95, #F3F3F3);
 }
 .cep-cmp tbody th.is-rec,
 .cep-cmp tbody td.is-rec { background: var(--color-cloud-blue-95, #EAF5FE); }
 .cep-cmp tbody th.is-miss,
 .cep-cmp tbody td.is-miss { background: var(--color-neutral-95, #F3F3F3); }
-.cep-cmp thead th.is-sel,
 .cep-cmp tbody td.is-sel {
-  background: var(--color-cloud-blue-90, #CFE9FE);
+  background: var(--color-cloud-blue-95, #EAF5FE);
 }
 /* Fill the 16px gap between the 72px nav and the 88px rail offset so
    scrolling rows cannot show between them. */
@@ -986,20 +988,31 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
   justify-content: space-between;
   gap: 8px;
   margin: 16px 0 6px;
-  font: 700 14px var(--sx-body);
+  font: 600 14px var(--sx-body);
   color: var(--color-on-surface-1, #001E5B);
   text-transform: none;
   letter-spacing: 0;
 }
+.cep-rail-h--est { font-weight: 700; }
+.cep-rail-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font: 400 14px/1.4 var(--sx-body);
+  color: var(--color-on-surface-3, #444444);
+}
+.cep-rail-foot--end { justify-content: flex-end; }
 .cep-rail-edit {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
-  margin: -6px -8px -6px 0;
-  color: var(--color-link, #022AC0);
-  border-radius: 4px;
+  margin: -8px -10px -8px 0;
+  color: var(--color-fill-accent, #066AFE);
+  border-radius: var(--radius-3, 8px);
   text-decoration: none;
 }
 .cep-rail-edit .icon {
@@ -1007,16 +1020,11 @@ input[type="password"]:focus { border-color: var(--sx-accent); }
   height: 16px;
   background-color: currentColor;
 }
-.cep-rail-edit:hover { background: var(--color-cloud-blue-95, #EAF5FE); }
+.cep-rail-edit:hover { background: var(--color-fill-neutral-hover, #EAF5FE); }
 .cep-rail-edit:focus-visible {
   outline: 2px solid var(--color-border-focus, #066AFE);
   outline-offset: 2px;
 }
-.sx-cv .sx-ctxrow .sx-ctx {
-  cursor: default;
-  text-decoration: none;
-}
-.sx-cv .sx-ctxrow span.sx-ctx:hover { border-color: var(--sx-border-hover); }
 @media (max-width: 767px) {
   .cep-tiles .sx-opt { flex-basis: min(240px, 100%); }
   .cep-cloud-toggle .sx-seg { width: 100%; }

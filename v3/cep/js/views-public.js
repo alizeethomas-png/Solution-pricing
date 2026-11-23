@@ -230,11 +230,11 @@
     var clouds = (window.CEP_SUITES && window.CEP_SUITES.clouds) || [
       { id: "sales", label: "Sales" }, { id: "service", label: "Service" }, { id: "crm", label: "Sales & Service" }
     ];
-    var cloudIco = { sales: "assets/product-icons/sales.svg", service: "assets/product-icons/service.svg", crm: "assets/product-icons/customer-360.svg" };
+    var cloudIco = { sales: "assets/product-icons/sales.svg", service: "assets/product-icons/service.svg" };
     return '<div class="cep-cloud-toggle"><span class="sx-lbl" id="cloud-l">Cloud</span><div class="sx-seg" role="group" aria-labelledby="cloud-l">' +
       clouds.map(function (c) {
-        var src = cloudIco[c.id] || cloudIco.crm;
-        return '<button type="button" aria-pressed="' + (cur === c.id) + '" data-act="setCloud" data-id="' + c.id + '"><img class="cep-cloud-ico" src="' + src + '" alt="" aria-hidden="true" />' + esc(c.label) + "</button>";
+        var ico = cloudIco[c.id] ? '<img class="cep-cloud-ico" src="' + cloudIco[c.id] + '" alt="" aria-hidden="true" />' : "";
+        return '<button type="button" aria-pressed="' + (cur === c.id) + '" data-act="setCloud" data-id="' + c.id + '">' + ico + esc(c.label) + "</button>";
       }).join("") + "</div></div>";
   }
   A.setCloud = function (el) {
@@ -285,8 +285,8 @@
     if (!available.length) {
       h += CEP.note("w", "<strong>This suite isn’t offered for " + esc(CEP.cloudLabel(c.cloud)) + ".</strong> " + (ind && ind.id === "ps" ? "Public Sector is sold as Service in this prototype. Switch to Service to see Core, Advanced and Max." : "Try another Sales / Service / Sales &amp; Service choice."));
     }
-    if (o.complex) h += CEP.note("w", "<strong>This may need specialist help.</strong> " + esc(o.complexWhy.join(" ")) + " We won’t add those products for you.");
     if (available.length && available.every(function (x) { return x.reach === 0; })) h += CEP.note("w", "None of these options covers your goals on its own. <a href=\"#/explore\">Change your goals</a> or talk to Sales on the last step.");
+    var complexNote = o.complex ? CEP.note("w", "<strong>This may need specialist help.</strong> " + esc(o.complexWhy.join(" ")) + " We won’t add those products for you.<div><a class=\"sx-link\" href=\"#/handoff\">Contact Specialist</a></div>") : "";
 
     if (rec) {
       var e = rec.edition;
@@ -298,6 +298,9 @@
       if (rec.suggested.length) h += '<p class="cep-why-blade__need"><strong>Would also need (not added yet):</strong> ' + rec.suggested.map(function (m) { var mm = E.mod(m); var up = E.modUnitPrice(mm, e, c.industry); return esc(mm.name) + (priced ? " (" + (up === null ? "priced by Sales" : (mm.status === "from" ? "from " : "") + CEP.pu(up, mm.unit)) + ")" : ""); }).join(", ") + ". You choose these in the next step.</p>";
       if (rec.unmet.length) h += '<p class="sx-gl__w">Can’t fully cover: ' + rec.unmet.map(function (r) { return esc(r.goal.name); }).join(", ") + "</p>";
       h += '<div class="sx-btnrow">' + (chosen === rec.id ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + rec.id + '">Use ' + esc(short(e)) + " instead</button>") + "</div></section>";
+      h += complexNote;
+    } else {
+      h += complexNote;
     }
 
     var top = '<div class="cep-top">' + h + "</div>"; h = "";
