@@ -74,6 +74,57 @@ t("Agentforce add-on is included on every Max SKU", function () {
   });
 });
 
+console.log("Industry suites (Portfolio 2.0 overlay)");
+var SU = require("../js/industry-suites.js");
+t("About you industries match explorer names and order", function () {
+  eq(FX.industries.map(function (i) { return i.name; }).join("|"),
+    "Financial Services|Health|Life Sciences|Automotive|Manufacturing|Consumer Goods|Communications|Media|Energy & Utilities|Education|Public Sector|Nonprofit");
+});
+t("Default cloud is Sales & Service", function () { eq(SU.meta.defaultCloud, "crm"); eq(SU.cloud("crm").label, "Sales & Service"); });
+t("Financial Services Sales & Service Core is $350", function () {
+  var t = E.suiteEd("crm_core", "fsc", "crm");
+  eq(t.price, 350);
+  eq(t.name, "Financial Services Core");
+  ok(t.includes[0].indexOf("Financial Services") >= 0);
+  eq(E.estimate({ ed: "crm_core", seats: 10, accepted: {}, industry: "fsc", cloud: "crm" }).knownAnnual, 350 * 10 * 12);
+});
+t("Options for an industry + cloud are that industry’s three tiers", function () {
+  var o = E.options({ size: "mm", goals: ["g_sales"], industry: "fsc", cloud: "crm" });
+  eq(o.options.map(function (x) { return x.id; }).join(","), "crm_core,crm_adv,crm_max");
+  eq(o.options[0].perUser, 350);
+  eq(o.options[1].perUser, 525);
+});
+t("Life Sciences Sales has Max only", function () {
+  ok(!E.suiteHas("ls", "sales", "core"));
+  ok(!E.suiteHas("ls", "sales", "adv"));
+  ok(E.suiteHas("ls", "sales", "max"));
+  var o = E.options({ size: "mm", goals: ["g_sales"], industry: "ls", cloud: "sales" });
+  eq(o.options.length, 1);
+  eq(o.options[0].id, "max");
+});
+t("Public Sector is Service only", function () {
+  ok(!E.suiteHas("ps", "sales", "core"));
+  ok(!E.suiteHas("ps", "crm", "core"));
+  ok(E.suiteHas("ps", "service", "svc_core"));
+  eq(E.options({ size: "mm", goals: ["g_service"], industry: "ps", cloud: "crm" }).options.length, 0);
+  eq(E.options({ size: "mm", goals: ["g_service"], industry: "ps", cloud: "service" }).options.length, 3);
+});
+t("Nonprofit Core shows commercial and nonprofit list prices", function () {
+  var t = E.suiteEd("crm_core", "np", "crm");
+  eq(t.price, 280);
+  eq(t.priceTiers.length, 2);
+  eq(t.priceTiers[0].price, 280);
+  eq(t.priceTiers[1].price, 70);
+});
+t("remapEd keeps the tier when switching clouds", function () {
+  eq(E.remapEd("crm_adv", "sales"), "adv");
+  eq(E.remapEd("core", "service"), "svc_core");
+  eq(E.remapEd("svc_max", "crm"), "crm_max");
+});
+t("Generic estimates stay on catalog prices when no industry is set", function () {
+  eq(E.estimate({ ed: "core", seats: 10, accepted: {} }).knownAnnual, 195 * 10 * 12);
+});
+
 console.log("Expansion: add seats (F5)");
 t("FX-D 10 seats prorated for 91 of 365 days at account rate", function () { var q = E.seatQuote({ lic: "sales_adv", qty: 10, role: "buyer", effective: "2026-11-02" }); ok(q.ok); eq(q.remDays, 91); eq(q.prorated, Math.round(10 * 375 * 12 * 91 / 365)); eq(q.lic.listRate, 395); });
 t("FX-E admin-not-buyer is blocked", function () { ok(E.seatQuote({ lic: "sales_adv", qty: 10, role: "admin" }).blocks.some(function (b) { return b.code === "unauthorized"; })); });

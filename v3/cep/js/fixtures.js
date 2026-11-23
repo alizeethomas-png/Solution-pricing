@@ -53,14 +53,22 @@
       { id: "ent", range: "1,000+ employees", who: "Enterprise · pricing with Sales", seats: 500, eds: ["core", "svc_core", "crm_core", "adv", "svc_adv", "crm_adv", "max", "svc_max", "crm_max"], salesLed: true }
     ],
 
+    /* Industry list and names match the Portfolio 2.0 Product Explorer
+       picker (visible labels, Cloud suffix stripped). Order is the
+       explorer’s. Public Sector is in the explorer and is kept here. */
     industries: [
-      { id: "tech", name: "Technology & SaaS", icon: "technology", common: ["g_sales", "g_service", "g_ai"] },
-      { id: "fs", name: "Financial Services", icon: "financial-services", common: ["g_service", "g_data", "g_sales"], industryTrial: "Financial Services" },
+      { id: "fsc", name: "Financial Services", icon: "financial-services", common: ["g_service", "g_data", "g_sales"], industryTrial: "Financial Services" },
+      { id: "health", name: "Health", icon: "healthcare", common: ["g_service", "g_data", "g_ai"] },
+      { id: "ls", name: "Life Sciences", icon: "healthcare-lifesciences", common: ["g_service", "g_data", "g_ai"], industryTrial: "Life Sciences" },
+      { id: "auto", name: "Automotive", icon: "automotive", common: ["g_sales", "g_integrate", "g_service"] },
       { id: "mfg", name: "Manufacturing", icon: "manufacturing", common: ["g_sales", "g_integrate", "g_service"] },
-      { id: "rcg", name: "Retail & Consumer Goods", icon: "retail", common: ["g_commerce", "g_market", "g_service"] },
-      { id: "hc", name: "Healthcare & Life Sciences", icon: "healthcare", common: ["g_service", "g_data", "g_ai"], industryTrial: "Life Sciences" },
-      { id: "ps", name: "Professional Services", icon: "professional-services", common: ["g_sales", "g_service", "g_integrate"] },
-      { id: "other", name: "Something else", icon: "industries", common: [] }
+      { id: "cg", name: "Consumer Goods", icon: "consumer-goods", common: ["g_commerce", "g_market", "g_service"] },
+      { id: "comms", name: "Communications", icon: "communications", common: ["g_service", "g_sales", "g_data"] },
+      { id: "media", name: "Media", icon: "communications-media", common: ["g_service", "g_sales", "g_market"] },
+      { id: "eu", name: "Energy & Utilities", icon: "energy-utilities", common: ["g_service", "g_integrate", "g_data"] },
+      { id: "edu", name: "Education", icon: "education", common: ["g_service", "g_data", "g_sales"] },
+      { id: "ps", name: "Public Sector", icon: "public-sector", common: ["g_service", "g_data", "g_ai"] },
+      { id: "np", name: "Nonprofit", icon: "nonprofit", common: ["g_sales", "g_service", "g_data"] }
     ],
 
     /* Editions. Portfolio 2.0 Core / Advanced / Max list prices and BOM
@@ -365,14 +373,14 @@
 
     /* ── Research fixtures FX-A..H (section 8) ──────────────────── */
     scenarios: [
-      { id: "FX-A", name: "SMB prospect", route: "#/explore", ctx: { industry: "tech", size: "s1", region: "na", goals: ["g_sales"] }, task: "Identify fit, price, onboarding need, and Try vs Buy." },
-      { id: "FX-B", name: "SMB complex need", route: "#/recommend", ctx: { industry: "rcg", size: "s1", region: "na", goals: ["g_ai", "g_data"] }, task: "Does guidance explain why this needs help instead of pushing add-ons?" },
+      { id: "FX-A", name: "SMB prospect", route: "#/explore", ctx: { industry: "fsc", size: "s1", region: "na", goals: ["g_sales"] }, task: "Identify fit, price, onboarding need, and Try vs Buy." },
+      { id: "FX-B", name: "SMB complex need", route: "#/recommend", ctx: { industry: "cg", size: "s1", region: "na", goals: ["g_ai", "g_data"] }, task: "Does guidance explain why this needs help instead of pushing add-ons?" },
       { id: "FX-C", name: "Mid-market portfolio", route: "#/recommend", ctx: { industry: "mfg", size: "mm", region: "na", goals: ["g_sales", "g_service", "g_integrate", "g_ai"] }, task: "Identify bundled entitlements, implementation range and total uncertainty." },
       { id: "FX-D", name: "Existing admin — add seats", route: "#/account", role: "buyer", task: "Add 10 Sales Cloud Advanced seats; understand proration; finish mock order." },
       { id: "FX-E", name: "Existing restricted user", route: "#/account", role: "admin", task: "Attempt order; understand authorization; escalate without losing context." },
       { id: "FX-F", name: "Seats + credits together", route: "#/account", role: "buyer", task: "Add 10 seats and top up Flex Credits in one order, with and without the public calculator." },
-      { id: "FX-G", name: "Trial proof", route: "#/try", ctx: { industry: "tech", size: "mm", region: "na", goals: ["g_sales", "g_ai"] }, edition: "max", task: "Pick an industry use case, start the real trial, complete the first-value steps." },
-      { id: "FX-I", name: "Enterprise prospect", route: "#/recommend", ctx: { industry: "fs", size: "ent", region: "na", goals: ["g_sales", "g_service", "g_data"] }, task: "Understand fit without prices; reach Sales with context." },
+      { id: "FX-G", name: "Trial proof", route: "#/try", ctx: { industry: "fsc", size: "mm", region: "na", goals: ["g_sales", "g_ai"] }, edition: "max", task: "Pick an industry use case, start the real trial, complete the first-value steps." },
+      { id: "FX-I", name: "Enterprise prospect", route: "#/recommend", ctx: { industry: "fsc", size: "ent", region: "na", goals: ["g_sales", "g_service", "g_data"] }, task: "Understand fit without prices; reach Sales with context." },
       { id: "FX-H", name: "Enterprise seller", route: "#/seller", role: "seller", task: "Identify policy conflict in Scenario B; create review-ready comparison." }
     ],
 

@@ -11,13 +11,14 @@
     Price: "List price per user per month. The total below is for the number of users you entered, before taxes and add-ons.",
     Billing: "Whether you can pay month to month, or only on an annual contract.",
     "Flex Credits included": "Credits that come with the edition each year for AI and Data 360 usage. Changing edition does not stack unused credits.",
-    Included: "Capabilities that come with this edition. They are not charged again as add-ons.",
     "Not included": "Limits of this edition, and things you would add separately or get by choosing a higher edition.",
     Try: "A free trial for this edition, if one is offered.",
     "Try first": "A free trial for this edition, if one is offered.",
     Slack: "The Slack plan that comes with this edition.",
     Limitations: "Limits of this edition, and things you would add separately or get by choosing a higher edition.",
-    "Goals covered": "How many of your selected goals this edition covers on its own, before any add-ons."
+    "Goals covered": "How many of your selected goals this edition covers on its own, before any add-ons.",
+    Included: "Products and capabilities on this industry edition’s Portfolio 2.0 BOM. They are not charged again as add-ons.",
+    "Data storage": "Data storage included per user on this edition, from the Portfolio 2.0 Product Explorer."
   };
   var FEATURE_TIPS = {
     "Lead, account and opportunity management": "Track people, companies and deals in one CRM.",
@@ -67,7 +68,7 @@
     "No included Flex Credits": "This edition does not come with Flex Credits for Agentforce or Data 360."
   };
   function featLine(t) {
-    var tip = FEATURE_TIPS[t] || "What this edition includes or leaves out.";
+    var tip = FEATURE_TIPS[t] || "Listed on this edition’s Portfolio 2.0 BOM. Included with the edition, not charged again as an add-on.";
     return '<span class="cep-feat">' + esc(t) + CEP.infoTip(t, tip) + "</span>";
   }
 
@@ -130,7 +131,7 @@
   R["/start"] = function () {
     var s = S();
     if (!hasProgress()) { CEP.afterRender = function () { location.replace(location.href.split("#")[0] + "#/explore"); }; return R["/explore"](); }
-    var est = CEP.est(), ed = s.pub.ed ? E.ed(s.pub.ed) : null;
+    var est = CEP.est(), ed = s.pub.ed ? CEP.viewEd(s.pub.ed) : null;
     var h = '<div class="cep-resume"><h1 class="sx-h2">Pick up where you left off</h1><p class="sx-sub">We saved your answers on this device.</p><ul class="cep-kv">' +
       '<li><span>Goals</span>' + (s.ctx.goals.map(function (g) { return esc(E.goal(g).name); }).join(", ") || "None yet") + "</li>" +
       (ed ? "<li><span>Option</span>" + esc(ed.name) + " · " + E.num(CEP.sel().seats) + " users (seats)</li>" : "") +
@@ -142,7 +143,7 @@
   A.resumeGo = function (el) { CEP.track("pricing_entry", { entry: "resumed" }); location.hash = el.getAttribute("href"); };
   A.resumeNew = function () {
     var s = S(), saved = s.pub.saved, ctx0 = JSON.parse(JSON.stringify(s.ctx));
-    s.ctx = { industry: null, size: null, region: "na", goals: [], freeText: "", suggested: [], skipped: false };
+    s.ctx = { industry: null, size: null, region: "na", cloud: "crm", goals: [], freeText: "", suggested: [], skipped: false };
     var p = s.pub; p.ed = null; p.edPicked = false; p.seats = null; p.accepted = {}; p.declined = {}; p.actions = 0; p.lastRoute = "#/explore"; p.origin = null; p.saved = saved;
     s.trial = { state: null, tasks: [], kind: null };
     CEP.track("context_changed", { reset: true, from: ctx0.goals }); CEP.save(); CEP.go("#/explore");
@@ -161,7 +162,7 @@
     s.pub.lastRoute = "#/explore";
     var ind = c.industry && FX.industries.filter(function (i) { return i.id === c.industry; })[0];
     var h = '<h1 class="sx-h2">Tell us about your business</h1><p class="sx-sub">A few quick questions on one page. We use your answers to suggest options, and you can change them any time.</p>';
-    h += q("Region", "region", FX.regions.map(function (r) { return { id: r.id, n: r.name, s: r.priced ? "USD list prices" : "Prices by Sales in this prototype" }; }), c.region, "cep-tiles");
+    h += q("Region", "region", FX.regions.map(function (r) { return { id: r.id, n: r.name }; }), c.region, "cep-tiles cep-tiles--region");
     h += q("Company size", "size", FX.sizes.map(function (z) { return { id: z.id, n: z.range, s: z.who }; }), c.size, "cep-tiles");
     h += q("Industry", "industry", FX.industries.map(function (i) { return { id: i.id, n: i.name, icon: "assets/industry-icons/" + i.icon + ".svg" }; }), c.industry, "cep-tiles");
     var common = ind && ind.common && ind.common.length ? ind.common : [];
@@ -192,6 +193,7 @@
     c[k] = c[k] === id && k !== "region" ? null : id;
     if (k === "size") S().pub.seats = null;
     if (k === "region") { var rg = E.region(id); if (rg && rg.ineligible && rg.ineligible.indexOf(S().pub.ed) >= 0) S().pub.ed = null; }
+    if (k === "industry") syncSuiteEdition();
     S().pub.edPicked = false; // answers changed: follow the new recommendation
     CEP.track("context_changed", { field: k, value: c[k] }); CEP.save(); CEP.render();
   };
@@ -211,45 +213,113 @@
   };
   A.toOptions = function () { if (!S().ctx.goals.length) { CEP.toast("Pick at least one goal first"); return; } CEP.go("#/recommend"); };
 
+  function syncSuiteEdition() {
+    var s = S(), cloud = s.ctx.cloud || "crm";
+    if (!s.pub.ed) return;
+    var next = E.remapEd(s.pub.ed, cloud);
+    if (s.ctx.industry && !E.suiteHas(s.ctx.industry, cloud, next)) {
+      s.pub.ed = null;
+      s.pub.edPicked = false;
+    } else {
+      s.pub.ed = next;
+    }
+    CEP.pruneAccepted(s.pub.ed);
+  }
+  function cloudToggle() {
+    var cur = S().ctx.cloud || "crm";
+    var clouds = (window.CEP_SUITES && window.CEP_SUITES.clouds) || [
+      { id: "sales", label: "Sales" }, { id: "service", label: "Service" }, { id: "crm", label: "Sales & Service" }
+    ];
+    return '<div class="cep-cloud-toggle"><span class="sx-lbl" id="cloud-l">Cloud</span><div class="sx-seg" role="group" aria-labelledby="cloud-l">' +
+      clouds.map(function (c) {
+        return '<button type="button" aria-pressed="' + (cur === c.id) + '" data-act="setCloud" data-id="' + c.id + '">' + esc(c.label) + "</button>";
+      }).join("") + "</div></div>";
+  }
+  A.setCloud = function (el) {
+    var s = S(), id = el.getAttribute("data-id");
+    s.ctx.cloud = id;
+    s.pub.edPicked = false;
+    syncSuiteEdition();
+    CEP.track("context_changed", { field: "cloud", value: id });
+    CEP.save(); CEP.render();
+  };
+  function missingWhy(industry, cloud, edId) {
+    var hasCrm = industry && E.suiteHas(industry, "crm", edId);
+    var tier = (window.CEP_SUITES && window.CEP_SUITES.tierKey(edId)) || "core";
+    var lab = tier === "max" ? "Max" : (tier === "advanced" ? "Advanced" : "Core");
+    if (cloud !== "crm" && hasCrm) return "<strong>No " + lab + " edition</strong><small>Sold as Sales &amp; Service for this industry.</small>";
+    return "<strong>No " + lab + " edition</strong><small>Not offered for this selection.</small>";
+  }
+
   /* ═════════ STEP 2 · OPTIONS: why-blade + one comparison table ═════════ */
   R["/recommend"] = function () {
     var s = S(), c = s.ctx, ent = CEP.isEnt();
     if (!c.goals.length) { CEP.afterRender = function () { location.replace(location.href.split("#")[0] + "#/explore"); }; return R["/explore"](); }
     s.pub.lastRoute = "#/recommend";
-    var o = E.options({ size: c.size, region: c.region, goals: c.goals, seats: s.pub.seats });
+    if (!c.cloud) c.cloud = "crm";
+    var o = E.options({ size: c.size, region: c.region, goals: c.goals, seats: s.pub.seats, industry: c.industry, cloud: c.cloud });
     var rg = E.region(c.region), priced = rg && rg.priced && !ent;
-    var show = o.options;
-    if (show.length > 3) { var ri = Math.max(0, show.map(function (x) { return x.id; }).indexOf(o.recommended)); var st = Math.min(Math.max(0, ri - 1), show.length - 3); show = show.slice(st, st + 3); }
-    var rec = show.filter(function (x) { return x.id === o.recommended; })[0] || show[0];
-    if (!s.pub.edPicked || !s.pub.ed || !show.some(function (x) { return x.id === s.pub.ed; })) { s.pub.edPicked = false; s.pub.ed = rec.id; if (!s.pub.seats) s.pub.seats = o.seats; if (E.ed(rec.id).billing.indexOf(s.pub.billing) < 0) s.pub.billing = "annual"; CEP.save(); }
+    var tierIds = E.suiteEds(c.cloud);
+    var byId = {};
+    o.options.forEach(function (x) { byId[x.id] = x; });
+    var show = tierIds.map(function (id) {
+      return byId[id] || { id: id, missing: true, edition: E.ed(id), rows: [], full: 0, reach: 0, unmet: [], suggested: [], seats: o.seats, perUser: null, baseAnnual: null };
+    });
+    var available = show.filter(function (x) { return !x.missing; });
+    var rec = available.filter(function (x) { return x.id === o.recommended; })[0] || available[0] || null;
+    if (rec && (!s.pub.edPicked || !s.pub.ed || !available.some(function (x) { return x.id === s.pub.ed; }))) {
+      s.pub.edPicked = false; s.pub.ed = rec.id; if (!s.pub.seats) s.pub.seats = o.seats;
+      if (E.ed(rec.id).billing.indexOf(s.pub.billing) < 0) s.pub.billing = "annual"; CEP.save();
+    }
+    if (!rec) { s.pub.ed = null; }
     var chosen = s.pub.ed;
-    var h = '<h1 class="sx-h2">Your recommended option</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare it with the alternatives below. Prices are illustrative list prices.") + "</p>";
+    var ind = c.industry && FX.industries.filter(function (i) { return i.id === c.industry; })[0];
+    var suiteTitle = (ind ? ind.name + " · " : "") + CEP.cloudLabel(c.cloud);
+    var h = '<h1 class="sx-h2">Your recommended option</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare Core, Advanced and Max below. Prices are illustrative list prices.") + "</p>";
+    h += cloudToggle();
+    h += '<p class="cep-suite-kicker">' + esc(suiteTitle) + " suite</p>";
+    if (ind && window.CEP_SUITES && window.CEP_SUITES.meta.notes[ind.id]) h += CEP.note("", esc(window.CEP_SUITES.meta.notes[ind.id]));
     if (rg && !rg.priced) h += CEP.note("w", "<strong>Prices for " + esc(rg.name) + " aren’t in this prototype.</strong> We show options and coverage, but not converted prices." + (rg.ineligible ? " Starter Suite isn’t offered in this region (synthetic rule)." : ""));
+    if (!available.length) {
+      h += CEP.note("w", "<strong>This suite isn’t offered for " + esc(CEP.cloudLabel(c.cloud)) + ".</strong> " + (ind && ind.id === "ps" ? "Public Sector is sold as Service in this prototype. Switch to Service to see Core, Advanced and Max." : "Try another Sales / Service / Sales &amp; Service choice."));
+    }
     if (o.complex) h += CEP.note("w", "<strong>This may need specialist help.</strong> " + esc(o.complexWhy.join(" ")) + " We won’t add those products for you.");
-    if (o.options.every(function (x) { return x.reach === 0; })) h += CEP.note("w", "None of these options covers your goals on its own. <a href=\"#/explore\">Change your goals</a> or talk to Sales on the last step.");
+    if (available.length && available.every(function (x) { return x.reach === 0; })) h += CEP.note("w", "None of these options covers your goals on its own. <a href=\"#/explore\">Change your goals</a> or talk to Sales on the last step.");
 
-    // why-blade
-    var e = rec.edition;
-    h += '<section class="cep-why-blade" aria-labelledby="why-h"><div class="cep-why-blade__top"><div><span class="cep-badge">★ Recommended for you</span><h2 class="sx-h3" id="why-h">Why we recommend ' + esc(e.name) + '</h2><p class="sx-mod__d">' + esc(e.blurb) + "</p></div>" +
-      (priced ? '<div class="cep-why-blade__p"><strong>' + E.money(CEP.uv(e.price)) + "</strong><span>" + CEP.perUnitLbl("user (seat)") + "</span><small>" + CEP.pt(rec.baseAnnual) + " for " + E.num(rec.seats) + " users (seats) · " + CEP.billNote(e.billing.indexOf("monthly") >= 0 && s.pub.billing === "monthly") + "</small></div>" :
-        '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing<small>A specialist prepares your price</small>" : "Priced by Sales<small>Not available for your region</small>") + "</span></div>") + "</div>";
-    h += '<p class="cep-why-blade__sum"><strong>' + (rec.reach === rec.rows.length ? "It can cover all " + rec.rows.length + " of your goals" : "It covers the most of your goals (" + rec.reach + " of " + rec.rows.length + ")") + (rec.suggested.length ? " with " + rec.suggested.length + " add-on" + (rec.suggested.length > 1 ? "s" : "") : " on its own") + (ent ? ", with the fewest extra products." : ", at the lowest estimated cost among options that do.") + "</strong></p>";
-    h += '<ul class="cep-why-blade__g">' + rec.rows.map(function (r) { return "<li>" + (r.base === "full" ? CEP.ic.check : r.base === "partial" ? CEP.ic.part : CEP.ic.gap) + "<span><strong>" + esc(r.goal.name) + "</strong> " + esc(r.reason) + "</span></li>"; }).join("") + "</ul>";
-    if (rec.suggested.length) h += '<p class="cep-why-blade__need"><strong>Would also need (not added yet):</strong> ' + rec.suggested.map(function (m) { var mm = E.mod(m); var up = E.modUnitPrice(mm, e); return esc(mm.name) + (priced ? " (" + (up === null ? "priced by Sales" : (mm.status === "from" ? "from " : "") + CEP.pu(up, mm.unit)) + ")" : ""); }).join(", ") + ". You choose these in the next step.</p>";
-    if (rec.unmet.length) h += '<p class="sx-gl__w">Can’t fully cover: ' + rec.unmet.map(function (r) { return esc(r.goal.name); }).join(", ") + "</p>";
-    h += '<div class="sx-btnrow">' + (chosen === rec.id ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + rec.id + '">Use ' + esc(short(e)) + " instead</button>") + "</div></section>";
+    if (rec) {
+      var e = rec.edition;
+      h += '<section class="cep-why-blade" aria-labelledby="why-h"><div class="cep-why-blade__top"><div><span class="cep-badge">★ Recommended for you</span><h2 class="sx-h3" id="why-h">Why we recommend ' + esc(e.name) + '</h2><p class="sx-mod__d">' + esc(e.blurb) + (e.suiteVariant ? " (" + esc(e.suiteVariant) + ")" : "") + "</p></div>" +
+        (priced ? '<div class="cep-why-blade__p"><strong>' + E.money(CEP.uv(e.price)) + "</strong><span>" + CEP.perUnitLbl("user (seat)") + "</span><small>" + CEP.pt(rec.baseAnnual) + " for " + E.num(rec.seats) + " users (seats) · " + CEP.billNote(e.billing.indexOf("monthly") >= 0 && s.pub.billing === "monthly") + "</small></div>" :
+          '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing<small>A specialist prepares your price</small>" : "Priced by Sales<small>Not available for your region</small>") + "</span></div>") + "</div>";
+      h += '<p class="cep-why-blade__sum"><strong>' + (rec.reach === rec.rows.length ? "It can cover all " + rec.rows.length + " of your goals" : "It covers the most of your goals (" + rec.reach + " of " + rec.rows.length + ")") + (rec.suggested.length ? " with " + rec.suggested.length + " add-on" + (rec.suggested.length > 1 ? "s" : "") : " on its own") + (ent ? ", with the fewest extra products." : ", at the lowest estimated cost among options that do.") + "</strong></p>";
+      h += '<ul class="cep-why-blade__g">' + rec.rows.map(function (r) { return "<li>" + (r.base === "full" ? CEP.ic.check : r.base === "partial" ? CEP.ic.part : CEP.ic.gap) + "<span><strong>" + esc(r.goal.name) + "</strong> " + esc(r.reason) + "</span></li>"; }).join("") + "</ul>";
+      if (rec.suggested.length) h += '<p class="cep-why-blade__need"><strong>Would also need (not added yet):</strong> ' + rec.suggested.map(function (m) { var mm = E.mod(m); var up = E.modUnitPrice(mm, e, c.industry); return esc(mm.name) + (priced ? " (" + (up === null ? "priced by Sales" : (mm.status === "from" ? "from " : "") + CEP.pu(up, mm.unit)) + ")" : ""); }).join(", ") + ". You choose these in the next step.</p>";
+      if (rec.unmet.length) h += '<p class="sx-gl__w">Can’t fully cover: ' + rec.unmet.map(function (r) { return esc(r.goal.name); }).join(", ") + "</p>";
+      h += '<div class="sx-btnrow">' + (chosen === rec.id ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + rec.id + '">Use ' + esc(short(e)) + " instead</button>") + "</div></section>";
+    }
 
-    // comparison table (main column; the blade above is full width)
     var top = '<div class="cep-top">' + h + "</div>"; h = "";
     h += '<div class="cep-row-between cep-cmp-head"><h2 class="sx-h3" id="cmp" style="margin:0">Compare options</h2>' + (priced ? '<div class="sx-row cep-cmp-ctl"><div class="cep-inline"><label class="sx-lbl" for="seats">Users (seats)</label>' + stepper("seats", o.seats, "users (seats)") + "</div>" + CEP.periodToggle("pt-opt") + "</div>" : "") + "</div>";
     h += '<div class="sx-tblw"><table class="sx-tbl cep-cmp"><caption class="sx-vh">Option comparison. The recommended option is marked.</caption><thead><tr><th scope="col">Compare</th>' + show.map(function (x) {
-      var isRec = x.id === rec.id;
-      return '<th scope="col" class="' + (isRec ? "is-rec" : "") + '">' + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(x.edition.name) + (s.pub.edPicked && x.id === chosen && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
+      var isRec = rec && x.id === rec.id;
+      var tk = (window.CEP_SUITES && window.CEP_SUITES.tierKey(x.id)) || "core";
+      var name = x.missing ? (tk === "max" ? "Max" : tk === "advanced" ? "Advanced" : "Core") : x.edition.name;
+      return '<th scope="col" class="' + (isRec ? "is-rec" : "") + (x.missing ? " is-miss" : "") + '">' + (isRec ? '<span class="cep-badge">★ Recommended</span>' : "") + esc(name) + (!x.missing && x.edition && x.edition.suiteVariant ? "<small>" + esc(x.edition.suiteVariant) + "</small>" : "") + (s.pub.edPicked && x.id === chosen && rec && x.id !== rec.id ? '<small>Your choice</small>' : "") + "</th>";
     }).join("") + "</tr></thead><tbody>";
     function trow(label, f, tip) {
-      return '<tr><th scope="row"><span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span></th>" + show.map(function (x) { return '<td class="' + (x.id === rec.id ? "is-rec" : "") + '">' + f(x) + "</td>"; }).join("") + "</tr>";
+      return '<tr><th scope="row"><span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span></th>" + show.map(function (x) { return '<td class="' + (rec && x.id === rec.id ? "is-rec" : "") + (x.missing ? " is-miss" : "") + '">' + (x.missing ? missingWhy(c.industry, c.cloud, x.id) : f(x)) + "</td>"; }).join("") + "</tr>";
     }
-    h += trow("Price", function (x) { return priced ? '<strong class="cep-cmp-p">' + E.money(CEP.uv(x.perUser)) + "</strong><small>" + CEP.perUnitLbl("user (seat)") + "</small><small>" + CEP.pt(x.baseAnnual) + " for " + E.num(x.seats) + " users (seats)</small>" : '<span class="cep-tailored">' + (ent ? "Tailored" : "Priced by Sales") + "</span>"; }, ROW_TIPS.Price);
+    function priceCell(x) {
+      if (!priced) return '<span class="cep-tailored">' + (ent ? "Tailored" : "Priced by Sales") + "</span>";
+      var tiers = x.edition.priceTiers;
+      if (tiers && tiers.length > 1) {
+        return tiers.map(function (p) {
+          return '<strong class="cep-cmp-p">' + E.money(CEP.uv(p.price)) + "</strong><small>" + esc(p.label) + "</small>";
+        }).join("") + "<small>" + CEP.perUnitLbl("user (seat)") + "</small>";
+      }
+      return '<strong class="cep-cmp-p">' + E.money(CEP.uv(x.perUser)) + "</strong><small>" + CEP.perUnitLbl("user (seat)") + "</small><small>" + CEP.pt(x.baseAnnual) + " for " + E.num(x.seats) + " users (seats)</small>";
+    }
+    h += trow("Price", priceCell, ROW_TIPS.Price);
     h += trow("Goals covered", function (x) { return "<strong>" + x.full + " of " + x.rows.length + "</strong> on its own" + (x.reach > x.full ? "<small>" + x.reach + " with add-ons</small>" : ""); }, ROW_TIPS["Goals covered"]);
     c.goals.forEach(function (gid) {
       var g = E.goal(gid);
@@ -258,25 +328,31 @@
         return '<span class="sx-lv">' + (r.base === "full" ? CEP.ic.check + " Covered" : r.base === "partial" ? CEP.ic.part + " Partly" : CEP.ic.gap + " Not covered") + "</span>" + (r.fixes.length ? "<small>Needs " + r.fixes.map(function (f) { return esc(E.mod(f).name); }).join(", ") + "</small>" : (r.needsUpgrade ? "<small>Needs a higher edition</small>" : ""));
       }, g.desc);
     });
+    h += trow("Included", function (x) { return "<small>" + x.edition.includes.map(featLine).join("<br>") + "</small>"; }, ROW_TIPS.Included);
     h += trow("Flex Credits included", function (x) { return x.edition.credits ? E.credits(x.edition.credits) + " per org/year" : '<span class="sx-na">None</span>'; }, ROW_TIPS["Flex Credits included"]);
+    h += trow("Data storage", function (x) { return x.edition.storage ? esc(x.edition.storage) : "—"; }, ROW_TIPS["Data storage"]);
     h += trow("Slack", function (x) { return esc(x.edition.slack); }, ROW_TIPS.Slack);
     h += trow("Billing", function (x) { return x.edition.billing.indexOf("monthly") >= 0 ? "Monthly or annual" : "Annual contract"; }, ROW_TIPS.Billing);
     h += trow("Try first", function (x) { var t = FX.trials[x.id]; return t ? esc(t.name) + "<small>30 days</small>" : "—"; }, ROW_TIPS["Try first"]);
     h += trow("Limitations", function (x) { return "<small>" + x.edition.limits.map(featLine).join("<br>") + "</small>"; }, ROW_TIPS.Limitations);
-    h += '<tr class="cep-cmp-act"><th scope="row"></th>' + show.map(function (x) { return '<td class="' + (x.id === rec.id ? "is-rec" : "") + '">' + (x.id === chosen ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sx-link" data-act="pickEd" data-id="' + x.id + '">Choose ' + esc(short(x.edition)) + " instead</button>") + "</td>"; }).join("") + "</tr>";
+    h += '<tr class="cep-cmp-act"><th scope="row"></th>' + show.map(function (x) {
+      if (x.missing) return '<td class="is-miss"></td>';
+      return '<td class="' + (rec && x.id === rec.id ? "is-rec" : "") + '">' + (x.id === chosen ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sx-link" data-act="pickEd" data-id="' + x.id + '">Choose ' + esc(short(x.edition)) + " instead</button>") + "</td>";
+    }).join("") + "</tr>";
     h += "</tbody></table></div>";
-    h += '<p class="sx-fine">' + (ent ? "Enterprise pricing is tailored by Sales. Public list prices are on the packaged editions page." : "Source: " + esc(FX.meta.priceSource) + ". Illustrative list prices for research; not a quote. Excludes taxes.") + "</p>";
-    h += stepNav("#/explore", "Back", "#/estimate", "Customize", { act: "toCustomize" });
-    CEP.track("recommendation_viewed", { rec: rec.id });
+    h += '<p class="sx-fine">' + (ent ? "Enterprise pricing is tailored by Sales. Public list prices are on the packaged editions page." : "Source: Portfolio 2.0 Product Explorer industry BOMs. Illustrative list prices for research; not a quote. Excludes taxes.") + "</p>";
+    h += stepNav("#/explore", "Back", rec ? "#/estimate" : null, "Customize", rec ? { act: "toCustomize" } : {});
+    CEP.track("recommendation_viewed", { rec: rec ? rec.id : null, cloud: c.cloud, industry: c.industry });
     return CEP.page(h, { rail: true, top: top, crumbs: CEP.crumbs(STEPS, 1) });
   };
   function short(e) {
+    if (e && e.name) return e.name.replace(/ Cloud/g, "");
     var map = {
       st: "Starter", pro: "Pro Suite", core: "Sales Core", adv: "Sales Advanced", max: "Sales Max",
       svc_core: "Service Core", svc_adv: "Service Advanced", svc_max: "Service Max",
       crm_core: "Sales & Service Core", crm_adv: "Sales & Service Advanced", crm_max: "Sales & Service Max"
     };
-    return map[e.id] || e.name;
+    return map[e && e.id] || (e && e.name) || "";
   }
   function row(label, cells, tip) {
     return '<tr><th scope="row">' + (label ? '<span class="cep-th-lab">' + esc(label) + (tip ? CEP.infoTip(label, tip) : "") + "</span>" : "") + "</th>" + cells.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>";
@@ -289,7 +365,11 @@
     CEP.track("sku_selected", { edition: id, from: prev }); CEP.track("option_compared", { chosen: id });
     CEP.save(); CEP.render();
   };
-  A.toCustomize = function () { var s = S(); s.pub.origin = "guided"; CEP.track("next_step_selected", { next: "customize", edition: s.pub.ed }); CEP.save(); CEP.go("#/estimate"); };
+  A.toCustomize = function () {
+    var s = S();
+    if (!s.pub.ed) { CEP.toast("Choose an option first"); return; }
+    s.pub.origin = "guided"; CEP.track("next_step_selected", { next: "customize", edition: s.pub.ed }); CEP.save(); CEP.go("#/estimate");
+  };
   A.chooseEd = function (el) { // used by the editions page and the Customize edition switcher
     var id = el.getAttribute("data-id"), s = S(), prev = s.pub.ed;
     s.pub.ed = id; s.pub.edPicked = true; if (!s.pub.seats) { var sz = E.size(s.ctx.size); s.pub.seats = sz ? sz.seats : 10; }
@@ -391,9 +471,9 @@
     var s = S(), bk = backFromCustomize();
     if (CEP.isEnt()) {
       s.pub.lastRoute = "#/estimate";
-      var ed = s.pub.ed ? E.ed(s.pub.ed) : null;
+      var ed = s.pub.ed ? CEP.viewEd(s.pub.ed) : null;
       var hh = '<h1 class="sx-h2">Let’s build your pricing together</h1><p class="sx-sub">For companies with 1,000+ employees we don’t show a generic estimate. Pricing depends on volume, term, commitment options and your product mix, so a specialist prepares it with you.</p>';
-      hh += '<div class="cep-ent"><h2 class="sx-h4" style="margin-top:0">What we’ll share with your specialist</h2><ul class="cep-kv"><li><span>Goals</span>' + (s.ctx.goals.map(function (g) { return esc(E.goal(g).name); }).join(", ") || "None yet") + "</li><li><span>Option</span>" + (ed ? esc(ed.name) : "Not chosen yet") + "</li><li><span>Company</span>" + [labelOf("industry"), labelOf("size"), labelOf("region")].filter(Boolean).map(esc).join(" · ") + "</li></ul>" +
+      hh += '<div class="cep-ent"><h2 class="sx-h4" style="margin-top:0">What we’ll share with your specialist</h2><ul class="cep-kv"><li><span>Goals</span>' + (s.ctx.goals.map(function (g) { return esc(E.goal(g).name); }).join(", ") || "None yet") + "</li><li><span>Option</span>" + (ed ? esc(ed.name) : "Not chosen yet") + "</li><li><span>Company</span>" + [labelOf("industry"), labelOf("cloud"), labelOf("size"), labelOf("region")].filter(Boolean).map(esc).join(" · ") + "</li></ul>" +
         '<h2 class="sx-h4">What happens next</h2><ol><li>You share your goals and contact details. You choose exactly what’s shared.</li><li>A specialist reviews your goals and current systems with you.</li><li>You get tailored pricing, including volume and commitment options, plus a trial or proof of concept if you want one.</li></ol>' +
         '<div class="sx-btnrow sx-mt"><a class="sf-cta sf-cta--primary sf-cta--hero" href="#/handoff" data-act="next" data-v="sales" data-allow-disabled>Talk to Sales</a></div></div>';
       hh += '<p class="sx-fine">Not 1,000+ employees? <a href="#/explore">Change company size</a> to see an estimate.</p>';
@@ -406,9 +486,14 @@
     var est = CEP.est(), e = est.edition, sel = CEP.sel();
     var h = '<h1 class="sx-h2">Customize your estimate</h1><p class="sx-sub">Your main number comes first. Adjust the edition and users (seats), then include add-ons if you need them.</p>';
     // 1 configuration
-    var sz = E.size(s.ctx.size), eds = sz ? sz.eds : ["st", "pro", "core", "adv", "max"];
+    var sz = E.size(s.ctx.size), eds;
+    if (s.pub.origin === "editions") {
+      eds = sz ? sz.eds : ["st", "pro", "core", "adv", "max"];
+    } else {
+      eds = E.suiteEds(s.ctx.cloud).filter(function (id) { return !s.ctx.industry || E.suiteHas(s.ctx.industry, s.ctx.cloud, id); });
+    }
     if (eds.indexOf(e.id) < 0) eds = eds.concat([e.id]);
-    h += '<div class="sx-cb"><h2 class="sx-h4" style="margin-top:0">Edition and users (seats)</h2><div class="sx-seg" role="group" aria-label="Edition">' + eds.map(function (id) { return '<button aria-pressed="' + (id === e.id) + '" data-act="chooseEd" data-id="' + id + '">' + esc(short(E.ed(id))) + "</button>"; }).join("") + "</div>" +
+    h += '<div class="sx-cb"><h2 class="sx-h4" style="margin-top:0">Edition and users (seats)</h2><div class="sx-seg" role="group" aria-label="Edition">' + eds.map(function (id) { return '<button aria-pressed="' + (id === e.id) + '" data-act="chooseEd" data-id="' + id + '">' + esc(short(CEP.viewEd(id))) + "</button>"; }).join("") + "</div>" +
       '<div class="sx-row" style="margin-top:16px"><div><label class="sx-lbl" for="seats">Users (seats)</label>' + stepper("seats", sel.seats, "users (seats)") + "</div>" +
       (e.billing.indexOf("monthly") >= 0 ? '<div><span class="sx-lbl" id="b2">How you’re billed</span><div class="sx-seg" role="group" aria-labelledby="b2"><button aria-pressed="' + (s.pub.billing === "annual") + '" data-act="billing" data-v="annual">Annual</button><button aria-pressed="' + (s.pub.billing === "monthly") + '" data-act="billing" data-v="monthly">Monthly</button></div></div>' : '<div><span class="sx-lbl">How you’re billed</span><p class="sx-mod__d">Annual contract</p></div>') + "</div>";
     est.lines.forEach(function (l) { if (l.warn) h += CEP.note("w", esc(l.warn)); });
@@ -480,7 +565,7 @@
     var s = S(), ent = CEP.isEnt();
     if (!s.pub.ed && !ent) return R["/estimate"]();
     s.pub.lastRoute = "#/next";
-    var est = CEP.est(), e = s.pub.ed ? E.ed(s.pub.ed) : null, tr = e ? FX.trials[e.id] : null;
+    var est = CEP.est(), e = s.pub.ed ? CEP.viewEd(s.pub.ed) : null, tr = e ? FX.trials[e.id] : null;
     var h = '<h1 class="sx-h2">Choose your next step</h1>';
     if (e) h += '<div class="cep-sumstrip"><span><strong>' + esc(e.name) + "</strong> · " + E.num(CEP.sel().seats) + " users (seats)</span><span>" + (ent ? "Tailored pricing with Sales" : est && est.priceable ? "<strong>" + CEP.pt(est.knownAnnual) + "</strong> " + (est.partial ? "known subtotal" : "estimated") + " · illustrative list price" : "Not priced for your region") + "</span></div>";
     if (s.me.signedIn) h += '<p class="sx-fine">Signed in as ' + esc(s.me.email) + ' (simulated) · <button class="sx-link" data-act="meOut">Sign out</button></p>';
@@ -560,7 +645,7 @@
   A.next = function (el) { S().pub.next = el.getAttribute("data-v"); CEP.track("next_step_selected", { next: S().pub.next }); CEP.save(); location.hash = el.getAttribute("href"); };
   A.buyOnline = function () {
     CEP.track("next_step_selected", { next: "buy" });
-    CEP.modal("Online checkout isn’t part of this prototype", "<p>In production, " + esc(E.ed(S().pub.ed).name) + " could be bought online. This research prototype doesn’t collect payment or create orders.</p><p class=\"sx-sub\">Your estimate is saved. You can start a trial or talk to Sales instead.</p><div class=\"sx-btnrow\"><a class=\"sf-cta sf-cta--primary sf-cta--medium\" href=\"#/try\" data-act=\"closeGo\">Start a trial</a><button class=\"sf-cta sf-cta--secondary sf-cta--medium\" data-act=\"closeModal\">Back to estimate</button></div>");
+    CEP.modal("Online checkout isn’t part of this prototype", "<p>In production, " + esc(CEP.viewEd(S().pub.ed).name) + " could be bought online. This research prototype doesn’t collect payment or create orders.</p><p class=\"sx-sub\">Your estimate is saved. You can start a trial or talk to Sales instead.</p><div class=\"sx-btnrow\"><a class=\"sf-cta sf-cta--primary sf-cta--medium\" href=\"#/try\" data-act=\"closeGo\">Start a trial</a><button class=\"sf-cta sf-cta--secondary sf-cta--medium\" data-act=\"closeModal\">Back to estimate</button></div>");
   };
   A.closeGo = function (el) { CEP.closeModal(); location.hash = el.getAttribute("href"); };
 
@@ -620,7 +705,13 @@
     return CEP.page(h + stepNav("#/next", "Back", null, null), { rail: true });
   };
   I.diffOnly = function (el) { S().pub.diffOnly = el.checked; CEP.save(); CEP.render(); };
-  A.restore = function (el) { var v = S().pub.saved[+el.getAttribute("data-i")], p = S().pub; p.ed = v.sel.ed; p.seats = v.sel.seats; p.billing = v.sel.billing; p.accepted = JSON.parse(JSON.stringify(v.sel.accepted)); p.actions = v.sel.actions; CEP.save(); CEP.toast(v.name + " restored"); CEP.go("#/estimate"); };
+  A.restore = function (el) {
+    var v = S().pub.saved[+el.getAttribute("data-i")], p = S().pub, c = S().ctx;
+    p.ed = v.sel.ed; p.seats = v.sel.seats; p.billing = v.sel.billing; p.accepted = JSON.parse(JSON.stringify(v.sel.accepted)); p.actions = v.sel.actions;
+    if (v.sel.industry !== undefined) c.industry = v.sel.industry;
+    if (v.sel.cloud) c.cloud = v.sel.cloud;
+    CEP.save(); CEP.toast(v.name + " restored"); CEP.go("#/estimate");
+  };
   A.delSaved = function (el) { S().pub.saved.splice(+el.getAttribute("data-i"), 1); S().pub.saved.forEach(function (v, i) { v.name = "Version " + String.fromCharCode(65 + i); }); CEP.save(); CEP.render(); };
 
   CEP.summaryText = function () {
@@ -628,6 +719,7 @@
     L.push("SALESFORCE PRICING ESTIMATE — ILLUSTRATIVE RESEARCH PROTOTYPE. NOT A QUOTE.");
     L.push("Generated " + new Date().toISOString().slice(0, 10) + " · session " + s.session);
     L.push("");
+    L.push("Industry: " + (labelOf("industry") || "not given") + " · Cloud: " + CEP.cloudLabel(s.ctx.cloud));
     L.push("Goals: " + (s.ctx.goals.map(function (g) { return E.goal(g).name; }).join("; ") || "none"));
     if (!est) { L.push("No option chosen."); return L.join("\n"); }
     if (CEP.isEnt()) { L.push("Option: " + est.edition.name); L.push("Pricing: tailored by Salesforce for 1,000+ employees. No estimate shown."); return L.join("\n"); }
@@ -648,9 +740,10 @@
 
   /* ═════════ F4 TRY — real trials + industry use cases (no demos) ═════════ */
   function trialFor(edId) { return FX.trials[edId] || FX.trials.st; }
-  function useCasesFor(indId) { return FX.useCases[indId] || FX.useCases.other; }
+  var UC_ALIAS = { fsc: "fs", health: "hc", ls: "hc", auto: "mfg", mfg: "mfg", cg: "rcg" };
+  function useCasesFor(indId) { return FX.useCases[indId] || FX.useCases[UC_ALIAS[indId]] || FX.useCases.other; }
   R["/try"] = function () {
-    var s = S(), e = s.pub.ed ? E.ed(s.pub.ed) : null, f = s.rs.failures, t = s.trial;
+    var s = S(), e = s.pub.ed ? CEP.viewEd(s.pub.ed) : null, f = s.rs.failures, t = s.trial;
     var h = '<h1 class="sx-h2">Try before you decide</h1>';
     if (!e) return CEP.page(h + '<p class="sx-sub">Choose an option first so we can show the right trial.</p><a class="sf-cta sf-cta--primary sf-cta--medium" href="#/recommend">See options</a>', { rail: true, crumbs: CEP.crumbs(STEPS, 3) });
     var tr = trialFor(e.id), ind = FX.industries.filter(function (i) { return i.id === s.ctx.industry; })[0] || null;
@@ -734,7 +827,7 @@
     }
     if (hd.declined) h += CEP.note("", "No problem — nothing will be shared. You can <button class=\"sx-link\" data-act=\"downloadSummary\">download</button> or <button class=\"sx-link\" data-act=\"copySummary\">copy</button> your summary instead, or <a href=\"" + back + "\">go back</a>.");
     var groups = [
-      ["context", "Business context", [labelOf("industry"), labelOf("size"), labelOf("region")].filter(Boolean).join(" · ") || "None given"],
+      ["context", "Business context", [labelOf("industry"), labelOf("cloud"), labelOf("size"), labelOf("region")].filter(Boolean).join(" · ") || "None given"],
       ["goals", "Goals", s.ctx.goals.map(function (g) { return E.goal(g).name; }).join(", ") || "None selected"],
       ["products", "Selected products and quantities", est ? est.lines.map(function (l) { return l.label + (l.qty ? " × " + E.num(l.qty) + " " + (l.unitLabel || "").replace(/^× /, "") : ""); }).join(", ") : "None"],
       ["estimate", "Estimate and price status", CEP.isEnt() ? "No estimate shown. You’re asking for tailored pricing (1,000+ employees)." : est ? (est.priceable ? E.money(est.monthly) + "/mo (" + E.money(est.knownAnnual) + "/yr)" : "Not priced") + (est.partial ? " (partial)" : "") + " · illustrative list prices" : "No estimate"],
@@ -750,7 +843,11 @@
   };
   function labelOf(k) {
     var c = S().ctx;
-    if (k === "industry" && c.industry) return FX.industries.filter(function (i) { return i.id === c.industry; })[0].name;
+    if (k === "industry" && c.industry) {
+      var rec = FX.industries.filter(function (i) { return i.id === c.industry; })[0];
+      return rec ? rec.name : null;
+    }
+    if (k === "cloud") return CEP.cloudLabel(c.cloud);
     if (k === "size" && c.size) return E.size(c.size).range;
     if (k === "region" && c.region) return E.region(c.region).name;
     return null;

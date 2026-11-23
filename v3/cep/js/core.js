@@ -14,7 +14,7 @@
   function fresh() {
     return {
       v: 1, session: newSession(), participant: "", variant: "guided",
-      ctx: { industry: null, size: null, region: "na", goals: [], freeText: "", suggested: [], skipped: false },
+      ctx: { industry: null, size: null, region: "na", cloud: "crm", goals: [], freeText: "", suggested: [], skipped: false },
       view: { period: "mo", audience: "new" },
       me: { signedIn: false, email: "", name: "" }, pendingGate: null,
       pub: { ed: null, seats: null, billing: "annual", accepted: {}, declined: {}, actions: 0, currency: "USD", model: "prepurchase", saved: [], compare: [], next: null, lastRoute: "#/explore", browseProduct: "all" },
@@ -255,9 +255,20 @@
   };
   CEP.sel = function () {
     var S = CEP.S, sz = E.size(S.ctx.size);
+    if (!S.ctx.cloud) S.ctx.cloud = "crm";
     CEP.pruneAccepted(S.pub.ed);
     return { ed: S.pub.ed, seats: S.pub.seats || (sz ? sz.seats : 10), billing: S.pub.billing, accepted: S.pub.accepted,
-      actions: S.pub.actions, region: S.ctx.region, currency: S.pub.currency, goals: S.ctx.goals, showServices: S.rs.showServices };
+      actions: S.pub.actions, region: S.ctx.region, currency: S.pub.currency, goals: S.ctx.goals, showServices: S.rs.showServices,
+      industry: S.ctx.industry, cloud: S.ctx.cloud };
+  };
+  CEP.viewEd = function (id) {
+    if (!id) return null;
+    var S = CEP.S;
+    return E.suiteEd(id, S.ctx.industry, S.ctx.cloud || "crm") || E.ed(id);
+  };
+  CEP.cloudLabel = function (id) {
+    var c = window.CEP_SUITES && window.CEP_SUITES.cloud(id || CEP.S.ctx.cloud || "crm");
+    return c ? c.label : "Sales & Service";
   };
   CEP.est = function () { return CEP.S.pub.ed ? E.estimate(CEP.sel()) : null; };
 
@@ -269,7 +280,9 @@
     var ctx = [];
     var ind = S.ctx.industry && FX.industries.filter(function (i) { return i.id === S.ctx.industry; })[0];
     var sz = E.size(S.ctx.size), rg = E.region(S.ctx.region);
-    if (ind) ctx.push(ind.name); if (sz) ctx.push(sz.range); if (rg) ctx.push(rg.name);
+    if (ind) ctx.push(ind.name);
+    ctx.push(CEP.cloudLabel(S.ctx.cloud));
+    if (sz) ctx.push(sz.range); if (rg) ctx.push(rg.name);
     var h = '<aside class="sx-cv" aria-label="Your plan summary"><div class="sx-cv__head"><h2 class="sx-cv__title">Running estimate</h2>' + (est && !ent ? CEP.status(est.status) : "") + "</div>" + (est && est.priceable && !ent ? CEP.periodToggle("pt-rail") : "");
     if (ctx.length) h += '<div class="sx-ctxrow">' + ctx.map(function (c) { return '<a class="sx-ctx" href="#/explore">' + esc(c) + "</a>"; }).join("") + "</div>";
     if (S.ctx.goals.length) {
@@ -283,7 +296,7 @@
       h += "</ul>";
     }
     if (ent) {
-      h += (S.pub.ed ? '<div class="sx-cv__h">Option you’re considering</div><p class="sx-gl__n">' + esc(E.ed(S.pub.ed).name) + "</p>" : "");
+      h += (S.pub.ed ? '<div class="sx-cv__h">Option you’re considering</div><p class="sx-gl__n">' + esc(CEP.viewEd(S.pub.ed).name) + "</p>" : "");
       h += '<div class="sx-cost"><p class="cep-tailored">Tailored pricing<small>For 1,000+ employees, a Salesforce specialist builds your pricing with you, including volume and commitment options.</small></p></div>';
     } else if (est) {
       h += '<div class="sx-cv__h">Your estimate</div><ul class="sx-lines">';
@@ -298,7 +311,7 @@
   };
   CEP.mobileBar = function () {
     var est = CEP.est(); if (!est) return "";
-    if (CEP.isEnt()) return '<div class="sx-bar" role="status"><div class="sx-bar__btn"><span class="sx-bar__l"><strong>Running estimate</strong><small>' + esc(est.edition.name) + '</small></span><span class="sx-bar__r"><strong>Tailored</strong><small>pricing with Sales</small></span></div></div>';
+    if (CEP.isEnt()) return '<div class="sx-bar" role="status"><div class="sx-bar__btn"><span class="sx-bar__l"><strong>Running estimate</strong><small>' + esc((est.edition && est.edition.name) || "") + '</small></span><span class="sx-bar__r"><strong>Tailored</strong><small>pricing with Sales</small></span></div></div>';
     return '<div class="sx-bar" role="status"><div class="sx-bar__btn"><span class="sx-bar__l"><strong>Running estimate</strong><small>' + esc(est.edition.name) + (est.partial ? " · partial" : "") + '</small></span><span class="sx-bar__r"><strong>' + (est.priceable ? E.money(CEP.pv(est.knownAnnual)) : "—") + "</strong><small>" + CEP.perLbl() + "</small></span></div></div>";
   };
   CEP.act.resetPublic = function () {

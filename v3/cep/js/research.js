@@ -51,7 +51,7 @@
   A.rsFx = function (el) {
     var x = FX.scenarios.filter(function (z) { return z.id === el.getAttribute("data-id"); })[0], s = S();
     CEP.reset(true); s = S(); s.rs.open = true;
-    if (x.ctx) { s.ctx.industry = x.ctx.industry; s.ctx.size = x.ctx.size; s.ctx.region = x.ctx.region; s.ctx.goals = x.ctx.goals.slice(); if (x.ctx.goals.indexOf("g_ai") >= 0) s.pub.actions = FX.usage.defaultActions; }
+    if (x.ctx) { s.ctx.industry = x.ctx.industry; s.ctx.size = x.ctx.size; s.ctx.region = x.ctx.region; s.ctx.cloud = x.ctx.cloud || "crm"; s.ctx.goals = x.ctx.goals.slice(); if (x.ctx.goals.indexOf("g_ai") >= 0) s.pub.actions = FX.usage.defaultActions; }
     if (x.edition) { s.pub.ed = x.edition; s.pub.seats = CEP.E.size(x.ctx.size).seats; }
     if (x.role === "buyer" || x.role === "admin") { s.rs.signinRole = x.role; }
     s.participant = s.participant || "";

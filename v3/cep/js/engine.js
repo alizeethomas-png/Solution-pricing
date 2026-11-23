@@ -13,6 +13,7 @@
 (function (root) {
   "use strict";
   var FX = root.CEP_FX || (typeof require !== "undefined" ? require("./fixtures.js") : null);
+  var SU = root.CEP_SUITES || (typeof require !== "undefined" ? require("./industry-suites.js") : null);
 
   /* ── helpers ──────────────────────────────────────────────────── */
   function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return null; }
@@ -47,19 +48,71 @@
   function edRank(id) { return ED_ORDER.indexOf(id); }
   function isSmb(id) { return id === "st" || id === "pro"; }
   function isMax(id) { return id === "max" || id === "svc_max" || id === "crm_max"; }
-  /* Extra to go from a one-function Portfolio SKU to the combined
-     Sales & Service SKU at the same tier (explorer: $250 / $475 / $675). */
-  function crmDelta(edId) {
+  /* Extra to go from a one-function SKU to the combined Sales & Service
+     SKU at the same tier. Industry overlays use explorer list prices
+     (generic Portfolio: $55 / $80 / $125). */
+  function crmDelta(edId, industry) {
+    var t = SU && SU.tierKey(edId);
+    if (SU && t) {
+      var sales = SU.tier(industry, "sales", t);
+      var crm = SU.tier(industry, "crm", t);
+      if (sales && crm && sales.price != null && crm.price != null) return crm.price - sales.price;
+      var svc = SU.tier(industry, "service", t);
+      if (svc && crm && svc.price != null && crm.price != null) return crm.price - svc.price;
+    }
     if (!edId) return 55;
     if (edId.indexOf("max") >= 0) return 125;
     if (edId.indexOf("adv") >= 0) return 80;
     return 55;
   }
-  function modUnitPrice(m, e) {
+  function modUnitPrice(m, e, industry) {
     if (!m) return null;
     if (m.price === "edition") return e ? e.price : null;
-    if (m.price === "crmDelta") return e ? crmDelta(e.id) : null;
+    if (m.price === "crmDelta") return e ? crmDelta(e.id, industry) : null;
     return m.price;
+  }
+  function cloneEd(e) {
+    if (!e) return e;
+    var o = {};
+    Object.keys(e).forEach(function (k) { o[k] = Array.isArray(e[k]) ? e[k].slice() : e[k]; });
+    return o;
+  }
+  /* Overlay Portfolio 2.0 industry suite name/price/BOM onto a base edition. */
+  function suiteEd(id, industry, cloud) {
+    var e = cloneEd(ed(id));
+    if (!e || !SU || isSmb(id)) return e;
+    var c = cloud;
+    if (!c) {
+      if (id.indexOf("crm_") === 0) c = "crm";
+      else if (id.indexOf("svc_") === 0) c = "service";
+      else if (id === "core" || id === "adv" || id === "max") c = "sales";
+      else return e;
+    }
+    var t = SU.tier(industry, c, id);
+    if (!t) return e;
+    e.name = t.name;
+    e.family = t.family;
+    e.price = t.price;
+    e.blurb = t.blurb;
+    e.includes = t.includes.slice();
+    e.slack = t.slack;
+    e.credits = t.credits;
+    e.storage = t.storage;
+    e.suiteVariant = t.variant || "";
+    e.priceTiers = t.prices || null;
+    return e;
+  }
+  function suiteHas(industry, cloud, edId) {
+    if (!SU) return true;
+    if (!industry) return !!SU.tier(null, cloud || "crm", edId);
+    return SU.has(industry, cloud || "crm", edId);
+  }
+  function suiteEds(cloud) { return SU ? SU.edsFor(cloud || "crm") : ["crm_core", "crm_adv", "crm_max"]; }
+  function remapEd(edId, cloud) {
+    var ids = suiteEds(cloud);
+    var t = SU ? SU.tierKey(edId) : "core";
+    for (var i = 0; i < ids.length; i++) if ((SU ? SU.tierKey(ids[i]) : ids[i]) === t) return ids[i];
+    return ids[0] || edId;
   }
 
   /* ── goal suggestion (R26: rules, reversible, no AI pricing) ──── */
@@ -101,10 +154,20 @@
     var sz = size(ctx.size) || null;
     var rg = region(ctx.region || "na") || region("na");
     var seats = ctx.seats || (sz ? sz.seats : 10);
-    var eds = (sz ? sz.eds : ["st", "pro", "core"]).filter(function (id) { return !(rg.ineligible && rg.ineligible.indexOf(id) >= 0); });
+    var cloud = ctx.cloud || null;
+    var industry = ctx.industry || null;
+    var eds;
+    if (cloud && SU && SU.CLOUD_EDS[cloud]) {
+      eds = suiteEds(cloud).filter(function (id) {
+        if (rg.ineligible && rg.ineligible.indexOf(id) >= 0) return false;
+        return suiteHas(industry, cloud, id);
+      });
+    } else {
+      eds = (sz ? sz.eds : ["st", "pro", "core"]).filter(function (id) { return !(rg.ineligible && rg.ineligible.indexOf(id) >= 0); });
+    }
     var goals = (ctx.goals || []).filter(function (g) { return !!goal(g); });
     var opts = eds.map(function (id) {
-      var e = ed(id);
+      var e = suiteEd(id, industry, cloud);
       var rows = goals.map(function (g) { return coverGoal(g, id, null); });
       var full = rows.filter(function (r) { return r.base === "full"; }).length;
       var reach = rows.filter(function (r) { return r.base === "full" || r.fixes.length; }).length;
@@ -119,8 +182,8 @@
       var best = Math.max.apply(null, opts.map(function (o) { return o.reach; }));
       var cands = opts.filter(function (o) { return o.reach === best; });
       cands.sort(function (a, b) {
-        var ea = estimate({ ed: a.id, seats: seats, accepted: defaultAccept(a, seats), actions: 0 }).knownAnnual;
-        var eb = estimate({ ed: b.id, seats: seats, accepted: defaultAccept(b, seats), actions: 0 }).knownAnnual;
+        var ea = estimate({ ed: a.id, seats: seats, accepted: defaultAccept(a, seats), actions: 0, industry: industry, cloud: cloud }).knownAnnual;
+        var eb = estimate({ ed: b.id, seats: seats, accepted: defaultAccept(b, seats), actions: 0, industry: industry, cloud: cloud }).knownAnnual;
         if (ea !== eb) return ea - eb;
         /* Same cost: prefer the packaged SKU (fewer add-ons, more covered on its own)
            so Sales & Service Core wins over Sales Core + Service delta. */
@@ -171,7 +234,7 @@
      sel: { ed, seats, billing, accepted:{modId:qty}, actions, region,
             currency, goals, showServices } */
   function estimate(sel) {
-    var e = ed(sel.ed);
+    var e = suiteEd(sel.ed, sel.industry, sel.cloud) || ed(sel.ed);
     var seats = Math.max(0, sel.seats || 0);
     var rg = region(sel.region || "na") || region("na");
     var cur = sel.currency || "USD";
@@ -212,7 +275,7 @@
         partial = true; return;
       }
       productCount++;
-      var unitPrice = modUnitPrice(m, e);
+      var unitPrice = modUnitPrice(m, e, sel.industry);
       var amt = null, qtyLabel = "", unitLabel = m.unit;
       if (m.status === "unpriced" || unitPrice === null) { amt = null; partial = true; }
       else if (m.unit === "user/mo") { amt = unitPrice * q * 12; qtyLabel = "users (seats)"; unitLabel = "user/mo"; }
@@ -425,7 +488,8 @@
   }
 
   var API = { money: money, credits: credits, num: num, fmtDate: fmtDate, daysInclusive: daysInclusive, addDays: addDays,
-    ed: ed, mod: mod, goal: goal, size: size, region: region, edRank: edRank, isSmb: isSmb, isMax: isMax, modUnitPrice: modUnitPrice, crmDelta: crmDelta,
+    ed: ed, suiteEd: suiteEd, suiteHas: suiteHas, suiteEds: suiteEds, remapEd: remapEd,
+    mod: mod, goal: goal, size: size, region: region, edRank: edRank, isSmb: isSmb, isMax: isMax, modUnitPrice: modUnitPrice, crmDelta: crmDelta,
     suggestGoals: suggestGoals, coverGoal: coverGoal, options: options, defaultQty: defaultQty,
     creditCalc: creditCalc, servicesBand: servicesBand, estimate: estimate, buyingModelCheck: buyingModelCheck,
     seatQuote: seatQuote, cartQuote: cartQuote, creditPosition: creditPosition, creditPlan: creditPlan, commitEval: commitEval };
