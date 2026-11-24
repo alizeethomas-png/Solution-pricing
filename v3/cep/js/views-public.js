@@ -279,20 +279,29 @@
     var suInd = window.CEP_SUITES && window.CEP_SUITES.industry(c.industry);
     var indName = (suInd && suInd.name) || (ind && ind.name) || "";
     var suiteTitle = (indName ? indName + " " : "") + CEP.cloudLabel(c.cloud) + " Suite";
-    var h = '<p class="cep-eyebrow">Your recommended option</p><h1 class="sx-h2">' + esc(suiteTitle) + '</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare Core, Advanced and Max below. Prices are illustrative list prices.") + "</p>";
+    var sz = E.size(c.size);
+    var h = '<div class="cep-top__intro"><p class="cep-eyebrow">Your recommended option</p><h1 class="sx-h2">' + esc(suiteTitle) + '</h1><p class="sx-sub">Based on your answers. ' + (ent ? "For companies your size, a Salesforce specialist prepares your pricing." : "Compare Core, Advanced and Max below. Prices are illustrative list prices.") + "</p></div>";
     if (ind && window.CEP_SUITES && window.CEP_SUITES.meta.notes[ind.id]) h += CEP.note("", esc(window.CEP_SUITES.meta.notes[ind.id]));
     if (rg && !rg.priced) h += CEP.note("w", "<strong>Prices for " + esc(rg.name) + " aren’t in this prototype.</strong> We show options and coverage, but not converted prices." + (rg.ineligible ? " Starter Suite isn’t offered in this region (synthetic rule)." : ""));
     if (!available.length) {
       h += CEP.note("w", "<strong>This suite isn’t offered for " + esc(CEP.cloudLabel(c.cloud)) + ".</strong> " + (ind && ind.id === "ps" ? "Public Sector is sold as Service in this prototype. Switch to Service to see Core, Advanced and Max." : "Try another Sales / Service / Sales &amp; Service choice."));
     }
     if (available.length && available.every(function (x) { return x.reach === 0; })) h += CEP.note("w", "None of these options covers your goals on its own. <a href=\"#/explore\">Change your goals</a> or talk to Sales on the last step.");
-    var complexNote = o.complex ? CEP.note("w", "<strong>This may need specialist help.</strong> " + esc(o.complexWhy.join(" ")) + " We won’t add those products for you.<div><a class=\"sx-link\" href=\"#/handoff\">Contact Specialist</a></div>") : "";
+    function specialistWarn() {
+      if (!o.complex) return "";
+      return '<div class="cep-why-warn" role="note"><p>' + CEP.ic.warn + "<span><strong>This may need specialist help.</strong> " + esc(o.complexWhy.join(" ")) + " We won’t add those products for you.</span></p><p class=\"cep-why-warn__cta\"><a href=\"#/handoff\">Contact Specialist</a></p></div>";
+    }
 
     if (rec) {
       var e = rec.edition;
       var goalItems = [];
       (c.goals || []).forEach(function (gid) {
-        var g = E.goal(gid); if (g) goalItems.push("<li>" + esc(g.name) + "</li>");
+        var g = E.goal(gid); if (!g) return;
+        var r = rec.rows.filter(function (rr) { return rr.goal && rr.goal.id === gid; })[0];
+        var base = r ? r.base : "gap";
+        var ic = base === "full" ? CEP.ic.check : base === "partial" ? CEP.ic.part : CEP.ic.cross;
+        var lab = base === "full" ? "Covered" : base === "partial" ? "Partially covered" : "Not covered";
+        goalItems.push("<li>" + ic + '<span class="sx-vh">' + lab + "</span><span>" + esc(g.name) + "</span></li>");
       });
       var addonItems = rec.suggested.map(function (mid) {
         var mm = E.mod(mid);
@@ -307,23 +316,29 @@
         else priceTxt = E.money(up);
         return "<li>" + esc(mm.name) + ": " + priceTxt + "</li>";
       }).filter(Boolean);
+      var whyBits = [];
+      whyBits.push(indName || "your industry");
+      whyBits.push((sz && sz.range) || "your business size");
       h += '<section class="cep-why-blade" aria-labelledby="why-h">';
+      h += '<div class="cep-why-blade__top"><div class="cep-why-blade__main">';
       h += '<div class="cep-why-blade__head"><h2 class="sx-h3" id="why-h">Recommended: ' + esc(e.name) + '</h2><span class="cep-badge">★ Recommended for you</span></div>';
+      h += '<p class="cep-why-blade__why">This recommendation is based on your answers about you: ' + esc(whyBits.join(", ")) + ", and the goals you’re trying to solve.</p>";
+      if (goalItems.length) {
+        h += '<p class="cep-why-blade__lab" id="why-goals">Goals covered in this solution:</p><ul class="cep-why-blade__g" aria-labelledby="why-goals">' + goalItems.join("") + "</ul>";
+      }
+      if (addonItems.length) {
+        h += '<p class="cep-why-blade__lab" id="why-addons">Add-ons needed:</p><ul class="cep-why-blade__needlist" aria-labelledby="why-addons">' + addonItems.join("") + "</ul>";
+      }
+      h += specialistWarn();
+      h += "</div>";
       if (priced) {
         h += '<div class="cep-why-blade__p"><strong>' + E.money(e.price) + "</strong><span>per user/month</span></div>";
       } else {
         h += '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing" : "Priced by Sales") + "</span></div>";
       }
-      if (goalItems.length) {
-        h += '<p class="cep-why-blade__lab" id="why-goals">Goals covered:</p><ul class="cep-why-blade__g" aria-labelledby="why-goals">' + goalItems.join("") + "</ul>";
-      }
-      if (addonItems.length) {
-        h += '<p class="cep-why-blade__lab" id="why-addons">Add-ons needed:</p><ul class="cep-why-blade__needlist" aria-labelledby="why-addons">' + addonItems.join("") + "</ul>";
-      }
-      h += "</section>";
-      h += complexNote;
+      h += "</div></section>";
     } else {
-      h += complexNote;
+      h += specialistWarn();
     }
 
     var top = '<div class="cep-top">' + h + "</div>"; h = "";
