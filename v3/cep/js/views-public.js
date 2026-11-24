@@ -290,14 +290,37 @@
 
     if (rec) {
       var e = rec.edition;
-      h += '<section class="cep-why-blade" aria-labelledby="why-h"><div class="cep-why-blade__top"><div><span class="cep-badge">★ Recommended for you</span><h2 class="sx-h3" id="why-h">Why we recommend ' + esc(e.name) + '</h2><p class="sx-mod__d">' + esc(e.blurb) + (e.suiteVariant ? " (" + esc(e.suiteVariant) + ")" : "") + "</p></div>" +
-        (priced ? '<div class="cep-why-blade__p"><strong>' + E.money(CEP.uv(e.price)) + "</strong><span>" + CEP.perUnitLbl("user seat") + "</span><small>" + CEP.pt(rec.baseAnnual) + " for " + E.num(rec.seats) + " users seats · " + CEP.billNote(e.billing.indexOf("monthly") >= 0 && s.pub.billing === "monthly") + "</small></div>" :
-          '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing<small>A specialist prepares your price</small>" : "Priced by Sales<small>Not available for your region</small>") + "</span></div>") + "</div>";
-      h += '<p class="cep-why-blade__sum"><strong>' + (rec.reach === rec.rows.length ? "It can cover all " + rec.rows.length + " of your goals" : "It covers the most of your goals (" + rec.reach + " of " + rec.rows.length + ")") + (rec.suggested.length ? " with " + rec.suggested.length + " add-on" + (rec.suggested.length > 1 ? "s" : "") : " on its own") + (ent ? ", with the fewest extra products." : ", at the lowest estimated cost among options that do.") + "</strong></p>";
-      h += '<ul class="cep-why-blade__g">' + rec.rows.map(function (r) { return "<li>" + (r.base === "full" ? CEP.ic.check : r.base === "partial" ? CEP.ic.part : CEP.ic.gap) + "<span><strong>" + esc(r.goal.name) + "</strong> " + esc(r.reason) + "</span></li>"; }).join("") + "</ul>";
-      if (rec.suggested.length) h += '<p class="cep-why-blade__need"><strong>Would also need (not added yet):</strong> ' + rec.suggested.map(function (m) { var mm = E.mod(m); var up = E.modUnitPrice(mm, e, c.industry); return esc(mm.name) + (priced ? " (" + (up === null ? "priced by Sales" : (mm.status === "from" ? "from " : "") + CEP.pu(up, mm.unit)) + ")" : ""); }).join(", ") + ". You choose these in the next step.</p>";
-      if (rec.unmet.length) h += '<p class="sx-gl__w">Can’t fully cover: ' + rec.unmet.map(function (r) { return esc(r.goal.name); }).join(", ") + "</p>";
-      h += '<div class="sx-btnrow">' + (chosen === rec.id ? '<span class="sx-chip is-est">Selected</span>' : '<button class="sf-cta sf-cta--secondary sf-cta--medium" data-act="pickEd" data-id="' + rec.id + '">Use ' + esc(short(e)) + " instead</button>") + "</div></section>";
+      var goalItems = [];
+      (c.goals || []).forEach(function (gid) {
+        var g = E.goal(gid); if (g) goalItems.push("<li>" + esc(g.name) + "</li>");
+      });
+      var addonItems = rec.suggested.map(function (mid) {
+        var mm = E.mod(mid);
+        if (!mm) return "";
+        var up = E.modUnitPrice(mm, e, c.industry);
+        var unit = mm.unit || "user/mo";
+        var priceTxt;
+        if (!priced || up === null) priceTxt = "Priced by Sales";
+        else if (unit === "user/mo") priceTxt = E.money(up) + "/user/month";
+        else if (unit === "org/mo") priceTxt = E.money(up) + "/org/month";
+        else if (unit === "1K profiles/yr") priceTxt = E.money(up) + "/1K profiles/year";
+        else priceTxt = E.money(up);
+        return "<li>" + esc(mm.name) + ": " + priceTxt + "</li>";
+      }).filter(Boolean);
+      h += '<section class="cep-why-blade" aria-labelledby="why-h">';
+      h += '<div class="cep-why-blade__head"><h2 class="sx-h3" id="why-h">Recommended: ' + esc(e.name) + '</h2><span class="cep-badge">★ Recommended for you</span></div>';
+      if (priced) {
+        h += '<div class="cep-why-blade__p"><strong>' + E.money(e.price) + "</strong><span>per user/month</span></div>";
+      } else {
+        h += '<div class="cep-why-blade__p"><span class="cep-tailored">' + (ent ? "Tailored pricing" : "Priced by Sales") + "</span></div>";
+      }
+      if (goalItems.length) {
+        h += '<p class="cep-why-blade__lab" id="why-goals">Goals covered:</p><ul class="cep-why-blade__g" aria-labelledby="why-goals">' + goalItems.join("") + "</ul>";
+      }
+      if (addonItems.length) {
+        h += '<p class="cep-why-blade__lab" id="why-addons">Add-ons needed:</p><ul class="cep-why-blade__needlist" aria-labelledby="why-addons">' + addonItems.join("") + "</ul>";
+      }
+      h += "</section>";
       h += complexNote;
     } else {
       h += complexNote;
